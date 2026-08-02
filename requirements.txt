@@ -1,0 +1,30 @@
+# Eskwela Project Dependencies
+
+# Django
+Django==6.0
+
+# Django Channels (WebSocket support)
+channels==4.0.0
+daphne==4.0.0
+
+# Database drivers
+psycopg2-binary==2.9.9  # PostgreSQL
+# Or for SQLite (already built-in):
+# No database driver needed
+
+# Email & utilities
+python-decouple==3.8
+Pillow==10.0.0  # Image processing for file uploads
+openpyxl==3.1.2  # Excel file handling
+
+# Optional: For production-grade real-time (Redis channel layer)
+# channels-redis==4.1.0
+# redis==5.0.0
+
+# Development tools (optional)
+# black==23.0.0  # Code formatter
+# flake8==6.0.0  # Linter
+# django-debug-toolbar==4.1.0  # Debug toolbar
+
+# Note: Install with:
+# pip install -r requirements.txt

@@ -1,0 +1,566 @@
+{% extends 'teacher/teacher_base.html' %}
+{% load static %}
+
+{% block title %}Submissions | Teacher Eskwela{% endblock %}
+
+{% block page_title %}Assignment Submissions{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .ts-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── BACK LINK ── */
+    .ts-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--forest-green);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: .9rem;
+        margin-bottom: 20px;
+        transition: color .15s;
+    }
+
+    .ts-back:hover {
+        color: var(--emerald);
+    }
+
+    /* ── BANNER ── */
+    .ts-banner {
+        background: var(--forest-green);
+        border-radius: 14px;
+        padding: 24px 28px;
+        color: #ffffff;
+        margin-bottom: 24px;
+    }
+
+    .ts-banner h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0 0 8px;
+        color: #ffffff;
+    }
+
+    .ts-banner p {
+        color: rgba(255, 255, 255, .8);
+        margin: 0 0 14px;
+        font-size: .9rem;
+        line-height: 1.5;
+    }
+
+    .ts-banner-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .ts-meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, .15);
+        padding: 7px 14px;
+        border-radius: 20px;
+        font-size: .85rem;
+        font-weight: 500;
+    }
+
+    /* ── STATS ── */
+    .ts-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .ts-stat {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .ts-stat-val {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--forest-green);
+        margin-bottom: 4px;
+    }
+
+    .ts-stat-lbl {
+        font-size: .7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #8a9aa8;
+    }
+
+    /* ── SECTION ── */
+    .ts-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .ts-section-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .ts-section-header h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--forest-green);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+
+    /* ── TABLE ── */
+    .ts-table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .ts-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .875rem;
+        min-width: 700px;
+    }
+
+    .ts-table thead th {
+        background: #f0f7f0;
+        padding: 12px 14px;
+        text-align: left;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #4a6a5a;
+        border-bottom: 2px solid #dceadc;
+        white-space: nowrap;
+    }
+
+    .ts-table tbody tr {
+        border-bottom: 1px solid #f0f5f0;
+        transition: background .15s;
+    }
+
+    .ts-table tbody tr:hover {
+        background: #f5fbf5;
+    }
+
+    .ts-table tbody td {
+        padding: 13px 14px;
+        color: #2d3f36;
+        vertical-align: top;
+    }
+
+    /* ── STUDENT CELL ── */
+    .ts-student-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ts-student-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--forest-green);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: .85rem;
+        flex-shrink: 0;
+    }
+
+    .ts-student-name {
+        font-weight: 600;
+        color: #1b3a2d;
+        font-size: .88rem;
+    }
+
+    .ts-student-email {
+        font-size: .75rem;
+        color: #8a9aa8;
+    }
+
+    /* ── BADGES ── */
+    .ts-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .78rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+    .status-submitted {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .status-late {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .status-graded {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .ts-grade-badge {
+        background: #e6f7ed;
+        color: #1a7a3f;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: .85rem;
+        display: inline-block;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .act-group {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 7px;
+        font-size: .76rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        line-height: 1.3;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    }
+
+    .act-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .act-view {
+        background: #4a6fa5;
+        color: #ffffff;
+    }
+
+    .act-grade {
+        background: #d97706;
+        color: #ffffff;
+    }
+
+    /* ── GRADE FORM ── */
+    .ts-grade-form {
+        margin-top: 12px;
+        padding: 14px;
+        background: #f8fdf8;
+        border-radius: 8px;
+        border: 1.5px solid #eaf2ea;
+        display: none;
+    }
+
+    .ts-grade-form textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 6px;
+        font-size: .83rem;
+        font-family: inherit;
+        resize: vertical;
+        margin-bottom: 10px;
+    }
+
+    .ts-grade-form textarea:focus {
+        outline: none;
+        border-color: var(--emerald);
+    }
+
+    .ts-grade-input-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .ts-grade-input-row input[type="number"] {
+        width: 90px;
+        padding: 7px 10px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 6px;
+        font-size: .88rem;
+        text-align: center;
+    }
+
+    .ts-grade-input-row input[type="number"]:focus {
+        outline: none;
+        border-color: var(--emerald);
+    }
+
+    .ts-grade-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-save-grade {
+        background: var(--emerald);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 7px 16px;
+        font-size: .82rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-save-grade:hover {
+        filter: brightness(.9);
+    }
+
+    .btn-cancel-grade {
+        background: #e5e7eb;
+        color: #374151;
+        border: none;
+        border-radius: 6px;
+        padding: 7px 14px;
+        font-size: .82rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+    }
+
+    .btn-cancel-grade:hover {
+        background: #d1d5db;
+    }
+
+    /* ── EMPTY ── */
+    .ts-empty {
+        text-align: center;
+        padding: 50px 20px;
+        color: #8a9aa8;
+    }
+
+    .ts-empty i {
+        font-size: 3rem;
+        color: #c8dfc8;
+        margin-bottom: 14px;
+        display: block;
+    }
+
+    .ts-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+        .ts-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .ts-stats {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .ts-banner-meta {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .act-group {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="ts-wrap">
+
+    <!-- Back Link -->
+    <a href="{% url 'manage_subjects' %}" class="ts-back">
+        <i class="fas fa-arrow-left"></i> Back to Subjects
+    </a>
+
+    <!-- Assignment Banner -->
+    <div class="ts-banner">
+        <h2>{{ assignment.title }}</h2>
+        <p>{{ assignment.description|truncatechars:200 }}</p>
+        <div class="ts-banner-meta">
+            <span class="ts-meta-item"><i class="fas fa-book"></i> {{ assignment.get_subject_display }}</span>
+            <span class="ts-meta-item"><i class="fas fa-graduation-cap"></i> {{ assignment.grade_level }}</span>
+            <span class="ts-meta-item"><i class="fas fa-star"></i> {{ assignment.total_points }} points</span>
+            <span class="ts-meta-item"><i class="far fa-clock"></i> Due: {{ assignment.due_date|date:"M d, Y h:i A" }}</span>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="ts-stats">
+        <div class="ts-stat">
+            <div class="ts-stat-val">{{ total_submissions }}</div>
+            <div class="ts-stat-lbl">Total</div>
+        </div>
+        <div class="ts-stat">
+            <div class="ts-stat-val">{{ graded_count }}</div>
+            <div class="ts-stat-lbl">Graded</div>
+        </div>
+        <div class="ts-stat">
+            <div class="ts-stat-val">{{ pending_count }}</div>
+            <div class="ts-stat-lbl">Pending</div>
+        </div>
+        <div class="ts-stat">
+            <div class="ts-stat-val">{{ late_count }}</div>
+            <div class="ts-stat-lbl">Late</div>
+        </div>
+    </div>
+
+    <!-- Submissions Table -->
+    <div class="ts-section">
+        <div class="ts-section-header">
+            <h3><i class="fas fa-list"></i> Student Submissions</h3>
+        </div>
+
+        {% if submissions %}
+        <div class="ts-table-scroll">
+            <table class="ts-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Grade</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for submission in submissions %}
+                    <tr>
+                        <td>
+                            <div class="ts-student-cell">
+                                <div class="ts-student-avatar">
+                                    {{ submission.student.user.first_name|first|default:submission.student.user.username|first|upper }}
+                                </div>
+                                <div>
+                                    <div class="ts-student-name">{{ submission.student.user.get_full_name|default:submission.student.user.username }}</div>
+                                    <div class="ts-student-email">{{ submission.student.user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {{ submission.submitted_at|date:"M d, Y h:i A" }}
+                            {% if submission.status == 'late' %}
+                            <br><small style="color: #c0392b; font-weight: 600;">(Late)</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="ts-status status-{{ submission.status }}">
+                                {{ submission.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if submission.grade %}
+                            <span class="ts-grade-badge">{{ submission.grade }}/{{ assignment.total_points }}</span>
+                            {% else %}
+                            <span style="color: #8a9aa8;">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="act-group">
+                                {% if submission.submission_file %}
+                                <a href="{{ submission.submission_file.url }}" class="act-btn act-view" target="_blank">
+                                    <i class="fas fa-eye"></i> View File
+                                </a>
+                                {% endif %}
+                                <button class="act-btn act-grade" onclick="toggleGradeForm('{{ submission.id }}')">
+                                    <i class="fas fa-star"></i> Grade
+                                </button>
+                            </div>
+
+                            <!-- Grade Form -->
+                            <div id="grade-form-{{ submission.id }}" class="ts-grade-form">
+                                <form method="POST" action="{% url 'grade_submission' submission.id %}">
+                                    {% csrf_token %}
+                                    <textarea name="feedback" rows="3"
+                                        placeholder="Feedback for student...">{{ submission.feedback }}</textarea>
+                                    <div class="ts-grade-input-row">
+                                        <input type="number" name="grade" min="0" max="{{ assignment.total_points }}"
+                                            value="{{ submission.grade|default:'' }}" placeholder="Score" required>
+                                        <span style="color: #6b7c7a; font-weight: 600;">/ {{ assignment.total_points }}
+                                            pts</span>
+                                    </div>
+                                    <div class="ts-grade-actions">
+                                        <button type="submit" class="btn-save-grade">
+                                            <i class="fas fa-save"></i> Save Grade
+                                        </button>
+                                        <button type="button" class="btn-cancel-grade"
+                                            onclick="toggleGradeForm('{{ submission.id }}')">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="ts-empty">
+            <i class="fas fa-inbox"></i>
+            <h3>No Submissions Yet</h3>
+            <p>Students haven't submitted this assignment yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+    function toggleGradeForm(submissionId) {
+        const form = document.getElementById(`grade-form-${submissionId}`);
+        if (form) {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+</script>
+{% endblock %}

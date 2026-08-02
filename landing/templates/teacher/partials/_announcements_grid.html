@@ -1,0 +1,38 @@
+{% if announcements %}
+{% for announcement in announcements %}
+<div class="announcement-card {% if not announcement.is_active %}inactive{% endif %}">
+    <span class="priority-badge priority-{{ announcement.priority }}">
+        {{ announcement.get_priority_display }}
+    </span>
+
+    <div class="announcement-title">{{ announcement.title }}</div>
+
+    <div class="announcement-meta">
+        <span class="audience-tag">
+            <i class="fas fa-users"></i> {{ announcement.get_audience_display }}
+        </span>
+        <span class="date-tag">
+            <i class="far fa-calendar"></i> {{ announcement.created_at|date:"M d, Y" }}
+        </span>
+    </div>
+
+    <div class="announcement-content">
+        {{ announcement.content|linebreaks|truncatechars:150 }}
+    </div>
+
+    {% if announcement.attachment %}
+    <div style="margin-bottom: 15px;">
+        <a href="{{ announcement.attachment.url }}" class="attachment-link" target="_blank">
+            <i class="fas fa-paperclip"></i> View Attachment
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-bullhorn"></i>
+    <h3>No Announcements Found</h3>
+    <p>No announcements match your current filters.</p>
+</div>
+{% endif %}

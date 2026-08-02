@@ -1,0 +1,1090 @@
+{% extends 'teacher/teacher_base.html' %}
+{% load static %}
+
+{% block title %}Announcements | Teacher Eskwela{% endblock %}
+
+{% block page_title %}Announcements{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .ta-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── STAT CARDS ── */
+    .ta-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .ta-stat {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        transition: transform .18s, box-shadow .18s;
+    }
+
+    .ta-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(34, 139, 34, .1);
+    }
+
+    .ta-stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .icon-total {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .icon-active {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .icon-inactive {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .ta-stat-body {
+        flex: 1;
+    }
+
+    .ta-stat-label {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #8a9aa8;
+        margin-bottom: 4px;
+    }
+
+    .ta-stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+    }
+
+    /* ── SECTION CARD ── */
+    .ta-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .ta-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .ta-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+    }
+
+    .ta-section-title .title-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #fef3cd;
+        color: #d97706;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+    }
+
+    .ta-btn-create {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 20px;
+        background: var(--emeraldv2);
+        color: #ffffff;
+        border: none;
+        border-radius: 9px;
+        font-size: .85rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        transition: filter .15s, transform .15s;
+        text-decoration: none;
+    }
+
+    .ta-btn-create:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    /* ── FILTER BAR ── */
+    .ta-filter-bar {
+        padding: 16px 24px;
+        background: #f8fdf8;
+        border-bottom: 1px solid #eaf2ea;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .ta-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .ta-filter-group label {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .ta-select {
+        padding: 8px 32px 8px 12px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 8px;
+        font-size: .84rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .ta-select:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .ta-btn-row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+    .btn-filter {
+        padding: 8px 18px;
+        background: var(--forest-green);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        font-size: .84rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: filter .15s;
+    }
+
+    .btn-filter:hover {
+        filter: brightness(.9);
+    }
+
+    .btn-clear {
+        padding: 8px 18px;
+        background: #8a9aa8;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-family: inherit;
+        font-size: .84rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: filter .15s;
+    }
+
+    .btn-clear:hover {
+        filter: brightness(.9);
+    }
+
+    /* ── CARD GRID ── */
+    .ta-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 18px;
+        padding: 20px 24px;
+    }
+
+    .ta-card {
+        background: #fafdfa;
+        border: 1.5px solid #eaf2ea;
+        border-radius: 12px;
+        padding: 20px;
+        position: relative;
+        transition: box-shadow .2s, transform .2s;
+    }
+
+    .ta-card:hover {
+        box-shadow: 0 6px 20px rgba(34, 139, 34, .1);
+        transform: translateY(-2px);
+    }
+
+    .ta-card.inactive {
+        opacity: .55;
+    }
+
+    .ta-priority-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        font-size: .7rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 10px;
+        text-transform: uppercase;
+    }
+
+    .priority-low {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .priority-medium {
+        background: #fef3cd;
+        color: #92400e;
+    }
+
+    .priority-high {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .priority-urgent {
+        background: #c0392b;
+        color: #ffffff;
+    }
+
+    .ta-card-title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #1b3a2d;
+        margin-bottom: 10px;
+        padding-right: 80px;
+    }
+
+    .ta-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .ta-meta-tag {
+        font-size: .73rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+    }
+
+    .tag-audience {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .tag-date {
+        background: #f0f7f0;
+        color: #4a6a5a;
+    }
+
+    .tag-status-active {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .tag-status-inactive {
+        background: #f0f5f0;
+        color: #8a9aa8;
+    }
+
+    .ta-card-content {
+        font-size: .88rem;
+        color: #6b7c7a;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+
+    .ta-attachment-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .82rem;
+        font-weight: 600;
+        color: #2a56c6;
+        text-decoration: none;
+        padding: 6px 12px;
+        background: #eff6ff;
+        border-radius: 7px;
+        margin-bottom: 12px;
+        transition: background .15s;
+    }
+
+    .ta-attachment-link:hover {
+        background: #dbeafe;
+    }
+
+    .ta-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #eaf2ea;
+        padding-top: 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .ta-card-date {
+        font-size: .78rem;
+        color: #8a9aa8;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .ta-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 7px;
+        font-size: .76rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        line-height: 1.3;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    }
+
+    .act-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .act-edit {
+        background: #d97706;
+        color: #ffffff;
+    }
+
+    .act-toggle {
+        background: #6d28d9;
+        color: #ffffff;
+    }
+
+    .act-delete {
+        background: #c0392b;
+        color: #ffffff;
+    }
+
+    /* ── PAGINATION ── */
+    .ta-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        padding: 20px 24px;
+        border-top: 1px solid #eaf2ea;
+    }
+
+    .ta-page-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 16px;
+        background: #ffffff;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 8px;
+        color: var(--forest-green);
+        text-decoration: none;
+        font-size: .85rem;
+        font-weight: 600;
+        transition: all .15s;
+    }
+
+    .ta-page-link:hover {
+        background: var(--forest-green);
+        color: #fff;
+        border-color: var(--forest-green);
+    }
+
+    .ta-page-link.active {
+        background: var(--forest-green);
+        color: #fff;
+        border-color: var(--forest-green);
+    }
+
+    /* ── EMPTY STATE ── */
+    .ta-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: #8a9aa8;
+    }
+
+    .ta-empty i {
+        font-size: 3rem;
+        color: #c8dfc8;
+        margin-bottom: 14px;
+        display: block;
+    }
+
+    .ta-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    /* ── MODAL ── */
+    .ta-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 40, 30, .55);
+        backdrop-filter: blur(4px);
+        z-index: 9000;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .ta-modal.open {
+        display: flex;
+    }
+
+    .ta-modal-box {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .22);
+        width: 100%;
+        max-width: 560px;
+        overflow: hidden;
+        animation: modalIn .22s ease;
+    }
+
+    @keyframes modalIn {
+        from {
+            opacity: 0;
+            transform: scale(.95) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .ta-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        color: #ffffff;
+    }
+
+    .head-create {
+        background: var(--forest-green);
+    }
+
+    .head-edit {
+        background: #d97706;
+    }
+
+    .ta-modal-head h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+    }
+
+    .ta-modal-close {
+        background: rgba(255, 255, 255, .15);
+        border: none;
+        color: #ffffff;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .15s;
+    }
+
+    .ta-modal-close:hover {
+        background: rgba(255, 255, 255, .28);
+    }
+
+    .ta-modal-body {
+        padding: 24px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .ta-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .ta-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .ta-form-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .ta-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .ta-input:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    textarea.ta-input {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .ta-select-modal {
+        padding: 10px 36px 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .ta-select-modal:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .ta-modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .ta-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 22px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s, transform .15s;
+    }
+
+    .ta-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    .btn-save {
+        background: var(--emerald);
+        color: #fff;
+    }
+
+    .btn-save:hover {
+        background: var(--forest-green);
+        filter: none;
+    }
+
+    .btn-cancel {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-cancel:hover {
+        background: #d1d5db;
+        filter: none;
+    }
+
+    .ta-hint {
+        font-size: .75rem;
+        color: #8a9aa8;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+        .ta-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .ta-stats {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .ta-card-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ta-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ta-filter-bar {
+            flex-direction: column;
+        }
+
+        .ta-btn-row {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="ta-wrap">
+
+    <!-- ══ STAT CARDS ══ -->
+    <div class="ta-stats">
+        <div class="ta-stat">
+            <div class="ta-stat-icon icon-total"><i class="fas fa-bullhorn"></i></div>
+            <div class="ta-stat-body">
+                <div class="ta-stat-label">Total</div>
+                <div class="ta-stat-value">{{ total_announcements }}</div>
+            </div>
+        </div>
+        <div class="ta-stat">
+            <div class="ta-stat-icon icon-active"><i class="fas fa-check-circle"></i></div>
+            <div class="ta-stat-body">
+                <div class="ta-stat-label">Active</div>
+                <div class="ta-stat-value">{{ active_announcements }}</div>
+            </div>
+        </div>
+        <div class="ta-stat">
+            <div class="ta-stat-icon icon-inactive"><i class="fas fa-eye-slash"></i></div>
+            <div class="ta-stat-body">
+                <div class="ta-stat-label">Inactive</div>
+                <div class="ta-stat-value">{{ total_announcements|add:"-" }}{{ active_announcements }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MAIN SECTION ══ -->
+    <div class="ta-section">
+        <div class="ta-section-header">
+            <div class="ta-section-title">
+                <div class="title-icon"><i class="fas fa-bullhorn"></i></div>
+                Announcements
+            </div>
+            <button class="ta-btn-create" onclick="openCreateModal()">
+                <i class="fas fa-plus"></i> New Announcement
+            </button>
+        </div>
+
+        <!-- Filter -->
+        <div class="ta-filter-bar">
+            <form method="GET" action="{% url 'teacher_announcements' %}"
+                style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; width: 100%;">
+                <div class="ta-filter-group">
+                    <label><i class="fas fa-users"></i> Audience</label>
+                    <select name="audience" class="ta-select">
+                        <option value="all" {% if current_filter.audience == 'all' %}selected{% endif %}>All Audiences
+                        </option>
+                        {% for value, label in audience_choices %}
+                        <option value="{{ value }}" {% if current_filter.audience == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="ta-filter-group">
+                    <label><i class="fas fa-flag"></i> Priority</label>
+                    <select name="priority" class="ta-select">
+                        <option value="all" {% if current_filter.priority == 'all' %}selected{% endif %}>All Priorities
+                        </option>
+                        {% for value, label in priority_choices %}
+                        <option value="{{ value }}" {% if current_filter.priority == value %}selected{% endif %}>{{ label|title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="ta-filter-group">
+                    <label><i class="fas fa-toggle-on"></i> Status</label>
+                    <select name="status" class="ta-select">
+                        <option value="all" {% if current_filter.status == 'all' %}selected{% endif %}>All Status</option>
+                        <option value="active" {% if current_filter.status == 'active' %}selected{% endif %}>Active
+                        </option>
+                        <option value="inactive" {% if current_filter.status == 'inactive' %}selected{% endif %}>Inactive
+                        </option>
+                    </select>
+                </div>
+
+                <div class="ta-btn-row">
+                    <button type="submit" class="btn-filter">
+                        <i class="fas fa-search"></i> Apply
+                    </button>
+                    <a href="{% url 'teacher_announcements' %}" class="btn-clear">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Cards Grid -->
+        {% if announcements %}
+        <div class="ta-card-grid">
+            {% for announcement in announcements %}
+            <div class="ta-card {% if not announcement.is_active %}inactive{% endif %}">
+                <span class="ta-priority-badge priority-{{ announcement.priority }}">
+                    {{ announcement.get_priority_display }}
+                </span>
+
+                <div class="ta-card-title">{{ announcement.title }}</div>
+
+                <div class="ta-card-meta">
+                    <span class="ta-meta-tag tag-audience">
+                        <i class="fas fa-users"></i> {{ announcement.get_audience_display }}
+                    </span>
+                    <span class="ta-meta-tag tag-date">
+                        <i class="far fa-calendar"></i> {{ announcement.created_at|date:"M d, Y" }}
+                    </span>
+                    <span
+                        class="ta-meta-tag {% if announcement.is_active %}tag-status-active{% else %}tag-status-inactive{% endif %}">
+                        {% if announcement.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+
+                <div class="ta-card-content">
+                    {{ announcement.content|linebreaks|truncatechars:150 }}
+                </div>
+
+                {% if announcement.attachment %}
+                <a href="{{ announcement.attachment.url }}" class="ta-attachment-link" target="_blank">
+                    <i class="fas fa-paperclip"></i> View Attachment
+                </a>
+                {% endif %}
+
+                <div class="ta-card-footer">
+                    <div class="ta-card-date">
+                        <i class="far fa-clock"></i> {{ announcement.updated_at|date:"M d" }}
+                    </div>
+                    <div class="ta-actions">
+                        <button class="act-btn act-edit" onclick="editAnnouncement('{{ announcement.id }}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <form method="POST" action="{% url 'toggle_announcement' announcement.id %}"
+                            style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="act-btn act-toggle">
+                                <i
+                                    class="fas {% if announcement.is_active %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                                {% if announcement.is_active %}Deactivate{% else %}Activate{% endif %}
+                            </button>
+                        </form>
+                        <form method="POST" action="{% url 'delete_announcement' announcement.id %}"
+                            style="display: inline;" onsubmit="return confirm('Delete this announcement?');">
+                            {% csrf_token %}
+                            <button type="submit" class="act-btn act-delete">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="ta-pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if current_filter.audience != 'all' %}&audience={{ current_filter.audience }}{% endif %}{% if current_filter.priority != 'all' %}&priority={{ current_filter.priority }}{% endif %}{% if current_filter.status != 'all' %}&status={{ current_filter.status }}{% endif %}"
+                class="ta-page-link">
+                <i class="fas fa-chevron-left"></i> Prev
+            </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="ta-page-link active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
+                href="?page={{ num }}{% if current_filter.audience != 'all' %}&audience={{ current_filter.audience }}{% endif %}{% if current_filter.priority != 'all' %}&priority={{ current_filter.priority }}{% endif %}{% if current_filter.status != 'all' %}&status={{ current_filter.status }}{% endif %}"
+                class="ta-page-link">{{ num }}</a>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if current_filter.audience != 'all' %}&audience={{ current_filter.audience }}{% endif %}{% if current_filter.priority != 'all' %}&priority={{ current_filter.priority }}{% endif %}{% if current_filter.status != 'all' %}&status={{ current_filter.status }}{% endif %}"
+                    class="ta-page-link">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="ta-empty">
+            <i class="fas fa-bullhorn"></i>
+            <h3>No Announcements Yet</h3>
+            <p>Create your first announcement to communicate with students.</p>
+            <button class="ta-btn-create" onclick="openCreateModal()" style="margin-top: 16px;">
+                <i class="fas fa-plus"></i> New Announcement
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- ══ CREATE MODAL ══ -->
+<div id="createModal" class="ta-modal">
+    <div class="ta-modal-box">
+        <div class="ta-modal-head head-create">
+            <h3><i class="fas fa-bullhorn"></i> New Announcement</h3>
+            <button class="ta-modal-close" onclick="closeCreateModal()">&times;</button>
+        </div>
+        <div class="ta-modal-body">
+            <form method="POST" action="{% url 'create_announcement' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="ta-form-group">
+                    <label>Title *</label>
+                    <input type="text" name="title" class="ta-input" required
+                        placeholder="e.g., Important Update, Class Suspension, etc.">
+                </div>
+
+                <div class="ta-form-group">
+                    <label>Content *</label>
+                    <textarea name="content" class="ta-input" rows="5" required
+                        placeholder="Write your announcement here..."></textarea>
+                </div>
+
+                <div class="ta-form-grid">
+                    <div class="ta-form-group">
+                        <label><i class="fas fa-users"></i> Target Audience *</label>
+                        <select name="audience" class="ta-select-modal" required>
+                            <option value="">Select Audience</option>
+                            {% for value, label in audience_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="ta-form-group">
+                        <label><i class="fas fa-flag"></i> Priority *</label>
+                        <select name="priority" class="ta-select-modal" required>
+                            <option value="">Select Priority</option>
+                            {% for value, label in priority_choices %}
+                            <option value="{{ value }}">{{ label|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ta-form-group">
+                    <label><i class="fas fa-paperclip"></i> Attachment <span class="ta-hint">(Optional)</span></label>
+                    <input type="file" name="attachment" class="ta-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        style="padding: 8px;">
+                    <span class="ta-hint">Max size: 10MB. Allowed: PDF, DOC, DOCX, JPG, PNG</span>
+                </div>
+
+                <div class="ta-modal-actions">
+                    <button type="button" class="ta-btn btn-cancel" onclick="closeCreateModal()">Cancel</button>
+                    <button type="submit" class="ta-btn btn-save"><i class="fas fa-paper-plane"></i> Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ══ EDIT MODAL ══ -->
+<div id="editModal" class="ta-modal">
+    <div class="ta-modal-box">
+        <div class="ta-modal-head head-edit">
+            <h3><i class="fas fa-edit"></i> Edit Announcement</h3>
+            <button class="ta-modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <div class="ta-modal-body">
+            <form method="POST" action="" id="editForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="ta-form-group">
+                    <label>Title *</label>
+                    <input type="text" name="title" id="edit_title" class="ta-input" required>
+                </div>
+
+                <div class="ta-form-group">
+                    <label>Content *</label>
+                    <textarea name="content" id="edit_content" class="ta-input" rows="5" required></textarea>
+                </div>
+
+                <div class="ta-form-grid">
+                    <div class="ta-form-group">
+                        <label>Target Audience *</label>
+                        <select name="audience" id="edit_audience" class="ta-select-modal" required>
+                            {% for value, label in audience_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="ta-form-group">
+                        <label>Priority *</label>
+                        <select name="priority" id="edit_priority" class="ta-select-modal" required>
+                            {% for value, label in priority_choices %}
+                            <option value="{{ value }}">{{ label|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ta-form-group">
+                    <label><i class="fas fa-paperclip"></i> New Attachment <span
+                            class="ta-hint">(Optional)</span></label>
+                    <input type="file" name="attachment" class="ta-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        style="padding: 8px;">
+                    <span class="ta-hint">Leave empty to keep current attachment</span>
+                </div>
+
+                <div class="ta-modal-actions">
+                    <button type="button" class="ta-btn btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="ta-btn btn-save"><i class="fas fa-save"></i> Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openCreateModal() {
+        document.getElementById('createModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeCreateModal() {
+        document.getElementById('createModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function editAnnouncement(announcementId) {
+        fetch('/teacher/announcements/edit/' + announcementId + '/', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                document.getElementById('edit_title').value = data.title;
+                document.getElementById('edit_content').value = data.content;
+                document.getElementById('edit_audience').value = data.audience;
+                document.getElementById('edit_priority').value = data.priority;
+                document.getElementById('editForm').action = '/teacher/announcements/edit/' + announcementId + '/';
+                document.getElementById('editModal').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            });
+    }
+
+    // Close modals on backdrop click
+    document.querySelectorAll('.ta-modal').forEach(function (m) {
+        m.addEventListener('click', function (e) {
+            if (e.target === m) {
+                m.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        });
+    });
+
+    // Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.ta-modal.open').forEach(function (m) {
+                m.classList.remove('open');
+            });
+            document.body.style.overflow = '';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,170 @@
+/*
+  Eskwela Project Green Theme
+  Applies a comprehensive green-themed color palette across the system.
+*/
+
+:root {
+    /* Main Colors */
+    --forest-green: #228B22;
+    --mint-bg: #F5FFFA;
+    --emerald: #50C878;
+    --emeraldv2: #00b53c;
+    --sage: #8FBC8F;
+    --charcoal: #222;
+    --white: #fff;
+
+    /* UI Assignments */
+    --header-bg: var(--forest-green);
+    --nav-bg: var(--forest-green);
+    --button-bg: var(--emerald);
+    --button-hover-bg: var(--sage);
+    --background: var(--mint-bg);
+    --text-dark: var(--charcoal);
+    --text-light: var(--white);
+}
+
+body {
+    background: var(--background);
+    color: var(--text-dark);
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+header,
+.header,
+nav,
+.navbar {
+    background: var(--header-bg) !important;
+    color: var(--text-light) !important;
+}
+
+/* Navigation links */
+nav a,
+.navbar a {
+    color: var(--text-light) !important;
+}
+
+/* Buttons — base defaults only, no !important so page-level styles can override */
+button,
+.btn,
+input[type="submit"],
+input[type="button"] {
+    background: var(--button-bg);
+    color: var(--text-light);
+    border: none;
+    border-radius: 4px;
+    padding: 0.5em 1.2em;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+button:hover,
+.btn:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+    background: var(--button-hover-bg);
+}
+
+/* Card/Panel backgrounds */
+.card,
+.panel,
+.module,
+.dashboard,
+.profile,
+.form-container {
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(34, 139, 34, 0.08);
+    padding: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+/* Table styling */
+table {
+    background: var(--white);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+thead {
+    background: var(--forest-green);
+    color: var(--text-light);
+}
+
+tbody tr:nth-child(even) {
+    background: var(--mint-bg);
+}
+
+tbody tr:nth-child(odd) {
+    background: #e6f5ea;
+}
+
+/* High contrast for accessibility */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label,
+th {
+    color: var(--forest-green);
+}
+
+a {
+    color: var(--forest-green);
+    text-decoration: underline;
+}
+
+a:hover {
+    color: var(--emerald);
+}
+
+/* Form fields */
+input,
+select,
+textarea {
+    background: var(--mint-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--sage);
+    border-radius: 4px;
+    padding: 0.5em;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid var(--emerald);
+}
+
+/* Utility classes */
+.bg-forest {
+    background: var(--forest-green) !important;
+    color: var(--text-light) !important;
+}
+
+.bg-mint {
+    background: var(--mint-bg) !important;
+}
+
+.text-forest {
+    color: var(--forest-green) !important;
+}
+
+.text-emerald {
+    color: var(--emerald) !important;
+}
+
+.text-charcoal {
+    color: var(--charcoal) !important;
+}
+
+/* Scrollbar styling for modern browsers */
+::-webkit-scrollbar {
+    width: 10px;
+    background: var(--mint-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--sage);
+    border-radius: 5px;
+}

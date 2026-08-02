@@ -1,0 +1,694 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+
+{% block title %}Announcements | Eskwela ALS{% endblock %}
+
+{% block page_title %}Teacher Announcements{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .sa-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── GRADE BADGE ── */
+    .sa-grade-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--forest-green);
+        color: #ffffff;
+        padding: 9px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: .9rem;
+        margin-bottom: 24px;
+    }
+
+    /* ── STATS ── */
+    .sa-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .sa-stat {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        transition: transform .18s, box-shadow .18s;
+    }
+
+    .sa-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(34, 139, 34, .1);
+    }
+
+    .sa-stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 8px;
+        font-size: 1.1rem;
+    }
+
+    .icon-total {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .icon-urgent {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .icon-high {
+        background: #fef3cd;
+        color: #d97706;
+    }
+
+    .sa-stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+        margin-bottom: 3px;
+    }
+
+    .sa-stat-label {
+        font-size: .7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #8a9aa8;
+    }
+
+    /* ── FILTER ── */
+    .sa-filter {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .sa-filter-form {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .sa-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 160px;
+    }
+
+    .sa-filter-group label {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .sa-input,
+    .sa-select {
+        padding: 9px 12px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 8px;
+        font-size: .84rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff;
+    }
+
+    .sa-select {
+        padding: 9px 32px 9px 12px;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .sa-input:focus,
+    .sa-select:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .sa-btn-row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+    .sa-btn {
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: .84rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: filter .15s, transform .15s;
+        border: none;
+    }
+
+    .sa-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    .btn-filter {
+        background: var(--forest-green);
+        color: #fff;
+    }
+
+    .btn-clear {
+        background: #8a9aa8;
+        color: #fff;
+    }
+
+    /* ── CARD GRID ── */
+    .sa-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .sa-card {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        transition: transform .2s, box-shadow .2s;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .sa-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(34, 139, 34, .1);
+    }
+
+    .sa-card.priority-urgent {
+        border-left: 4px solid #c0392b;
+        background: #fefafa;
+    }
+
+    .sa-card.priority-high {
+        border-left: 4px solid #d97706;
+        background: #fffdf7;
+    }
+
+    .sa-card.priority-medium {
+        border-left: 4px solid #f59e0b;
+        background: #fffefa;
+    }
+
+    .sa-card.priority-low {
+        border-left: 4px solid #1a7a3f;
+        background: #f8fdf8;
+    }
+
+    /* ── PRIORITY BADGE ── */
+    .sa-priority-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        z-index: 2;
+    }
+
+    .sa-priority-badge.priority-urgent {
+        background: #c0392b;
+        color: #ffffff;
+    }
+
+    .sa-priority-badge.priority-high {
+        background: #d97706;
+        color: #ffffff;
+    }
+
+    .sa-priority-badge.priority-medium {
+        background: #fef3cd;
+        color: #92400e;
+    }
+
+    .sa-priority-badge.priority-low {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    /* ── CARD CONTENT ── */
+    .sa-card-header {
+        padding: 18px 20px 10px;
+    }
+
+    .sa-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0 0 8px;
+        padding-right: 90px;
+        line-height: 1.3;
+    }
+
+    .sa-card-meta {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: .8rem;
+        color: #6b7c7a;
+    }
+
+    .sa-card-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .sa-card-meta i {
+        color: #4a6a5a;
+        font-size: .78rem;
+    }
+
+    .sa-card-body {
+        flex: 1;
+        padding: 6px 20px;
+        color: #6b7c7a;
+        font-size: .88rem;
+        line-height: 1.5;
+    }
+
+    .sa-card-body p {
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .sa-card-footer {
+        padding: 14px 20px;
+        border-top: 1px solid #eaf2ea;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .sa-attachment-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        background: #eff6ff;
+        color: #2a56c6;
+        border: 1px solid #bfdbfe;
+        border-radius: 7px;
+        font-size: .82rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all .15s;
+    }
+
+    .sa-attachment-link:hover {
+        background: #2a56c6;
+        color: #fff;
+        border-color: #2a56c6;
+    }
+
+    .sa-read-more-btn {
+        background: none;
+        border: none;
+        color: var(--forest-green);
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .84rem;
+        font-family: inherit;
+        margin-left: auto;
+        transition: color .15s, transform .15s;
+    }
+
+    .sa-read-more-btn:hover {
+        color: var(--emerald);
+        transform: translateX(3px);
+    }
+
+    .sa-read-more-btn i {
+        transition: transform .3s;
+        font-size: .75rem;
+    }
+
+    /* ── FULL CONTENT ── */
+    .sa-full-content {
+        display: none;
+        padding: 16px 20px;
+        background: #f8fdf8;
+        border-top: 1px solid #eaf2ea;
+    }
+
+    .sa-full-content-divider {
+        height: 1px;
+        background: #dceadc;
+        margin-bottom: 14px;
+    }
+
+    .sa-full-content-text {
+        color: #4a6a5a;
+        font-size: .9rem;
+        line-height: 1.6;
+    }
+
+    .sa-full-content-text p {
+        margin: 8px 0;
+    }
+
+    .sa-full-content-text p:first-child {
+        margin-top: 0;
+    }
+
+    .sa-full-content-text p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* ── PAGINATION ── */
+    .sa-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .sa-page-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--forest-green);
+        font-weight: 600;
+        font-size: .84rem;
+        background: #fff;
+        transition: all .15s;
+    }
+
+    .sa-page-link:hover {
+        background: var(--forest-green);
+        color: #fff;
+        border-color: var(--forest-green);
+    }
+
+    .sa-page-info {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 14px;
+        background: #f0f7f0;
+        color: #4a6a5a;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: .84rem;
+    }
+
+    /* ── EMPTY STATE ── */
+    .sa-empty {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .sa-empty-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #f0f7f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 2rem;
+        color: #8a9aa8;
+    }
+
+    .sa-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .sa-empty p {
+        color: #8a9aa8;
+        font-size: .88rem;
+    }
+
+    .sa-empty-note {
+        margin-top: 14px;
+        background: #eff6ff;
+        border-left: 3px solid #2a56c6;
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: #1e3a8a;
+        font-size: .85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .sa-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .sa-card-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sa-filter-form {
+            flex-direction: column;
+        }
+
+        .sa-filter-group {
+            width: 100%;
+        }
+
+        .sa-card-title {
+            padding-right: 70px;
+            font-size: .92rem;
+        }
+
+        .sa-priority-badge {
+            top: 10px;
+            right: 10px;
+            font-size: .65rem;
+            padding: 4px 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .sa-stats {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+    }
+</style>
+
+<div class="sa-wrap">
+
+    <!-- Grade Badge -->
+    <div class="sa-grade-badge">
+        <i class="fas fa-bell"></i> Announcements for {{ current_grade }}
+    </div>
+
+    <!-- Stats -->
+    <div class="sa-stats">
+        <div class="sa-stat">
+            <div class="sa-stat-icon icon-total"><i class="fas fa-bullhorn"></i></div>
+            <div class="sa-stat-value">{{ total_announcements }}</div>
+            <div class="sa-stat-label">Total</div>
+        </div>
+        <div class="sa-stat">
+            <div class="sa-stat-icon icon-urgent"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="sa-stat-value">{{ urgent_count }}</div>
+            <div class="sa-stat-label">Urgent</div>
+        </div>
+        <div class="sa-stat">
+            <div class="sa-stat-icon icon-high"><i class="fas fa-flag"></i></div>
+            <div class="sa-stat-value">{{ high_count }}</div>
+            <div class="sa-stat-label">High Priority</div>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="sa-filter">
+        <form method="GET" action="{% url 'student_announcements' %}" class="sa-filter-form">
+            <div class="sa-filter-group">
+                <label><i class="fas fa-search"></i> Search</label>
+                <input type="text" name="search" class="sa-input" placeholder="Search announcements..."
+                    value="{{ current_filter.search }}">
+            </div>
+            <div class="sa-filter-group">
+                <label><i class="fas fa-flag"></i> Priority</label>
+                <select name="priority" class="sa-select">
+                    <option value="all" {% if current_filter.priority == 'all' %}selected{% endif %}>All Priorities
+                    </option>
+                    <option value="urgent" {% if current_filter.priority == 'urgent' %}selected{% endif %}>Urgent</option>
+                    <option value="high" {% if current_filter.priority == 'high' %}selected{% endif %}>High</option>
+                    <option value="medium" {% if current_filter.priority == 'medium' %}selected{% endif %}>Medium</option>
+                    <option value="low" {% if current_filter.priority == 'low' %}selected{% endif %}>Low</option>
+                </select>
+            </div>
+            <div class="sa-btn-row">
+                <button type="submit" class="sa-btn btn-filter"><i class="fas fa-filter"></i> Apply</button>
+                <a href="{% url 'student_announcements' %}" class="sa-btn btn-clear"><i class="fas fa-times"></i>
+                    Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Announcements Grid -->
+    {% if announcements %}
+    <div class="sa-card-grid">
+        {% for announcement in announcements %}
+        <div class="sa-card priority-{{ announcement.priority }}">
+            <!-- Priority Badge -->
+            <span class="sa-priority-badge priority-{{ announcement.priority }}">
+                <i class="fas fa-exclamation-circle"></i> {{ announcement.get_priority_display }}
+            </span>
+
+            <!-- Header -->
+            <div class="sa-card-header">
+                <div class="sa-card-title">{{ announcement.title }}</div>
+                <div class="sa-card-meta">
+                    <span><i class="fas fa-chalkboard-teacher"></i> {{ announcement.teacher.user.get_full_name }}</span>
+                    <span><i class="fas fa-calendar"></i> {{ announcement.created_at|date:"M d, Y - h:i A" }}</span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="sa-card-body">
+                <p>{{ announcement.content|truncatewords:50|linebreaks }}</p>
+            </div>
+
+            <!-- Footer -->
+            <div class="sa-card-footer">
+                {% if announcement.attachment %}
+                <a href="{{ announcement.attachment.url }}" class="sa-attachment-link" download>
+                    <i class="fas fa-download"></i> Attachment
+                </a>
+                {% endif %}
+                <button class="sa-read-more-btn" onclick="toggleAnnouncement(this)">
+                    <i class="fas fa-chevron-down"></i> Read Full
+                </button>
+            </div>
+
+            <!-- Full Content -->
+            <div class="sa-full-content">
+                <div class="sa-full-content-divider"></div>
+                <div class="sa-full-content-text">
+                    {{ announcement.content|linebreaks }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if announcements.has_other_pages %}
+    <div class="sa-pagination">
+        {% if announcements.has_previous %}
+        <a href="?page={{ announcements.previous_page_number }}{% if current_filter.search %}&search={{ current_filter.search }}{% endif %}{% if current_filter.priority != 'all' %}&priority={{ current_filter.priority }}{% endif %}"
+            class="sa-page-link">
+            <i class="fas fa-chevron-left"></i> Previous
+        </a>
+        {% endif %}
+
+        <span class="sa-page-info">
+            Page {{ announcements.number }} of {{ announcements.paginator.num_pages }}
+        </span>
+
+        {% if announcements.has_next %}
+        <a href="?page={{ announcements.next_page_number }}{% if current_filter.search %}&search={{ current_filter.search }}{% endif %}{% if current_filter.priority != 'all' %}&priority={{ current_filter.priority }}{% endif %}"
+            class="sa-page-link">
+            Next <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="sa-empty">
+        <div class="sa-empty-icon"><i class="fas fa-inbox"></i></div>
+        <h3>No Announcements</h3>
+        <p>
+            {% if current_filter.search or current_filter.priority != 'all' %}
+            No announcements found matching your filters. Try adjusting your search criteria.
+            {% else %}
+            There are no announcements for you at this time.
+            {% endif %}
+        </p>
+        <div class="sa-empty-note">
+            <i class="fas fa-info-circle"></i>
+            Check back later for new announcements from your teachers.
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    function toggleAnnouncement(button) {
+        var card = button.closest('.sa-card');
+        var content = card.querySelector('.sa-full-content');
+        var isVisible = content.style.display === 'block';
+
+        if (isVisible) {
+            content.style.display = 'none';
+            button.innerHTML = '<i class="fas fa-chevron-down"></i> Read Full';
+        } else {
+            content.style.display = 'block';
+            button.innerHTML = '<i class="fas fa-chevron-up"></i> Read Less';
+        }
+    }
+</script>
+{% endblock %}

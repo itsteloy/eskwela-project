@@ -1,0 +1,51 @@
+{% load schedule_extras %}
+{% for assignment in assignments %}
+{% with submission=submission_status|get_item:assignment.id %}
+<div class="assignment-card {% if assignment.id in submitted_ids %}submitted{% endif %}">
+    <div class="assignment-header">
+        <div class="assignment-title">{{ assignment.title }}</div>
+        <div class="assignment-subject">
+            <i class="fas fa-book"></i> {{ assignment.get_subject_display }}
+        </div>
+    </div>
+    <div class="assignment-body">
+        <div class="assignment-meta">
+            <span class="points-tag"><i class="fas fa-star"></i> {{ assignment.total_points }} pts</span>
+            <span
+                class="due-date-tag {% if assignment.is_past_due and assignment.id not in submitted_ids %}past-due{% endif %}">
+                <i class="far fa-clock"></i> Due: {{ assignment.due_date|date:"M d, Y h:i A" }}
+            </span>
+        </div>
+        <div class="assignment-description">
+            {{ assignment.description|truncatechars:150 }}
+        </div>
+
+        {% if assignment.id in submitted_ids %}
+        <div class="submission-status status-{{ submission.status }}">
+            Status: {{ submission.get_status_display }}
+            {% if submission.grade %} - Grade: {{ submission.grade }}/{{ assignment.total_points }}{% endif %}
+        </div>
+        {% endif %}
+
+        <div class="assignment-footer">
+            {% if assignment.id in submitted_ids %}
+            <a href="{% url 'student_my_submissions' %}" class="btn-view-submission">
+                <i class="fas fa-eye"></i> View Submission
+            </a>
+            {% else %}
+            <button class="btn-submit"
+                onclick="openSubmitModal('{{ assignment.id }}', '{{ assignment.title|escapejs }}')">
+                <i class="fas fa-upload"></i> Submit Assignment
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endwith %}
+{% empty %}
+<div class="empty-state">
+    <i class="fas fa-tasks"></i>
+    <h3>No Assignments</h3>
+    <p>No assignments available at the moment.</p>
+</div>
+{% endfor %}

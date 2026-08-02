@@ -1,0 +1,421 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+
+{% block title %}Profile Settings | Eskwela ALS{% endblock %}
+{% block page_title %}Profile Settings{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .sp-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+        max-width: 620px;
+        margin: 0 auto;
+    }
+
+    /* ── PROFILE CARD ── */
+    .sp-profile-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        padding: 28px 30px;
+        margin-bottom: 24px;
+    }
+
+    .sp-profile-top {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .sp-avatar {
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        background: var(--forest-green);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.9rem;
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .sp-profile-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin-bottom: 4px;
+    }
+
+    .sp-profile-role {
+        display: inline-block;
+        font-size: .75rem;
+        background: #e6f7ed;
+        color: var(--forest-green);
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .sp-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .sp-info-item {
+        background: #f8fdf8;
+        border-radius: 10px;
+        padding: 14px 16px;
+        border: 1px solid #eaf2ea;
+    }
+
+    .sp-info-label {
+        font-size: .7rem;
+        color: #8a9aa8;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+
+    .sp-info-value {
+        font-size: .92rem;
+        font-weight: 600;
+        color: #1b3a2d;
+    }
+
+    /* ── PASSWORD SECTION ── */
+    .sp-password-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .sp-password-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .sp-password-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: #fef3cd;
+        color: #d97706;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .sp-password-header h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0 0 2px;
+    }
+
+    .sp-password-subtitle {
+        font-size: .8rem;
+        color: #8a9aa8;
+    }
+
+    .sp-password-body {
+        padding: 24px;
+    }
+
+    /* ── FORM STYLES ── */
+    .sp-form-group {
+        margin-bottom: 18px;
+    }
+
+    .sp-form-group label {
+        display: block;
+        font-size: .78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+        margin-bottom: 7px;
+    }
+
+    .sp-password-wrapper {
+        position: relative;
+    }
+
+    .sp-input {
+        width: 100%;
+        padding: 11px 44px 11px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .9rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        outline: none;
+        background: #ffffff;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .sp-input:focus {
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .sp-toggle-btn {
+        position: absolute;
+        right: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #8a9aa8;
+        padding: 0;
+        font-size: .95rem;
+        transition: color .15s;
+    }
+
+    .sp-toggle-btn:hover {
+        color: #4a6a5a;
+    }
+
+    /* ── STRENGTH METER ── */
+    .sp-strength-bar {
+        display: flex;
+        gap: 5px;
+        margin-top: 9px;
+    }
+
+    .sp-strength-segment {
+        height: 4px;
+        flex: 1;
+        border-radius: 3px;
+        background: #ebebeb;
+        transition: background .25s;
+    }
+
+    .sp-strength-text {
+        font-size: .75rem;
+        margin-top: 4px;
+        min-height: 18px;
+        color: #8a9aa8;
+    }
+
+    .sp-match-text {
+        font-size: .75rem;
+        margin-top: 5px;
+        min-height: 18px;
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .sp-btn-submit {
+        width: 100%;
+        padding: 13px;
+        background: var(--forest-green);
+        color: #ffffff;
+        border: none;
+        border-radius: 9px;
+        font-size: .95rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-family: inherit;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+    }
+
+    .sp-btn-submit:hover {
+        filter: brightness(.9);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 12px rgba(34, 139, 34, .2);
+    }
+
+    .sp-btn-submit:active {
+        transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+        .sp-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sp-profile-top {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="sp-wrap">
+
+    <!-- ══ PROFILE INFO CARD ══ -->
+    <div class="sp-profile-card">
+        <div class="sp-profile-top">
+            <div class="sp-avatar">
+                {{ request.user.first_name|first|default:request.user.username|first|upper }}
+            </div>
+            <div>
+                <div class="sp-profile-name">
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </div>
+                <span class="sp-profile-role">ALS Learner</span>
+            </div>
+        </div>
+
+        <div class="sp-info-grid">
+            <div class="sp-info-item">
+                <div class="sp-info-label">Username</div>
+                <div class="sp-info-value">{{ request.user.username }}</div>
+            </div>
+            <div class="sp-info-item">
+                <div class="sp-info-label">Email</div>
+                <div class="sp-info-value">{{ request.user.email|default:"—" }}</div>
+            </div>
+            <div class="sp-info-item">
+                <div class="sp-info-label">Campus</div>
+                <div class="sp-info-value">
+                    {% if request.user.student_profile.campus %}
+                    {{ request.user.student_profile.campus.name }}
+                    {% else %}Not Assigned{% endif %}
+                </div>
+            </div>
+            <div class="sp-info-item">
+                <div class="sp-info-label">Grade Level</div>
+                <div class="sp-info-value">
+                    {{ request.user.student_profile.enrolled_in|default:"Not Assigned" }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CHANGE PASSWORD SECTION ══ -->
+    <div class="sp-password-section">
+        <div class="sp-password-header">
+            <div class="sp-password-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <div>
+                <h3>Change Password</h3>
+                <p class="sp-password-subtitle">Minimum 8 characters required</p>
+            </div>
+        </div>
+
+        <div class="sp-password-body">
+            <form method="POST" action="{% url 'student_profile' %}">
+                {% csrf_token %}
+
+                <!-- Current Password -->
+                <div class="sp-form-group">
+                    <label>Current Password</label>
+                    <div class="sp-password-wrapper">
+                        <input type="password" name="current_password" id="id_current" class="sp-input"
+                            placeholder="Enter your current password" required>
+                        <button type="button" tabindex="-1" class="sp-toggle-btn"
+                            onclick="togglePwd('id_current', this)" title="Show password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- New Password -->
+                <div class="sp-form-group">
+                    <label>New Password</label>
+                    <div class="sp-password-wrapper">
+                        <input type="password" name="new_password" id="id_new" class="sp-input"
+                            placeholder="Enter new password" required oninput="evalStrength(this.value); evalMatch()">
+                        <button type="button" tabindex="-1" class="sp-toggle-btn" onclick="togglePwd('id_new', this)"
+                            title="Show password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <!-- Strength Meter -->
+                    <div class="sp-strength-bar">
+                        <div id="s1" class="sp-strength-segment"></div>
+                        <div id="s2" class="sp-strength-segment"></div>
+                        <div id="s3" class="sp-strength-segment"></div>
+                        <div id="s4" class="sp-strength-segment"></div>
+                    </div>
+                    <div id="strengthText" class="sp-strength-text"></div>
+                </div>
+
+                <!-- Confirm New Password -->
+                <div class="sp-form-group">
+                    <label>Confirm New Password</label>
+                    <div class="sp-password-wrapper">
+                        <input type="password" name="confirm_password" id="id_confirm" class="sp-input"
+                            placeholder="Re-enter new password" required oninput="evalMatch()">
+                        <button type="button" tabindex="-1" class="sp-toggle-btn"
+                            onclick="togglePwd('id_confirm', this)" title="Show password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="matchText" class="sp-match-text"></div>
+                </div>
+
+                <button type="submit" class="sp-btn-submit">
+                    <i class="fas fa-save"></i> Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function togglePwd(id, btn) {
+        var inp = document.getElementById(id);
+        var ico = btn.querySelector('i');
+        var show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        ico.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+        btn.style.color = show ? '#4a6a5a' : '#8a9aa8';
+    }
+
+    function evalStrength(val) {
+        var ids = ['s1', 's2', 's3', 's4'];
+        var colors = ['#dc3545', '#fd7e14', '#ffc107', '#28a745'];
+        var words = ['Weak', 'Fair', 'Good', 'Strong'];
+        var score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+        if (/\d/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+
+        ids.forEach(function (id, i) {
+            document.getElementById(id).style.background =
+                (val.length && i < score) ? colors[score - 1] : '#ebebeb';
+        });
+
+        var lbl = document.getElementById('strengthText');
+        lbl.textContent = val.length ? words[score - 1] || '' : '';
+        lbl.style.color = (val.length && score > 0) ? colors[score - 1] : '#8a9aa8';
+    }
+
+    function evalMatch() {
+        var np = document.getElementById('id_new').value;
+        var cp = document.getElementById('id_confirm').value;
+        var msg = document.getElementById('matchText');
+        if (!cp) { msg.textContent = ''; return; }
+        var ok = np === cp;
+        msg.textContent = ok ? '✓ Passwords match' : '✗ Passwords do not match';
+        msg.style.color = ok ? '#1a7a3f' : '#c0392b';
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,853 @@
+{% extends 'teacher/teacher_base.html' %}
+{% load static %}
+{% load schedule_extras %}
+
+{% block title %}Schedule Management | Teacher Eskwela{% endblock %}
+
+{% block page_title %}Schedule Management{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ── SCHEDULE GRID ── */
+    .sched-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 18px;
+        margin-top: 8px;
+    }
+
+    .sched-day-col {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .sched-day-header {
+        background: var(--forest-green);
+        color: #ffffff;
+        padding: 12px 16px;
+        font-weight: 700;
+        font-size: .9rem;
+        text-align: center;
+        letter-spacing: .04em;
+    }
+
+    .sched-card {
+        padding: 16px;
+        border-bottom: 1px solid #f0f5f0;
+        transition: background .14s;
+        position: relative;
+    }
+
+    .sched-card:last-child {
+        border-bottom: none;
+    }
+
+    .sched-card:hover {
+        background: #f5fbf5;
+    }
+
+    .sched-card.inactive {
+        opacity: .55;
+        background: #f9fafb;
+    }
+
+    .sched-time {
+        font-size: .8rem;
+        font-weight: 700;
+        color: var(--emerald);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .sched-subject {
+        font-weight: 700;
+        color: #1b3a2d;
+        margin-bottom: 8px;
+        font-size: .95rem;
+    }
+
+    .sched-details {
+        font-size: .82rem;
+        color: #6b7c7a;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 10px;
+    }
+
+    .sched-details div {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .sched-details i {
+        color: #4a6a5a;
+        width: 16px;
+        font-size: .78rem;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .sched-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        border-top: 1px solid #eaf2ea;
+        padding-top: 10px;
+        margin-top: 4px;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 7px;
+        font-size: .76rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        line-height: 1.3;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    }
+
+    .act-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .act-edit {
+        background: #d97706;
+        color: #ffffff;
+    }
+
+    .act-toggle {
+        background: #6d28d9;
+        color: #ffffff;
+    }
+
+    .act-delete {
+        background: #c0392b;
+        color: #ffffff;
+    }
+
+    .act-activate {
+        background: #0891b2;
+        color: #ffffff;
+    }
+
+    /* ── EMPTY ── */
+    .sched-empty {
+        text-align: center;
+        padding: 28px 16px;
+        color: #8a9aa8;
+        font-size: .85rem;
+    }
+
+    .sched-empty i {
+        font-size: 2rem;
+        color: #c8dfc8;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* ── INACTIVE SECTION ── */
+    .inactive-section {
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 2px dashed #dceadc;
+    }
+
+    .inactive-section h3 {
+        color: #4a6a5a;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .inactive-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .inactive-item {
+        background: #f8fdf8;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: .85rem;
+        border: 1px solid #eaf2ea;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .inactive-item span {
+        color: #4a6a5a;
+        font-weight: 500;
+    }
+
+    /* ── MODAL ── */
+    .sch-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 40, 30, .55);
+        backdrop-filter: blur(4px);
+        z-index: 9000;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .sch-modal.open {
+        display: flex;
+    }
+
+    .sch-modal-box {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .22);
+        width: 100%;
+        max-width: 520px;
+        overflow: hidden;
+        animation: modalIn .22s ease;
+    }
+
+    @keyframes modalIn {
+        from {
+            opacity: 0;
+            transform: scale(.95) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .sch-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        color: #ffffff;
+    }
+
+    .head-create {
+        background: var(--forest-green);
+    }
+
+    .head-edit {
+        background: #d97706;
+    }
+
+    .sch-modal-head h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+    }
+
+    .sch-modal-close {
+        background: rgba(255, 255, 255, .15);
+        border: none;
+        color: #ffffff;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .15s;
+        line-height: 1;
+    }
+
+    .sch-modal-close:hover {
+        background: rgba(255, 255, 255, .28);
+    }
+
+    .sch-modal-body {
+        padding: 24px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    /* ── FORM GRID ── */
+    .sch-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .sch-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .sch-form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .sch-form-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .sch-form-group label .required-star {
+        color: #c0392b;
+    }
+
+    .sch-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .sch-input:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .sch-select {
+        padding: 10px 36px 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .sch-select:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    textarea.sch-input {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .sch-hint {
+        font-size: .75rem;
+        color: #8a9aa8;
+        margin-top: 2px;
+    }
+
+    /* ── MODAL BUTTONS ── */
+    .sch-modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .btn-save {
+        background: var(--emerald);
+        color: #ffffff;
+    }
+
+    .btn-save:hover {
+        background: var(--forest-green);
+        filter: none;
+    }
+
+    .btn-cancel {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-cancel:hover {
+        background: #d1d5db;
+        filter: none;
+    }
+
+    .sch-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 22px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s, transform .15s;
+    }
+
+    .sch-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .sched-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sch-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sched-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<!-- ══ STAT CARDS ══ -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon icon-schedules">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="stat-info">
+            <h3>Total Schedules</h3>
+            <div class="stat-number">{{ total_schedules }}</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: #e6f7ed; color: #1a7a3f;">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+            <h3>Active</h3>
+            <div class="stat-number">{{ active_schedules }}</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: #fdecea; color: #c0392b;">
+            <i class="fas fa-eye-slash"></i>
+        </div>
+        <div class="stat-info">
+            <h3>Inactive</h3>
+            <div class="stat-number">{{ inactive_schedules|length }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ SECTION HEADER ══ -->
+<div class="section-card">
+    <div class="section-header">
+        <h2><i class="fas fa-calendar-alt"></i> Weekly Class Schedule</h2>
+        <button class="btn-create" onclick="openModal('createModal')">
+            <i class="fas fa-plus"></i> Create New Schedule
+        </button>
+    </div>
+
+    <!-- Filter -->
+    <div style="padding: 18px 24px; background: #f8fdf8; border-bottom: 1px solid #eaf2ea;">
+        <form method="GET" action="{% url 'teacher_schedules' %}"
+            style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 140px;">
+                <label
+                    style="font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #4a6a5a;">
+                    <i class="fas fa-graduation-cap"></i> Grade Level
+                </label>
+                <select name="grade_level" class="sch-select" style="border-radius: 8px;">
+                    <option value="all" {% if current_filter.grade == 'all' %}selected{% endif %}>All Grade Levels
+                    </option>
+                    {% for level in grade_levels %}
+                    <option value="{{ level }}" {% if current_filter.grade == level %}selected{% endif %}>{{ level }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 120px;">
+                <label
+                    style="font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #4a6a5a;">
+                    <i class="fas fa-toggle-on"></i> Status
+                </label>
+                <select name="status" class="sch-select" style="border-radius: 8px;">
+                    <option value="all" {% if current_filter.status == 'all' %}selected{% endif %}>All Status</option>
+                    <option value="active" {% if current_filter.status == 'active' %}selected{% endif %}>Active Only
+                    </option>
+                    <option value="inactive" {% if current_filter.status == 'inactive' %}selected{% endif %}>Inactive Only
+                    </option>
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 120px;">
+                <label
+                    style="font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #4a6a5a;">
+                    <i class="fas fa-calendar-day"></i> Day
+                </label>
+                <select name="day" class="sch-select" style="border-radius: 8px;">
+                    <option value="all" {% if current_filter.day == 'all' %}selected{% endif %}>All Days</option>
+                    {% for day in days_order %}
+                    <option value="{{ day }}" {% if current_filter.day == day %}selected{% endif %}>{{ day }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button type="submit" class="btn-filter">
+                    <i class="fas fa-search"></i> Apply
+                </button>
+                <a href="{% url 'teacher_schedules' %}" class="btn-clear">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Filters -->
+    {% if current_filter.grade != 'all' or current_filter.status != 'all' or current_filter.day != 'all' %}
+    <div
+        style="padding: 10px 24px; background: #eff6ff; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <i class="fas fa-tags" style="color: #2a56c6;"></i>
+        <span style="font-size: .82rem; font-weight: 600; color: #2a56c6;">Active Filters:</span>
+        {% if current_filter.grade != 'all' %}
+        <span
+            style="background: #2a56c6; color: #fff; font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;">Grade:
+            {{ current_filter.grade }}</span>
+        {% endif %}
+        {% if current_filter.status != 'all' %}
+        <span
+            style="background: #2a56c6; color: #fff; font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;">Status:
+            {{ current_filter.status|title }}</span>
+        {% endif %}
+        {% if current_filter.day != 'all' %}
+        <span
+            style="background: #2a56c6; color: #fff; font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;">Day:
+            {{ current_filter.day }}</span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Schedule Grid -->
+    <div style="padding: 20px 24px;">
+        <div class="sched-grid">
+            {% for day in days_order %}
+            <div class="sched-day-col">
+                <div class="sched-day-header">{{ day }}</div>
+                {% with day_schedules=schedules_by_day|get_item:day %}
+                {% for schedule in day_schedules %}
+                <div class="sched-card {% if not schedule.is_active %}inactive{% endif %}">
+                    <div class="sched-time">
+                        <i class="far fa-clock"></i> {{ schedule.time_range }}
+                    </div>
+                    <div class="sched-subject">{{ schedule.subject }}</div>
+                    <div class="sched-details">
+                        <div><i class="fas fa-users"></i> {{ schedule.get_grade_level_display }}</div>
+                        {% if schedule.room %}
+                        <div><i class="fas fa-door-open"></i> {{ schedule.room }}</div>
+                        {% endif %}
+                        {% if schedule.notes %}
+                        <div><i class="fas fa-sticky-note"></i> {{ schedule.notes|truncatechars:30 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="sched-actions">
+                        <button class="act-btn act-edit" onclick="editSchedule('{{ schedule.id }}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <form method="POST" action="{% url 'toggle_schedule' schedule.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="act-btn act-toggle">
+                                <i class="fas {% if schedule.is_active %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                                {% if schedule.is_active %}Deactivate{% else %}Activate{% endif %}
+                            </button>
+                        </form>
+                        <form method="POST" action="{% url 'delete_schedule' schedule.id %}" style="display: inline;"
+                            onsubmit="return confirm('Delete this schedule? This action cannot be undone.');">
+                            {% csrf_token %}
+                            <button type="submit" class="act-btn act-delete">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="sched-empty">
+                    <i class="far fa-calendar-times"></i>
+                    <p>No schedule</p>
+                </div>
+                {% endfor %}
+                {% endwith %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Inactive Section -->
+    {% if inactive_schedules %}
+    <div class="inactive-section" style="padding: 0 24px 24px;">
+        <h3><i class="fas fa-eye-slash"></i> Inactive Schedules</h3>
+        <div class="inactive-list">
+            {% for schedule in inactive_schedules %}
+            <div class="inactive-item">
+                <span>{{ schedule.get_day_of_week_display }}: <strong>{{ schedule.subject }}</strong> ({{
+                    schedule.time_range }})</span>
+                <form method="POST" action="{% url 'toggle_schedule' schedule.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="act-btn act-activate">
+                        <i class="fas fa-eye"></i> Activate
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ══ CREATE MODAL ══ -->
+<div id="createModal" class="sch-modal">
+    <div class="sch-modal-box">
+        <div class="sch-modal-head head-create">
+            <h3><i class="fas fa-plus-circle"></i> Create New Schedule</h3>
+            <button class="sch-modal-close" onclick="closeModal('createModal')">&times;</button>
+        </div>
+        <div class="sch-modal-body">
+            <form method="POST" action="{% url 'create_schedule' %}" id="createForm">
+                {% csrf_token %}
+
+                <div class="sch-form-group">
+                    <label><span class="required-star">*</span> Day of Week</label>
+                    <select name="day_of_week" class="sch-select" required>
+                        <option value="">Select Day</option>
+                        {% for day in days_order %}
+                        <option value="{{ day }}">{{ day }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="sch-form-grid">
+                    <div class="sch-form-group">
+                        <label><span class="required-star">*</span> Start Time</label>
+                        <input type="time" name="start_time" class="sch-input" required>
+                    </div>
+                    <div class="sch-form-group">
+                        <label><span class="required-star">*</span> End Time</label>
+                        <input type="time" name="end_time" class="sch-input" required>
+                    </div>
+                </div>
+
+                <div class="sch-form-group">
+                    <label><span class="required-star">*</span> Subject / Learning Area</label>
+                    <input type="text" name="subject" class="sch-input"
+                        placeholder="e.g., Mathematics, English, Science" required>
+                </div>
+
+                <div class="sch-form-group">
+                    <label>Grade Level</label>
+                    <select name="grade_level" class="sch-select">
+                        <option value="All Levels">All Levels</option>
+                        {% for level in grade_levels %}
+                        {% if level != 'All Levels' %}
+                        <option value="{{ level }}">{{ level }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <span class="sch-hint">Select specific grade or keep as "All Levels"</span>
+                </div>
+
+                <div class="sch-form-group">
+                    <label>Room / Location</label>
+                    <input type="text" name="room" class="sch-input" placeholder="e.g., Room 101, Online">
+                </div>
+
+                <div class="sch-form-group">
+                    <label>Additional Notes</label>
+                    <textarea name="notes" class="sch-input" rows="3"
+                        placeholder="Any additional information..."></textarea>
+                </div>
+
+                <div class="sch-modal-actions">
+                    <button type="button" class="sch-btn btn-cancel" onclick="closeModal('createModal')">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="sch-btn btn-save">
+                        <i class="fas fa-save"></i> Create Schedule
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ══ EDIT MODAL ══ -->
+<div id="editModal" class="sch-modal">
+    <div class="sch-modal-box">
+        <div class="sch-modal-head head-edit">
+            <h3><i class="fas fa-edit"></i> Edit Schedule</h3>
+            <button class="sch-modal-close" onclick="closeModal('editModal')">&times;</button>
+        </div>
+        <div class="sch-modal-body">
+            <form method="POST" action="" id="editForm">
+                {% csrf_token %}
+
+                <div class="sch-form-group">
+                    <label><span class="required-star">*</span> Day of Week</label>
+                    <select name="day_of_week" id="edit_day" class="sch-select" required>
+                        <option value="">Select Day</option>
+                        {% for day in days_order %}
+                        <option value="{{ day }}">{{ day }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="sch-form-grid">
+                    <div class="sch-form-group">
+                        <label><span class="required-star">*</span> Start Time</label>
+                        <input type="time" name="start_time" id="edit_start" class="sch-input" required>
+                    </div>
+                    <div class="sch-form-group">
+                        <label><span class="required-star">*</span> End Time</label>
+                        <input type="time" name="end_time" id="edit_end" class="sch-input" required>
+                    </div>
+                </div>
+
+                <div class="sch-form-group">
+                    <label><span class="required-star">*</span> Subject / Learning Area</label>
+                    <input type="text" name="subject" id="edit_subject" class="sch-input" required>
+                </div>
+
+                <div class="sch-form-group">
+                    <label>Grade Level</label>
+                    <select name="grade_level" id="edit_grade" class="sch-select">
+                        <option value="All Levels">All Levels</option>
+                        {% for level in grade_levels %}
+                        {% if level != 'All Levels' %}
+                        <option value="{{ level }}">{{ level }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="sch-form-group">
+                    <label>Room / Location</label>
+                    <input type="text" name="room" id="edit_room" class="sch-input">
+                </div>
+
+                <div class="sch-form-group">
+                    <label>Additional Notes</label>
+                    <textarea name="notes" id="edit_notes" class="sch-input" rows="3"></textarea>
+                </div>
+
+                <div class="sch-modal-actions">
+                    <button type="button" class="sch-btn btn-cancel" onclick="closeModal('editModal')">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="sch-btn btn-save">
+                        <i class="fas fa-save"></i> Update Schedule
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+    }
+
+    // Edit schedule
+    function editSchedule(scheduleId) {
+        fetch(`/teacher/schedules/edit/${scheduleId}/`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('edit_day').value = data.day_of_week;
+                document.getElementById('edit_start').value = data.start_time;
+                document.getElementById('edit_end').value = data.end_time;
+                document.getElementById('edit_subject').value = data.subject;
+                document.getElementById('edit_grade').value = data.grade_level;
+                document.getElementById('edit_room').value = data.room || '';
+                document.getElementById('edit_notes').value = data.notes || '';
+                document.getElementById('editForm').action = `/teacher/schedules/edit/${scheduleId}/`;
+                openModal('editModal');
+            })
+            .catch(error => {
+                alert('Error loading schedule data. Please try again.');
+                console.error('Error:', error);
+            });
+    }
+
+    // Close modals on backdrop click
+    document.querySelectorAll('.sch-modal').forEach(modal => {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) closeModal(modal.id);
+        });
+    });
+
+    // Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.sch-modal.open').forEach(m => m.classList.remove('open'));
+        }
+    });
+
+    // Validation
+    document.getElementById('createForm').addEventListener('submit', function (e) {
+        const startTime = this.querySelector('input[name="start_time"]').value;
+        const endTime = this.querySelector('input[name="end_time"]').value;
+        if (startTime && endTime && startTime >= endTime) {
+            e.preventDefault();
+            alert('End time must be after start time!');
+        }
+    });
+
+    document.getElementById('editForm').addEventListener('submit', function (e) {
+        const startTime = this.querySelector('input[name="start_time"]').value;
+        const endTime = this.querySelector('input[name="end_time"]').value;
+        if (startTime && endTime && startTime >= endTime) {
+            e.preventDefault();
+            alert('End time must be after start time!');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% if modules %}
+{% for module in modules %}
+<div class="module-card {% if not module.is_active %}inactive{% endif %}">
+    <div class="module-cover">
+        {% if module.cover_image %}
+        <img src="{{ module.cover_image.url }}" alt="{{ module.title }}">
+        {% else %}
+        <i class="fas fa-file-pdf"></i>
+        {% endif %}
+        <span class="module-status {% if module.is_active %}active{% else %}inactive{% endif %}">
+            {% if module.is_active %}Active{% else %}Inactive{% endif %}
+        </span>
+    </div>
+    <div class="module-content">
+        <div class="module-title">{{ module.title|truncatechars:40 }}</div>
+        <div class="module-meta">
+            <span class="grade-tag">{{ module.grade_level }}</span>
+            <span class="subject-tag">{{ module.subject }}</span>
+            <span class="quarter-tag">{{ module.quarter }}</span>
+        </div>
+        {% if module.description %}
+        <div class="module-description">{{ module.description|truncatechars:60 }}</div>
+        {% endif %}
+        <div class="module-stats">
+            <span><i class="fas fa-download"></i> {{ module.download_count }}</span>
+            <span><i class="far fa-calendar"></i> {{ module.created_at|date:"M d, Y" }}</span>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-book-open"></i>
+    <h3>No Modules Found</h3>
+    <p>No modules match your current filters.</p>
+</div>
+{% endif %}

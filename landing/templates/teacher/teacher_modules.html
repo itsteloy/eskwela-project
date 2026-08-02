@@ -1,0 +1,378 @@
+{% extends 'teacher/teacher_base.html' %}
+{% load static %}
+
+{% block title %}Learning Modules | Teacher Eskwela{% endblock %}
+
+{% block page_title %}Learning Modules{% endblock %}
+
+
+{% block content %}
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total Modules</h3>
+        <div class="stat-number">{{ total_modules }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Active Modules</h3>
+        <div class="stat-number">{{ active_modules }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Total Downloads</h3>
+        <div class="stat-number">{{ total_downloads }}</div>
+    </div>
+</div>
+
+<!-- Modules Container -->
+<div class="modules-container">
+    <div class="modules-header"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+        <h2><i class="fas fa-book-open"></i> Learning Modules</h2>
+        <button class="btn-upload btn-create" onclick="openUploadModal()">
+            <i class="fas fa-upload"></i> Upload Module
+        </button>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form method="GET" action="{% url 'teacher_modules' %}" class="filter-form">
+            <div class="filter-group">
+                <label><i class="fas fa-graduation-cap"></i> Grade Level</label>
+                <select name="grade_level">
+                    <option value="all" {% if current_filter.grade == 'all' %}selected{% endif %}>All Grades</option>
+                    {% for grade in grade_levels %}
+                    <option value="{{ grade }}" {% if current_filter.grade == grade %}selected{% endif %}>{{ grade }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-book"></i> Subject</label>
+                <select name="subject">
+                    <option value="all" {% if current_filter.subject == 'all' %}selected{% endif %}>All Subjects</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject }}" {% if current_filter.subject == subject %}selected{% endif %}>{{ subject }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-calendar"></i> Quarter</label>
+                <select name="quarter">
+                    <option value="all" {% if current_filter.quarter == 'all' %}selected{% endif %}>All Quarters</option>
+                    {% for quarter in quarters %}
+                    <option value="{{ quarter }}" {% if current_filter.quarter == quarter %}selected{% endif %}>{{ quarter }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-toggle-on"></i> Status</label>
+                <select name="status">
+                    <option value="all" {% if current_filter.status == 'all' %}selected{% endif %}>All Status</option>
+                    <option value="active" {% if current_filter.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if current_filter.status == 'inactive' %}selected{% endif %}>Inactive
+                    </option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn-filter">
+                    <i class="fas fa-search"></i> Apply
+                </button>
+                <a href="{% url 'teacher_modules' %}" class="btn-clear">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modules Grid -->
+    {% if modules %}
+    <div class="modules-grid">
+        {% for module in modules %}
+        <div class="module-card {% if not module.is_active %}inactive{% endif %}">
+            <div class="module-cover">
+                {% if module.thumbnail %}
+                <img src="{{ module.thumbnail.url }}" alt="{{ module.title }}">
+                {% else %}
+                <i class="fas fa-file-pdf"></i>
+                {% endif %}
+                <span class="status-badge {% if module.is_active %}status-active{% else %}status-inactive{% endif %}">
+                    {% if module.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+            </div>
+            <div class="module-content">
+                <div class="module-title">{{ module.title|truncatechars:40 }}</div>
+                <div class="module-meta">
+                    <span class="grade-tag">{{ module.grade_level }}</span>
+                    <span class="subject-tag">{{ module.subject }}</span>
+                    <span class="quarter-tag">{{ module.quarter }}</span>
+                </div>
+                {% if module.description %}
+                <div class="module-description">{{ module.description|truncatechars:60 }}</div>
+                {% endif %}
+                <div class="module-stats">
+                    <span><i class="fas fa-download"></i> {{ module.download_count }}</span>
+                    <span><i class="far fa-calendar"></i> {{ module.created_at|date:"M d, Y" }}</span>
+                    <span><i class="fas fa-file"></i> {{ module.get_file_size_display }}</span>
+                </div>
+                <div class="module-actions"
+                    style="display: flex; gap: 8px; border-top: 1px solid #dee2e6; padding-top: 12px;">
+                    <a href="{% url 'download_module' module.id %}" class="action-btn btn-download">
+                        <i class="fas fa-download"></i>
+                    </a>
+                    <button class="action-btn btn-edit" onclick="editModule('{{ module.id }}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <form method="POST" action="{% url 'toggle_module' module.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn btn-toggle">
+                            <i class="fas {% if module.is_active %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                        </button>
+                    </form>
+                    <form method="POST" action="{% url 'delete_module' module.id %}" style="display: inline;"
+                        onsubmit="return confirm('Are you sure you want to delete this module? This action cannot be undone.');">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn btn-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if current_filter.grade != 'all' %}&grade_level={{ current_filter.grade }}{% endif %}{% if current_filter.subject != 'all' %}&subject={{ current_filter.subject }}{% endif %}{% if current_filter.quarter != 'all' %}&quarter={{ current_filter.quarter }}{% endif %}{% if current_filter.status != 'all' %}&status={{ current_filter.status }}{% endif %}"
+            class="page-link">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <span class="page-link active">{{ num }}</span>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
+            href="?page={{ num }}{% if current_filter.grade != 'all' %}&grade_level={{ current_filter.grade }}{% endif %}{% if current_filter.subject != 'all' %}&subject={{ current_filter.subject }}{% endif %}{% if current_filter.quarter != 'all' %}&quarter={{ current_filter.quarter }}{% endif %}{% if current_filter.status != 'all' %}&status={{ current_filter.status }}{% endif %}"
+            class="page-link">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if current_filter.grade != 'all' %}&grade_level={{ current_filter.grade }}{% endif %}{% if current_filter.subject != 'all' %}&subject={{ current_filter.subject }}{% endif %}{% if current_filter.quarter != 'all' %}&quarter={{ current_filter.quarter }}{% endif %}{% if current_filter.status != 'all' %}&status={{ current_filter.status }}{% endif %}"
+                class="page-link">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-book-open"></i>
+        <h3>No Learning Modules Yet</h3>
+        <p>Upload your first learning module to get started.</p>
+        <button class="btn-upload btn-create" onclick="openUploadModal()"
+            style="display: inline-block; margin-top: 15px;">
+            <i class="fas fa-upload"></i> Upload Module
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Upload Module Modal -->
+<div id="uploadModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-upload"></i> Upload Learning Module</h3>
+            <span class="close-modal" onclick="closeUploadModal()">&times;</span>
+        </div>
+        <form method="POST" action="{% url 'upload_module' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Title *</label>
+                <input type="text" name="title" required placeholder="e.g., Module 1: Communication Skills">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="3" placeholder="Brief description of the module"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Subject *</label>
+                    <select name="subject" required>
+                        <option value="">Select Subject</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject }}">{{ subject }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Grade Level *</label>
+                    <select name="grade_level" required>
+                        <option value="">Select Grade</option>
+                        {% for grade in grade_levels %}
+                        <option value="{{ grade }}">{{ grade }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Quarter *</label>
+                    <select name="quarter" required>
+                        <option value="">Select Quarter</option>
+                        {% for quarter in quarters %}
+                        <option value="{{ quarter }}">{{ quarter }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Cover Image</label>
+                    <input type="file" name="cover_image" accept="image/*">
+                    <div class="file-info">Optional: JPG, PNG (Max 2MB)</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>PDF File *</label>
+                <input type="file" name="pdf_file" accept=".pdf" required>
+                <div class="file-info">PDF only, Max size: 50MB</div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-cloud-upload-alt"></i> Upload Module
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Module Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-edit"></i> Edit Module</h3>
+            <span class="close-modal" onclick="closeEditModal()">&times;</span>
+        </div>
+        <form method="POST" action="" id="editForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Title *</label>
+                <input type="text" name="title" id="edit_title" required>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" id="edit_description" rows="3"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Subject *</label>
+                    <select name="subject" id="edit_subject" required>
+                        <option value="">Select Subject</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject }}">{{ subject }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Grade Level *</label>
+                    <select name="grade_level" id="edit_grade" required>
+                        <option value="">Select Grade</option>
+                        {% for grade in grade_levels %}
+                        <option value="{{ grade }}">{{ grade }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Quarter *</label>
+                    <select name="quarter" id="edit_quarter" required>
+                        <option value="">Select Quarter</option>
+                        {% for quarter in quarters %}
+                        <option value="{{ quarter }}">{{ quarter }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>New Cover Image</label>
+                    <input type="file" name="cover_image" accept="image/*">
+                    <div class="file-info">Leave empty to keep current image</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>New PDF File</label>
+                <input type="file" name="pdf_file" accept=".pdf">
+                <div class="file-info">Leave empty to keep current file</div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i> Update Module
+            </button>
+        </form>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Modal functions
+    function openUploadModal() {
+        document.getElementById('uploadModal').style.display = 'block';
+    }
+
+    function closeUploadModal() {
+        document.getElementById('uploadModal').style.display = 'none';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+
+    // Edit module function
+    function editModule(moduleId) {
+        fetch(`/teacher/modules/edit/${moduleId}/`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('edit_title').value = data.title;
+                document.getElementById('edit_description').value = data.description;
+                document.getElementById('edit_subject').value = data.subject;
+                document.getElementById('edit_grade').value = data.grade_level;
+                document.getElementById('edit_quarter').value = data.quarter;
+
+                document.getElementById('editForm').action = `/teacher/modules/edit/${moduleId}/`;
+                document.getElementById('editModal').style.display = 'block';
+            });
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function (event) {
+        if (event.target == document.getElementById('uploadModal')) {
+            closeUploadModal();
+        }
+        if (event.target == document.getElementById('editModal')) {
+            closeEditModal();
+        }
+    }
+</script>
+{% endblock %}
+{% endblock %}

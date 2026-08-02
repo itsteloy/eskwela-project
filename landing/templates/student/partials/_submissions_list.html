@@ -1,0 +1,68 @@
+{% load static %}
+
+{% if submissions %}
+<div class="submissions-list">
+    {% for submission in submissions %}
+    <div class="submission-card">
+        <div class="submission-header">
+            <div class="submission-title">
+                <i class="fas fa-tasks"></i> {{ submission.assignment.title }}
+            </div>
+            <span class="submission-status status-{{ submission.status }}">
+                <i class="fas 
+                        {% if submission.status == 'graded' %}fa-check-circle
+                        {% elif submission.status == 'late' %}fa-exclamation-triangle
+                        {% else %}fa-clock{% endif %}"></i>
+                {{ submission.get_status_display }}
+            </span>
+        </div>
+
+        <div class="submission-meta">
+            <span class="meta-item">
+                <i class="fas fa-book"></i> {{ submission.assignment.get_subject_display }}
+            </span>
+            <span class="meta-item">
+                <i class="fas fa-graduation-cap"></i> {{ submission.assignment.grade_level }}
+            </span>
+            <span class="meta-item">
+                <i class="fas fa-calendar"></i> Submitted: {{ submission.submitted_at|date:"M d, Y h:i A" }}
+            </span>
+        </div>
+
+        {% if submission.comments %}
+        <div style="margin-bottom: 10px;">
+            <strong>Your comments:</strong>
+            <p style="color: #666; margin-top: 5px;">{{ submission.comments }}</p>
+        </div>
+        {% endif %}
+
+        {% if submission.grade %}
+        <div class="grade-box">
+            <i class="fas fa-star"></i> Grade: {{ submission.grade }}/{{ submission.assignment.total_points }}
+        </div>
+        {% endif %}
+
+        {% if submission.feedback %}
+        <div class="feedback-box">
+            <h4><i class="fas fa-comment"></i> Teacher's Feedback</h4>
+            <p>{{ submission.feedback }}</p>
+        </div>
+        {% endif %}
+
+        <a href="{{ submission.submission_file.url }}" class="attachment-link" target="_blank">
+            <i class="fas fa-file"></i> View My Submission
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-upload"></i>
+    <h3>No Submissions Yet</h3>
+    <p>You haven't submitted any assignments yet.</p>
+    <div class="empty-note">
+        <i class="fas fa-info-circle"></i>
+        Go to the Assignments tab to submit your work.
+    </div>
+</div>
+{% endif %}

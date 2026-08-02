@@ -1,0 +1,454 @@
+{% extends 'administrator/admin_base.html' %}
+{% load static %}
+
+{% block title %}Edit Student | Eskwela{% endblock %}
+
+{% block page_title %}Edit Student Information{% endblock %}
+
+{% block content %}
+<style>
+    .edit-form-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-divider {
+        background: #333;
+        color: white;
+        padding: 12px 20px;
+        margin: 30px 0 20px;
+        border-radius: 5px;
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 0.95rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 5px 0;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #ffc107;
+        margin: 20px 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid #eee;
+    }
+
+    .btn-save,
+    .btn-cancel {
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-save {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-save:hover {
+        background: #218838;
+    }
+
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-cancel:hover {
+        background: #5a6268;
+    }
+
+    @media (max-width: 768px) {
+
+        .form-grid-2,
+        .form-grid-3 {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="edit-form-container">
+    <div class="section-header">
+        <h2><i class="fas fa-edit"></i> Edit Student: {{ student.user.get_full_name }}</h2>
+        <p style="color: #666; margin-top: 10px;">Update student information and enrollment details</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- SECTION 1: PERSONAL INFORMATION -->
+        <div class="section-divider">
+            <i class="fas fa-user"></i> 1. Personal Information
+        </div>
+
+        <div class="form-grid-3">
+            <div class="form-group">
+                <label>First Name *</label>
+                <input type="text" name="first_name" value="{{ student.user.first_name }}" required>
+            </div>
+            <div class="form-group">
+                <label>Middle Name</label>
+                <input type="text" name="middle_name" value="{{ student.middle_name|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label>Last Name *</label>
+                <input type="text" name="last_name" value="{{ student.user.last_name }}" required>
+            </div>
+        </div>
+
+        <div class="form-grid-3">
+            <div class="form-group">
+                <label>Extension Name</label>
+                <input type="text" name="extension_name" value="{{ student.extension_name|default:'' }}"
+                    placeholder="Jr., Sr., III">
+            </div>
+            <div class="form-group">
+                <label>Birthdate</label>
+                <input type="date" name="birthdate" value="{{ student.birthdate|date:'Y-m-d' }}">
+            </div>
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" name="age" value="{{ student.age|default:'' }}" min="1" max="120">
+            </div>
+        </div>
+
+        <div class="form-grid-3">
+            <div class="form-group">
+                <label>Sex</label>
+                <select name="gender">
+                    <option value="">Select</option>
+                    <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Place of Birth</label>
+                <input type="text" name="place_of_birth" value="{{ student.place_of_birth|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label>Civil Status</label>
+                <select name="civil_status">
+                    <option value="">Select</option>
+                    <option value="Single" {% if student.civil_status == 'Single' %}selected{% endif %}>Single</option>
+                    <option value="Married" {% if student.civil_status == 'Married' %}selected{% endif %}>Married</option>
+                    <option value="Widowed" {% if student.civil_status == 'Widowed' %}selected{% endif %}>Widowed</option>
+                    <option value="Separated" {% if student.civil_status == 'Separated' %}selected{% endif %}>Separated
+                    </option>
+                    <option value="Sole Parent" {% if student.civil_status == 'Sole Parent' %}selected{% endif %}>Sole
+                        Parent</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-grid-3">
+            <div class="form-group">
+                <label>Religion</label>
+                <input type="text" name="religion" value="{{ student.religion|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label>Mother Tongue</label>
+                <input type="text" name="mother_tongue" value="{{ student.mother_tongue|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label>LRN (Learner Reference Number)</label>
+                <input type="text" name="lrn" value="{{ student.lrn|default:'' }}" maxlength="12">
+            </div>
+        </div>
+
+        <!-- SECTION 2: CONTACT INFORMATION -->
+        <div class="section-divider">
+            <i class="fas fa-phone"></i> 2. Contact Information
+        </div>
+
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label>Email Address *</label>
+                <input type="email" name="email" value="{{ student.user.email }}" required>
+            </div>
+            <div class="form-group">
+                <label>Contact Number(s)</label>
+                <input type="text" name="contact_numbers"
+                    value="{{ student.contact_numbers|default:student.phone|default:'' }}">
+            </div>
+        </div>
+
+        <!-- SECTION 3: ADDRESS INFORMATION -->
+        <div class="section-divider">
+            <i class="fas fa-home"></i> 3. Address Information
+        </div>
+
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label>Street/Street Name</label>
+                <input type="text" name="street_name" value="{{ student.street_name|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label>Barangay</label>
+                <input type="text" name="barangay" value="{{ student.barangay|default:'' }}">
+            </div>
+        </div>
+
+        <div class="form-grid-3">
+            <div class="form-group">
+                <label>Municipality/City</label>
+                <input type="text" name="municipality" value="{{ student.municipality|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label>Province</label>
+                <input type="text" name="province" value="{{ student.province|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label>Zip Code</label>
+                <input type="text" name="zip_code" value="{{ student.zip_code|default:'' }}" maxlength="4">
+            </div>
+        </div>
+
+        <!-- SECTION 4: CAMPUS & ENROLLMENT -->
+        <div class="section-divider">
+            <i class="fas fa-school"></i> 4. Campus & Enrollment Information
+        </div>
+
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label><i class="fas fa-building"></i> Campus/Learning Center *</label>
+                <select name="campus" required>
+                    <option value="">Select Campus</option>
+                    {% for campus in campuses %}
+                    <option value="{{ campus.id }}" {% if student.campus and student.campus.id == campus.id %}selected{% endif %}>
+                        {{ campus.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <small style="color: #666; margin-top: 5px;">
+                    Student will be assigned to the teacher of this campus
+                </small>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-graduation-cap"></i> Assigned Grade Level *</label>
+                <select name="enrolled_in" required>
+                    <option value="">Pending Assessment</option>
+                    <option value="Grade 7" {% if student.enrolled_in == 'Grade 7' %}selected{% endif %}>Grade 7</option>
+                    <option value="Grade 8" {% if student.enrolled_in == 'Grade 8' %}selected{% endif %}>Grade 8</option>
+                    <option value="Grade 9" {% if student.enrolled_in == 'Grade 9' %}selected{% endif %}>Grade 9</option>
+                    <option value="Grade 10" {% if student.enrolled_in == 'Grade 10' %}selected{% endif %}>Grade 10
+                    </option>
+                    <option value="Grade 11" {% if student.enrolled_in == 'Grade 11' %}selected{% endif %}>Grade 11
+                    </option>
+                    <option value="Grade 12" {% if student.enrolled_in == 'Grade 12' %}selected{% endif %}>Grade 12
+                    </option>
+                </select>
+                <small style="color: #666; margin-top: 5px;">
+                    Set after face-to-face assessment
+                </small>
+            </div>
+        </div>
+
+        <!-- Teacher Assignment Info -->
+        <div class="info-box">
+            <label style="margin-bottom: 10px; display: block;"><i class="fas fa-chalkboard-teacher"></i> Assigned
+                Teacher</label>
+            {% with teacher=student.get_assigned_teacher %}
+            {% if teacher %}
+            <p style="margin: 0;">
+                <strong>{{ teacher.user.get_full_name }}</strong><br>
+                <small style="color: #666;">Campus: {{ teacher.campus.name }}</small>
+            </p>
+            {% else %}
+            <p style="color: #856404; margin: 0;">
+                <i class="fas fa-exclamation-triangle"></i>
+                No teacher assigned to this campus. Student won't be visible in any teacher dashboard.
+            </p>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- SECTION 5: PARENT/GUARDIAN INFORMATION -->
+        <div class="section-divider">
+            <i class="fas fa-user-friends"></i> 5. Parent/Guardian Information
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-male"></i> Father's Name</label>
+            <div class="form-grid-3">
+                <input type="text" name="father_first_name" placeholder="First Name"
+                    value="{{ student.father_first_name|default:'' }}">
+                <input type="text" name="father_middle_name" placeholder="Middle Name"
+                    value="{{ student.father_middle_name|default:'' }}">
+                <input type="text" name="father_last_name" placeholder="Last Name"
+                    value="{{ student.father_last_name|default:'' }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-female"></i> Mother's Maiden Name</label>
+            <div class="form-grid-3">
+                <input type="text" name="mother_first_name" placeholder="First Name"
+                    value="{{ student.mother_first_name|default:'' }}">
+                <input type="text" name="mother_middle_name" placeholder="Middle Name"
+                    value="{{ student.mother_middle_name|default:'' }}">
+                <input type="text" name="mother_last_name" placeholder="Last Name"
+                    value="{{ student.mother_last_name|default:'' }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label><i class="fas fa-user-shield"></i> Legal Guardian (if applicable)</label>
+            <div class="form-grid-3">
+                <input type="text" name="guardian_first_name" placeholder="First Name"
+                    value="{{ student.guardian_first_name|default:'' }}">
+                <input type="text" name="guardian_middle_name" placeholder="Middle Name"
+                    value="{{ student.guardian_middle_name|default:'' }}">
+                <input type="text" name="guardian_last_name" placeholder="Last Name"
+                    value="{{ student.guardian_last_name|default:'' }}">
+            </div>
+        </div>
+
+        <!-- SECTION 6: ADDITIONAL INFORMATION -->
+        <div class="section-divider">
+            <i class="fas fa-info-circle"></i> 6. Additional Information
+        </div>
+
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label>Indigenous People Status</label>
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                    <label class="checkbox-group">
+                        <input type="radio" name="is_indigenous_people" value="Yes" {% if student.is_indigenous_people %}checked{% endif %}>
+                        Yes
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="radio" name="is_indigenous_people" value="No" {% if not student.is_indigenous_people %}checked{% endif %}>
+                        No
+                    </label>
+                </div>
+                <input type="text" name="indigenous_specify" placeholder="If Yes, specify community"
+                    value="{{ student.indigenous_specify|default:'' }}" style="margin-top: 10px;">
+            </div>
+
+            <div class="form-group">
+                <label>4Ps Beneficiary</label>
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                    <label class="checkbox-group">
+                        <input type="radio" name="is_4ps_beneficiary" value="Yes" {% if student.is_4ps_beneficiary %}checked{% endif %}>
+                        Yes
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="radio" name="is_4ps_beneficiary" value="No" {% if not student.is_4ps_beneficiary %}checked{% endif %}>
+                        No
+                    </label>
+                </div>
+                <input type="text" name="fourps_household_id" placeholder="If Yes, enter Household ID"
+                    value="{{ student.fourps_household_id|default:'' }}" style="margin-top: 10px;">
+            </div>
+        </div>
+
+        <div class="form-grid-2">
+            <div class="form-group">
+                <label>PWD (Person with Disability)</label>
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                    <label class="checkbox-group">
+                        <input type="radio" name="is_pwd" value="Yes" {% if student.is_pwd %}checked{% endif %}>
+                        Yes
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="radio" name="is_pwd" value="No" {% if not student.is_pwd %}checked{% endif %}>
+                        No
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Has PWD ID</label>
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                    <label class="checkbox-group">
+                        <input type="radio" name="has_pwd_id" value="Yes" {% if student.has_pwd_id %}checked{% endif %}>
+                        Yes
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="radio" name="has_pwd_id" value="No" {% if not student.has_pwd_id %}checked{% endif %}>
+                        No
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{% url 'admin_dashboard' %}" class="btn-cancel">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn-save">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

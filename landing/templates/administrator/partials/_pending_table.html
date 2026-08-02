@@ -1,0 +1,43 @@
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Campus</th>
+            <th>Registered</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in pending_students %}
+        <tr>
+            <td>{{ student.user.last_name }}, {{ student.user.first_name }}</td>
+            <td>{{ student.user.email }}</td>
+            <td>{{ student.phone|default:'—' }}</td>
+            <td><span class="school-badge">{{ student.get_campus_display|default:'—' }}</span></td>
+            <td>{{ student.created_at|date:"M d, Y" }}</td>
+            <td>
+                <div class="action-buttons">
+                    <a href="{% url 'approve_student' student.id %}" class="action-btn btn-approve"
+                        onclick="return confirm('Approve this student?')">
+                        <i class="fas fa-check"></i> Approve
+                    </a>
+                    <a href="{% url 'reject_student' student.id %}" class="action-btn btn-reject"
+                        onclick="return confirm('Reject this student?')">
+                        <i class="fas fa-times"></i> Reject
+                    </a>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="empty-message">
+                <i class="fas fa-check-circle"></i>
+                <h3>No Pending Approvals</h3>
+                <p>All student registrations have been processed.</p>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

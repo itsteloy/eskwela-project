@@ -1,0 +1,607 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>{% block title %}Student | Eskwela ALS{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/green-theme.css' %}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--mint-bg);
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 280px;
+            background: var(--forest-green);
+            color: var(--white);
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .logo-area {
+            text-align: center;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 28px;
+        }
+
+        .sidebar-logo {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            border: 3px solid var(--white);
+            margin-bottom: 14px;
+            object-fit: cover;
+        }
+
+        .logo-area h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .logo-area p {
+            color: var(--mint-bg);
+            font-size: .82rem;
+        }
+
+        .user-welcome {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 18px 16px;
+            border-radius: 12px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-avatar-large {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--forest-green);
+            font-weight: 700;
+            border: 3px solid var(--emerald);
+            flex-shrink: 0;
+        }
+
+        .user-welcome-info h4 {
+            font-size: .9rem;
+            margin-bottom: 3px;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .user-welcome-info p {
+            font-size: .82rem;
+            color: var(--mint-bg);
+        }
+
+        /* ===== NAVIGATION ===== */
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--mint-bg);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all .18s ease;
+            font-weight: 500;
+            font-size: .9rem;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--white);
+        }
+
+        .nav-link i {
+            width: 22px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .nav-link.active {
+            background: var(--emeraldv2);
+            color: var(--white);
+            font-weight: 600;
+            border-left: 3px solid var(--white);
+            padding-left: 12px;
+        }
+
+        .nav-link .badge {
+            background: #dc3545;
+            color: var(--white);
+            font-size: .7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: auto;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+
+        .top-bar {
+            background: var(--white);
+            padding: 16px 28px;
+            border-radius: 14px;
+            box-shadow: 0 1px 4px rgba(34, 139, 34, 0.08);
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            border: 1px solid #eaf2ea;
+        }
+
+        .page-title h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--forest-green);
+        }
+
+        .page-title p {
+            color: var(--charcoal);
+            font-size: .85rem;
+            margin-top: 3px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--forest-green);
+            font-size: .9rem;
+        }
+
+        .user-role {
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--emerald);
+            background: #e6f7ed;
+            padding: 3px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--forest-green);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .logout-btn {
+            padding: 8px 18px;
+            background: var(--mint-bg);
+            color: var(--forest-green);
+            border: 1.5px solid var(--sage);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: .85rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all .2s;
+        }
+
+        .logout-btn:hover {
+            background: #dc3545;
+            color: var(--white);
+            border-color: #dc3545;
+        }
+
+        /* ===== MESSAGES ===== */
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-size: .9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 40, 30, .55);
+            backdrop-filter: blur(4px);
+            z-index: 9000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .22);
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+            animation: modalIn .22s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(.95) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .modal-head {
+            padding: 20px 24px;
+            text-align: center;
+        }
+
+        .modal-icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #fdecea;
+            color: #dc3545;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 12px;
+        }
+
+        .modal-head h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1b3a2d;
+            margin-bottom: 6px;
+        }
+
+        .modal-head p {
+            font-size: .88rem;
+            color: #6b7c7a;
+            margin: 0;
+        }
+
+        .modal-body {
+            padding: 0 24px 24px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 9px;
+            font-size: .875rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: filter .15s, transform .15s;
+            border: none;
+        }
+
+        .modal-btn:hover {
+            filter: brightness(.92);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn-cancel {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .modal-btn-confirm {
+            background: #dc3545;
+            color: #ffffff;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .modal-body {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body data-dashboard="student">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-area">
+                <h2>ESKWELA ALS</h2>
+                <p>Alternative Learning System</p>
+            </div>
+
+            <div class="user-welcome">
+                <div class="user-avatar-large">
+                    {{ request.user.first_name|first|default:request.user.username|first|upper }}
+                </div>
+                <div class="user-welcome-info">
+                    <h4>Welcome back!</h4>
+                    <p>{{ request.user.get_full_name|default:request.user.username }}</p>
+                </div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="{% url 'student_dashboard' %}"
+                        class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                        <i class="fas fa-dashboard"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'student_schedule' %}"
+                        class="nav-link {% if active_page == 'schedule' %}active{% endif %}">
+                        <i class="fas fa-calendar-alt"></i> Class Schedule
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'student_subjects' %}"
+                        class="nav-link {% if active_page == 'subjects' %}active{% endif %}">
+                        <i class="fas fa-book-open"></i> Subjects
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'student_announcements' %}"
+                        class="nav-link {% if active_page == 'announcements' %}active{% endif %}">
+                        <i class="fas fa-bell"></i> Announcements
+                        {% if pending_announcements_count > 0 %}
+                        <span class="badge">{{ pending_announcements_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'student_requirements' %}"
+                        class="nav-link {% if active_page == 'requirements' %}active{% endif %}">
+                        <i class="fas fa-file-alt"></i> Requirements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'student_profile' %}"
+                        class="nav-link {% if active_page == 'profile' %}active{% endif %}">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>{% block page_title %}Student Dashboard{% endblock %}</h1>
+                    <p>{{ request.user.get_full_name|default:request.user.username }} · ALS Learner</p>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="user-name">{{ request.user.first_name|default:request.user.username }}</div>
+                        <div class="user-role">ALS Learner</div>
+                    </div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <button onclick="showLogoutModal()" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i
+                        class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Page Content -->
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <div class="modal-icon-circle">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <h2>Confirm Logout</h2>
+                <p>Are you sure you want to logout? Your progress will be saved.</p>
+            </div>
+            <div class="modal-body">
+                <button onclick="hideLogoutModal()" class="modal-btn modal-btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <a href="{% url 'logout' %}" class="modal-btn modal-btn-confirm">
+                    <i class="fas fa-check"></i> Yes, Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function preventBack() {
+                window.history.pushState(null, null, window.location.href);
+                window.addEventListener('popstate', function () {
+                    window.history.pushState(null, null, window.location.href);
+                });
+            }
+            preventBack();
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted) preventBack();
+            });
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.href);
+            }
+        })();
+
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.add('show');
+        }
+
+        function hideLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('show');
+        }
+
+        window.addEventListener('click', function (event) {
+            const modal = document.getElementById('logoutModal');
+            if (event.target === modal) hideLogoutModal();
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') hideLogoutModal();
+        });
+
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(function (message) {
+                message.style.transition = 'opacity 0.5s';
+                message.style.opacity = '0';
+                setTimeout(function () { message.remove(); }, 500);
+            });
+        }, 5000);
+    </script>
+    <script src="{% static 'js/realtime.js' %}"></script>
+    <noscript>
+        <meta http-equiv="refresh" content="0;url={% url 'student_login' %}">
+    </noscript>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

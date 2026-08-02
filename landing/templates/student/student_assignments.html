@@ -1,0 +1,230 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+{% load schedule_extras %}
+
+{% block title %}Assignments | Eskwela ALS{% endblock %}
+
+{% block page_title %}My Assignments{% endblock %}
+
+
+{% block content %}
+<div class="assignments-page">
+    {% if not has_grade_level %}
+    <!-- No Grade Level Assigned -->
+    <div class="empty-state">
+        <i class="fas fa-graduation-cap"></i>
+        <h3>Grade Level Not Assigned</h3>
+        <p>Please complete your assessment to receive your grade level assignment.</p>
+        <div class="empty-note">
+            <i class="fas fa-info-circle"></i>
+            Assignments will be available once your grade level is assigned.
+        </div>
+    </div>
+
+    {% elif not assignments %}
+    <!-- No Assignments Yet -->
+    <div class="empty-state">
+        <i class="fas fa-tasks"></i>
+        <h3>No Assignments Yet</h3>
+        <p>Your teacher hasn't posted any assignments for {{ current_grade }} yet.</p>
+        <div class="empty-note">
+            <i class="fas fa-info-circle"></i>
+            Check back later for new assignments.
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Grade Level Badge -->
+    <div class="grade-badge">
+        <i class="fas fa-graduation-cap"></i> {{ current_grade }} Assignments
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ assignments|length }}</div>
+            <div class="stat-label">Total Assignments</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ pending_count }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ submitted_ids|length }}</div>
+            <div class="stat-label">Submitted</div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form method="GET" action="{% url 'student_assignments' %}" class="filter-form">
+            <div class="filter-group">
+                <label><i class="fas fa-book"></i> Subject</label>
+                <select name="subject">
+                    <option value="all" {% if current_filter.subject == 'all' %}selected{% endif %}>All Subjects</option>
+                    {% for subject in subjects_list %}
+                    <option value="{{ subject }}" {% if current_filter.subject == subject %}selected{% endif %}>{{ subject }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-toggle-on"></i> Status</label>
+                <select name="status">
+                    <option value="all" {% if current_filter.status == 'all' %}selected{% endif %}>All Status</option>
+                    <option value="pending" {% if current_filter.status == 'pending' %}selected{% endif %}>Pending
+                    </option>
+                    <option value="submitted" {% if current_filter.status == 'submitted' %}selected{% endif %}>Submitted
+                    </option>
+                    <option value="graded" {% if current_filter.status == 'graded' %}selected{% endif %}>Graded</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn-filter">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
+                <a href="{% url 'student_assignments' %}" class="btn-clear">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Assignments Grid -->
+    <div class="assignments-grid">
+        {% for assignment in assignments %}
+        {% with submission=submission_status|get_item:assignment.id %}
+        <div class="assignment-card 
+                    {% if assignment.id in submitted_ids %}
+                        {% if submission.status == 'graded' %}graded
+                        {% elif submission.status == 'late' %}late
+                        {% else %}submitted
+                        {% endif %}
+                    {% endif %}">
+
+            <div class="assignment-header">
+                <div class="assignment-title">{{ assignment.title }}</div>
+                <div class="assignment-subject">
+                    <i class="fas fa-book"></i> {{ assignment.get_subject_display }}
+                </div>
+            </div>
+
+            <div class="assignment-body">
+                <div class="assignment-meta">
+                    <span class="points-tag"><i class="fas fa-star"></i> {{ assignment.total_points }} pts</span>
+                    <span
+                        class="due-date-tag {% if assignment.is_past_due and assignment.id not in submitted_ids %}past-due{% endif %}">
+                        <i class="far fa-clock"></i> Due: {{ assignment.due_date|date:"M d, Y h:i A" }}
+                    </span>
+                </div>
+
+                <div class="assignment-description">
+                    {{ assignment.description|truncatechars:200 }}
+                </div>
+
+                {% if assignment.attachment %}
+                <div style="margin-bottom: 15px;">
+                    <a href="{{ assignment.attachment.url }}" class="attachment-link" target="_blank">
+                        <i class="fas fa-paperclip"></i> View Assignment File
+                    </a>
+                </div>
+                {% endif %}
+
+                {% if assignment.id in submitted_ids %}
+                <!-- Submission Status -->
+                <div class="submission-status status-{{ submission.status }}">
+                    <i class="fas 
+                                    {% if submission.status == 'graded' %}fa-check-circle
+                                    {% elif submission.status == 'late' %}fa-exclamation-triangle
+                                    {% else %}fa-clock{% endif %}"></i>
+                    Status: {{ submission.get_status_display }}
+                </div>
+
+                {% if submission.grade %}
+                <div class="grade-info">
+                    <i class="fas fa-star"></i> Grade: {{ submission.grade }}/{{ assignment.total_points }}
+                </div>
+                {% endif %}
+
+                {% if submission.feedback %}
+                <div class="feedback-info">
+                    <i class="fas fa-comment"></i> Feedback: {{ submission.feedback|truncatechars:50 }}
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <div class="assignment-footer">
+                    {% if assignment.id in submitted_ids %}
+                    <a href="{% url 'student_my_submissions' %}" class="btn-view-submission">
+                        <i class="fas fa-eye"></i> View Submission
+                    </a>
+                    {% else %}
+                    <button class="btn-submit"
+                        onclick="openSubmitModal('{{ assignment.id }}', '{{ assignment.title|escapejs }}')">
+                        <i class="fas fa-upload"></i> Submit Assignment
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Submit Assignment Modal -->
+<div id="submitModal" class="modal">
+    <div class="modal-content submit-modal-content">
+        <div class="modal-header"
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3><i class="fas fa-upload" style="color: #28a745;"></i> Submit Assignment</h3>
+            <span class="close-modal" onclick="closeSubmitModal()"
+                style="font-size: 1.5rem; cursor: pointer; color: #666;">&times;</span>
+        </div>
+        <form method="POST" action="" id="submitForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="submit-form-group">
+                <label>Assignment:</label>
+                <p id="modalAssignmentTitle" style="font-weight: 600; color: #333; margin-bottom: 10px;"></p>
+            </div>
+            <div class="submit-form-group">
+                <label>Upload File *</label>
+                <input type="file" name="submission_file" required accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png">
+                <div class="file-info">Max size: 20MB. Allowed: PDF, DOC, DOCX, TXT, JPG, PNG</div>
+            </div>
+            <div class="submit-form-group">
+                <label>Comments (Optional)</label>
+                <textarea name="comments" rows="3" placeholder="Add any comments about your submission..."></textarea>
+            </div>
+            <button type="submit" class="btn-submit" style="width: 100%;">
+                <i class="fas fa-cloud-upload-alt"></i> Submit
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Submit modal functions
+    function openSubmitModal(assignmentId, assignmentTitle) {
+        document.getElementById('modalAssignmentTitle').textContent = assignmentTitle;
+        document.getElementById('submitForm').action = `/student/submit_assignment/${assignmentId}/`;
+        document.getElementById('submitModal').style.display = 'flex';
+    }
+
+    function closeSubmitModal() {
+        document.getElementById('submitModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function (event) {
+        const modal = document.getElementById('submitModal');
+        if (event.target == modal) {
+            closeSubmitModal();
+        }
+    }
+</script>
+{% endblock %}

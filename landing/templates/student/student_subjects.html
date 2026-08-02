@@ -1,0 +1,1162 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+{% load schedule_extras %}
+
+{% block title %}My Subjects | Eskwela ALS{% endblock %}
+
+{% block page_title %}My Subjects{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .ssb-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── GRADE BADGE ── */
+    .ssb-grade-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--forest-green);
+        color: #ffffff;
+        padding: 9px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: .9rem;
+        margin-bottom: 24px;
+    }
+
+    /* ── STATS ── */
+    .ssb-stats {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .ssb-stat {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 18px 16px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .ssb-stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 8px;
+        font-size: 1.1rem;
+    }
+
+    .icon-subjects {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .icon-modules {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .icon-assignments {
+        background: #fef3cd;
+        color: #d97706;
+    }
+
+    .icon-pending {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .icon-submitted {
+        background: #eff6ff;
+        color: #0891b2;
+    }
+
+    .ssb-stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+        margin-bottom: 3px;
+    }
+
+    .ssb-stat-label {
+        font-size: .7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #8a9aa8;
+    }
+
+    /* ── ACCORDION ── */
+    .ssb-accordion {
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        margin-bottom: 18px;
+        overflow: hidden;
+    }
+
+    .ssb-accordion-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        cursor: pointer;
+        background: #f8fdf8;
+        border-bottom: 1px solid #eaf2ea;
+        user-select: none;
+        transition: background .2s;
+    }
+
+    .ssb-accordion-header:hover {
+        background: #f0f7f0;
+    }
+
+    .ssb-accordion.open .ssb-accordion-header {
+        border-bottom-color: #dceadc;
+    }
+
+    .ssb-subject-title-group {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .ssb-subject-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--forest-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .ssb-subject-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+    }
+
+    .ssb-mini-counts {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+    }
+
+    .ssb-mini-count {
+        font-size: .72rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .mini-modules {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .mini-assignments {
+        background: #fef3cd;
+        color: #92400e;
+    }
+
+    .mini-submissions {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .mini-pending {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .ssb-chevron {
+        font-size: .9rem;
+        color: #8a9aa8;
+        transition: transform .3s;
+    }
+
+    .ssb-accordion.open .ssb-chevron {
+        transform: rotate(180deg);
+        color: var(--forest-green);
+    }
+
+    .ssb-accordion-body {
+        display: none;
+    }
+
+    .ssb-accordion.open .ssb-accordion-body {
+        display: block;
+    }
+
+    /* ── INNER TABS ── */
+    .ssb-tabs {
+        display: flex;
+        border-bottom: 2px solid #eaf2ea;
+        background: #fafdfa;
+        padding: 0 20px;
+    }
+
+    .ssb-tab-btn {
+        padding: 11px 18px;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        font-size: .85rem;
+        font-weight: 600;
+        color: #8a9aa8;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        transition: all .2s;
+        white-space: nowrap;
+        font-family: inherit;
+    }
+
+    .ssb-tab-btn:hover {
+        color: var(--forest-green);
+    }
+
+    .ssb-tab-btn.active {
+        color: var(--forest-green);
+        border-bottom-color: var(--emerald);
+    }
+
+    .ssb-tab-badge {
+        background: #fdecea;
+        color: #c0392b;
+        font-size: .7rem;
+        padding: 1px 7px;
+        border-radius: 8px;
+        font-weight: 700;
+    }
+
+    .ssb-tab-panel {
+        display: none;
+        padding: 20px 22px;
+    }
+
+    .ssb-tab-panel.active {
+        display: block;
+    }
+
+    /* ── MODULE LIST ── */
+    .ssb-module-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .ssb-module-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8fdf8;
+        border-radius: 10px;
+        padding: 14px 16px;
+        border: 1px solid #eaf2ea;
+        gap: 12px;
+        transition: box-shadow .2s;
+    }
+
+    .ssb-module-row:hover {
+        box-shadow: 0 4px 12px rgba(34, 139, 34, .08);
+    }
+
+    .ssb-module-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .ssb-module-file-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: #e8f0fe;
+        color: #2a56c6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .ssb-module-title-text {
+        font-weight: 600;
+        color: #1b3a2d;
+        font-size: .92rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
+    }
+
+    .ssb-module-meta-text {
+        font-size: .76rem;
+        color: #8a9aa8;
+        margin-top: 2px;
+    }
+
+    .ssb-new-badge {
+        background: var(--emerald);
+        color: #fff;
+        font-size: .68rem;
+        padding: 2px 7px;
+        border-radius: 6px;
+        font-weight: 700;
+        margin-left: 6px;
+    }
+
+    .ssb-module-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    /* ── BUTTONS ── */
+    .ssb-btn {
+        padding: 7px 12px;
+        border-radius: 7px;
+        font-size: .8rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: filter .15s, transform .15s;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .ssb-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    .btn-view {
+        background: #4a6fa5;
+        color: #ffffff;
+    }
+
+    .btn-dl {
+        background: #0891b2;
+        color: #ffffff;
+    }
+
+    .btn-submit {
+        background: #1a7a3f;
+        color: #ffffff;
+    }
+
+    .btn-view-sub {
+        background: #2a56c6;
+        color: #ffffff;
+    }
+
+    /* ── ASSIGNMENT LIST ── */
+    .ssb-assignment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .ssb-assignment-row {
+        background: #fafdfa;
+        border-radius: 10px;
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+        transition: box-shadow .2s;
+    }
+
+    .ssb-assignment-row:hover {
+        box-shadow: 0 4px 12px rgba(34, 139, 34, .08);
+    }
+
+    .ssb-assignment-header {
+        background: var(--forest-green);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .ssb-assignment-title {
+        font-weight: 700;
+        color: #ffffff;
+        font-size: .95rem;
+    }
+
+    .ssb-points-tag {
+        background: rgba(255, 255, 255, .2);
+        color: #fff;
+        padding: 3px 10px;
+        border-radius: 10px;
+        font-size: .78rem;
+        font-weight: 600;
+    }
+
+    .ssb-assignment-body {
+        padding: 14px 16px;
+    }
+
+    .ssb-assignment-meta {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+        font-size: .82rem;
+        color: #6b7c7a;
+    }
+
+    .ssb-due-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .ssb-due-tag.past-due {
+        color: #c0392b;
+        font-weight: 600;
+    }
+
+    .ssb-assignment-desc {
+        color: #6b7c7a;
+        font-size: .85rem;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+
+    .ssb-assignment-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #eaf2ea;
+        padding-top: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .ssb-status-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .82rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 8px;
+    }
+
+    .status-submitted {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .status-graded {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .status-late {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .status-pending {
+        background: #fef3cd;
+        color: #92400e;
+    }
+
+    .ssb-grade-pill {
+        background: #fef3cd;
+        color: #92400e;
+        font-size: .8rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 10px;
+    }
+
+    /* ── SUBMISSION LIST ── */
+    .ssb-submission-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .ssb-submission-row {
+        background: #f8fdf8;
+        border-radius: 10px;
+        border: 1px solid #eaf2ea;
+        padding: 16px;
+        transition: box-shadow .2s;
+    }
+
+    .ssb-submission-row:hover {
+        box-shadow: 0 4px 12px rgba(34, 139, 34, .08);
+    }
+
+    .ssb-submission-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .ssb-submission-title {
+        font-weight: 600;
+        color: #1b3a2d;
+        font-size: .92rem;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .ssb-submission-title i {
+        color: var(--forest-green);
+    }
+
+    .ssb-submission-meta {
+        font-size: .78rem;
+        color: #8a9aa8;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+    }
+
+    .ssb-feedback-box {
+        background: #e6f7ed;
+        border-left: 3px solid var(--emerald);
+        padding: 10px 14px;
+        border-radius: 0 6px 6px 0;
+        font-size: .85rem;
+        color: #1b3a2d;
+        margin-top: 8px;
+    }
+
+    .ssb-attachment-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .82rem;
+        font-weight: 600;
+        color: #2a56c6;
+        text-decoration: none;
+        padding: 6px 12px;
+        background: #eff6ff;
+        border-radius: 7px;
+        margin-top: 8px;
+        transition: background .15s;
+    }
+
+    .ssb-attachment-link:hover {
+        background: #dbeafe;
+    }
+
+    /* ── INNER EMPTY ── */
+    .ssb-inner-empty {
+        text-align: center;
+        padding: 30px 20px;
+        color: #8a9aa8;
+    }
+
+    .ssb-inner-empty i {
+        font-size: 2rem;
+        color: #c8dfc8;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* ── EMPTY STATE ── */
+    .ssb-empty {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .ssb-empty-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #f0f7f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 2rem;
+        color: #8a9aa8;
+    }
+
+    .ssb-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .ssb-empty p {
+        color: #8a9aa8;
+        font-size: .88rem;
+    }
+
+    .ssb-empty-note {
+        margin-top: 14px;
+        background: #eff6ff;
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: #1e3a8a;
+        font-size: .85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* ── SUBMIT MODAL ── */
+    .ssb-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 40, 30, .55);
+        backdrop-filter: blur(4px);
+        z-index: 9000;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .ssb-modal.open {
+        display: flex;
+    }
+
+    .ssb-modal-box {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .22);
+        width: 100%;
+        max-width: 500px;
+        overflow: hidden;
+        animation: modalIn .22s ease;
+    }
+
+    @keyframes modalIn {
+        from {
+            opacity: 0;
+            transform: scale(.95) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .ssb-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        background: var(--forest-green);
+        color: #ffffff;
+    }
+
+    .ssb-modal-head h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+    }
+
+    .ssb-modal-close {
+        background: rgba(255, 255, 255, .15);
+        border: none;
+        color: #ffffff;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .15s;
+    }
+
+    .ssb-modal-close:hover {
+        background: rgba(255, 255, 255, .28);
+    }
+
+    .ssb-modal-body {
+        padding: 24px;
+    }
+
+    .ssb-form-group {
+        margin-bottom: 16px;
+    }
+
+    .ssb-form-group label {
+        display: block;
+        font-size: .8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .ssb-form-group input[type="file"],
+    .ssb-form-group textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .88rem;
+        font-family: inherit;
+        transition: border-color .2s;
+    }
+
+    .ssb-form-group input[type="file"]:focus,
+    .ssb-form-group textarea:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .ssb-file-hint {
+        font-size: .75rem;
+        color: #8a9aa8;
+        margin-top: 4px;
+    }
+
+    .ssb-modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .btn-save {
+        background: var(--emerald);
+        color: #fff;
+    }
+
+    .btn-save:hover {
+        background: var(--forest-green);
+        filter: none;
+    }
+
+    .btn-cancel {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-cancel:hover {
+        background: #d1d5db;
+        filter: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .ssb-tabs {
+            overflow-x: auto;
+            padding: 0 10px;
+        }
+
+        .ssb-tab-btn {
+            padding: 10px 14px;
+            font-size: .8rem;
+        }
+
+        .ssb-module-title-text {
+            max-width: 160px;
+        }
+
+        .ssb-assignment-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .ssb-module-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .ssb-module-actions {
+            justify-content: flex-end;
+        }
+    }
+</style>
+
+<div class="ssb-wrap">
+
+    {% if not has_grade_level %}
+    <div class="ssb-empty">
+        <div class="ssb-empty-icon"><i class="fas fa-graduation-cap"></i></div>
+        <h3>Grade Level Not Assigned</h3>
+        <p>Please complete your assessment to receive your grade level assignment.</p>
+        <div class="ssb-empty-note">
+            <i class="fas fa-info-circle"></i>
+            Subjects will be available once your grade level is assigned.
+        </div>
+    </div>
+
+    {% elif not subject_data %}
+    <div class="ssb-empty">
+        <div class="ssb-empty-icon"><i class="fas fa-book-open"></i></div>
+        <h3>No Subjects Yet</h3>
+        <p>Your teacher hasn't uploaded any content for {{ current_grade }} yet.</p>
+        <div class="ssb-empty-note">
+            <i class="fas fa-info-circle"></i>
+            Check back later for new learning materials.
+        </div>
+    </div>
+
+    {% else %}
+
+    <!-- Grade Badge -->
+    <div class="ssb-grade-badge">
+        <i class="fas fa-graduation-cap"></i> {{ current_grade }}
+    </div>
+
+    <!-- Stats -->
+    <div class="ssb-stats">
+        <div class="ssb-stat">
+            <div class="ssb-stat-icon icon-subjects"><i class="fas fa-layer-group"></i></div>
+            <div class="ssb-stat-value">{{ subject_data|length }}</div>
+            <div class="ssb-stat-label">Subjects</div>
+        </div>
+        <div class="ssb-stat">
+            <div class="ssb-stat-icon icon-modules"><i class="fas fa-book-open"></i></div>
+            <div class="ssb-stat-value">{{ total_modules }}</div>
+            <div class="ssb-stat-label">Modules</div>
+        </div>
+        <div class="ssb-stat">
+            <div class="ssb-stat-icon icon-assignments"><i class="fas fa-tasks"></i></div>
+            <div class="ssb-stat-value">{{ total_assignments }}</div>
+            <div class="ssb-stat-label">Assignments</div>
+        </div>
+        <div class="ssb-stat">
+            <div class="ssb-stat-icon icon-pending"><i class="fas fa-clock"></i></div>
+            <div class="ssb-stat-value">{{ total_pending }}</div>
+            <div class="ssb-stat-label">Pending</div>
+        </div>
+        <div class="ssb-stat">
+            <div class="ssb-stat-icon icon-submitted"><i class="fas fa-upload"></i></div>
+            <div class="ssb-stat-value">{{ total_submissions }}</div>
+            <div class="ssb-stat-label">Submitted</div>
+        </div>
+    </div>
+
+    <!-- Subject Accordions -->
+    {% for subj_name, data in subject_data.items %}
+    {% with modules=data.modules assignments=data.assignments submissions=data.submissions pending=data.pending_count %}
+    <div class="ssb-accordion" id="subj-{{ forloop.counter }}">
+        <div class="ssb-accordion-header" onclick="toggleSubject('subj-{{ forloop.counter }}')">
+            <div class="ssb-subject-title-group">
+                <div class="ssb-subject-icon"><i class="fas fa-book"></i></div>
+                <div>
+                    <div class="ssb-subject-name">{{ subj_name }}</div>
+                    <div class="ssb-mini-counts">
+                        <span class="ssb-mini-count mini-modules"><i class="fas fa-file-pdf"></i> {{ modules|length }} module{{ modules|length|pluralize }}</span>
+                        <span class="ssb-mini-count mini-assignments"><i class="fas fa-tasks"></i> {{ assignments|length }} assignment{{ assignments|length|pluralize }}</span>
+                        {% if pending > 0 %}
+                        <span class="ssb-mini-count mini-pending"><i class="fas fa-clock"></i> {{ pending }}
+                            pending</span>
+                        {% endif %}
+                        {% if submissions %}
+                        <span class="ssb-mini-count mini-submissions"><i class="fas fa-upload"></i> {{ submissions|length }} submitted</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <i class="fas fa-chevron-down ssb-chevron"></i>
+        </div>
+
+        <div class="ssb-accordion-body">
+            <!-- Inner Tabs -->
+            <div class="ssb-tabs" id="tabs-{{ forloop.counter }}">
+                <button class="ssb-tab-btn active" onclick="switchTab(this, 'modules-{{ forloop.counter }}')">
+                    <i class="fas fa-book-open"></i> Modules {% if modules %}<span style="font-size:.75rem;">({{ modules|length }})</span>{% endif %}
+                </button>
+                <button class="ssb-tab-btn" onclick="switchTab(this, 'assignments-{{ forloop.counter }}')">
+                    <i class="fas fa-tasks"></i> Assignments {% if pending > 0 %}<span class="ssb-tab-badge">{{ pending }}</span>{% endif %}
+                </button>
+                <button class="ssb-tab-btn" onclick="switchTab(this, 'submissions-{{ forloop.counter }}')">
+                    <i class="fas fa-upload"></i> My Submissions {% if submissions %}<span style="font-size:.75rem;">({{ submissions|length }})</span>{% endif %}
+                </button>
+            </div>
+
+            <!-- Modules Panel -->
+            <div class="ssb-tab-panel active" id="modules-{{ forloop.counter }}">
+                {% if modules %}
+                <div class="ssb-module-list">
+                    {% for module in modules %}
+                    <div class="ssb-module-row">
+                        <div class="ssb-module-left">
+                            <div class="ssb-module-file-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div>
+                                <div class="ssb-module-title-text">
+                                    {{ module.title }}
+                                    {% if module.id not in accessed_modules %}
+                                    <span class="ssb-new-badge">NEW</span>
+                                    {% endif %}
+                                </div>
+                                <div class="ssb-module-meta-text">
+                                    {{ module.quarter }} · {{ module.get_file_size_display }} · <i
+                                        class="fas fa-download"></i> {{ module.download_count }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ssb-module-actions">
+                            <a href="{% url 'view_module' module.id %}" class="ssb-btn btn-view"><i
+                                    class="fas fa-eye"></i> View</a>
+                            <a href="{% url 'student_download_module' module.id %}" class="ssb-btn btn-dl"><i
+                                    class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="ssb-inner-empty">
+                    <i class="fas fa-book-open"></i>
+                    <p>No modules uploaded for this subject yet.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Assignments Panel -->
+            <div class="ssb-tab-panel" id="assignments-{{ forloop.counter }}">
+                {% if assignments %}
+                <div class="ssb-assignment-list">
+                    {% for assignment in assignments %}
+                    {% with submission=submission_map|get_item:assignment.id %}
+                    <div class="ssb-assignment-row">
+                        <div class="ssb-assignment-header">
+                            <span class="ssb-assignment-title">{{ assignment.title }}</span>
+                            <span class="ssb-points-tag"><i class="fas fa-star"></i> {{ assignment.total_points }}
+                                pts</span>
+                        </div>
+                        <div class="ssb-assignment-body">
+                            <div class="ssb-assignment-meta">
+                                <span
+                                    class="ssb-due-tag {% if assignment.is_past_due and assignment.id not in submitted_ids %}past-due{% endif %}">
+                                    <i class="far fa-clock"></i> Due: {{ assignment.due_date|date:"M d, Y h:i A" }}
+                                </span>
+                            </div>
+                            <div class="ssb-assignment-desc">{{ assignment.description|truncatechars:200 }}</div>
+
+                            {% if assignment.attachment %}
+                            <div style="margin-bottom:10px;">
+                                <a href="{{ assignment.attachment.url }}" class="ssb-attachment-link" target="_blank">
+                                    <i class="fas fa-paperclip"></i> View Assignment File
+                                </a>
+                            </div>
+                            {% endif %}
+
+                            <div class="ssb-assignment-footer">
+                                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                    {% if assignment.id in submitted_ids %}
+                                    <span class="ssb-status-inline status-{{ submission.status }}">
+                                        <i
+                                            class="fas {% if submission.status == 'graded' %}fa-check-circle{% elif submission.status == 'late' %}fa-exclamation-triangle{% else %}fa-clock{% endif %}"></i>
+                                        {{ submission.get_status_display }}
+                                    </span>
+                                    {% if submission.grade %}
+                                    <span class="ssb-grade-pill"><i class="fas fa-star"></i> {{ submission.grade }}/{{ assignment.total_points }}</span>
+                                    {% endif %}
+                                    {% else %}
+                                    <span style="font-size:.83rem;color:#8a9aa8;">Not yet submitted</span>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if assignment.id in submitted_ids %}
+                                    <a href="{% url 'student_subjects' %}?tab=submissions" class="ssb-btn btn-view-sub">
+                                        <i class="fas fa-eye"></i> View Submission
+                                    </a>
+                                    {% else %}
+                                    <button class="ssb-btn btn-submit"
+                                        onclick="openSubmitModal('{{ assignment.id }}', '{{ assignment.title|escapejs }}')">
+                                        <i class="fas fa-upload"></i> Submit
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="ssb-inner-empty">
+                    <i class="fas fa-tasks"></i>
+                    <p>No assignments posted for this subject yet.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Submissions Panel -->
+            <div class="ssb-tab-panel" id="submissions-{{ forloop.counter }}">
+                {% if submissions %}
+                <div class="ssb-submission-list">
+                    {% for sub in submissions %}
+                    <div class="ssb-submission-row">
+                        <div class="ssb-submission-header">
+                            <span class="ssb-submission-title">
+                                <i class="fas fa-tasks"></i> {{ sub.assignment.title }}
+                            </span>
+                            <span class="ssb-status-inline status-{{ sub.status }}">
+                                <i
+                                    class="fas {% if sub.status == 'graded' %}fa-check-circle{% elif sub.status == 'late' %}fa-exclamation-triangle{% else %}fa-clock{% endif %}"></i>
+                                {{ sub.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="ssb-submission-meta">
+                            <span><i class="fas fa-calendar"></i> {{ sub.submitted_at|date:"M d, Y h:i A" }}</span>
+                            {% if sub.grade %}<span><i class="fas fa-star"></i> Grade: {{ sub.grade }}/{{ sub.assignment.total_points }}</span>{% endif %}
+                        </div>
+                        {% if sub.feedback %}
+                        <div class="ssb-feedback-box"><i class="fas fa-comment"></i> <strong>Feedback:</strong> {{ sub.feedback }}</div>
+                        {% endif %}
+                        <a href="{{ sub.submission_file.url }}" class="ssb-attachment-link" target="_blank">
+                            <i class="fas fa-file"></i> View My Submission
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="ssb-inner-empty">
+                    <i class="fas fa-upload"></i>
+                    <p>No submissions for this subject yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+
+    {% endif %}
+</div>
+
+<!-- Submit Modal -->
+<div id="submitModal" class="ssb-modal">
+    <div class="ssb-modal-box">
+        <div class="ssb-modal-head">
+            <h3><i class="fas fa-upload"></i> Submit Assignment</h3>
+            <button class="ssb-modal-close" onclick="closeSubmitModal()">&times;</button>
+        </div>
+        <div class="ssb-modal-body">
+            <form method="POST" action="" id="submitForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="ssb-form-group">
+                    <label>Assignment</label>
+                    <p id="modalAssignmentTitle" style="font-weight:600;color:#1b3a2d;font-size:.92rem;"></p>
+                </div>
+                <div class="ssb-form-group">
+                    <label>Upload File <span style="color:#c0392b;">*</span></label>
+                    <input type="file" name="submission_file" required accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png">
+                    <div class="ssb-file-hint">Max 20 MB · PDF, DOC, DOCX, TXT, JPG, PNG</div>
+                </div>
+                <div class="ssb-form-group">
+                    <label>Comments <span style="color:#8a9aa8;font-weight:400;">(optional)</span></label>
+                    <textarea name="comments" rows="3"
+                        placeholder="Add any comments about your submission..."></textarea>
+                </div>
+                <div class="ssb-modal-actions">
+                    <button type="button" class="ssb-btn btn-cancel" onclick="closeSubmitModal()">Cancel</button>
+                    <button type="submit" class="ssb-btn btn-save"><i class="fas fa-cloud-upload-alt"></i>
+                        Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleSubject(id) {
+        document.getElementById(id).classList.toggle('open');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var first = document.querySelector('.ssb-accordion');
+        if (first) first.classList.add('open');
+
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('tab') === 'submissions') {
+            document.querySelectorAll('.ssb-accordion').forEach(function (acc) { acc.classList.add('open'); });
+            document.querySelectorAll('[id^="submissions-"]').forEach(function (panel) {
+                panel.classList.add('active');
+                var sibs = panel.parentElement.querySelectorAll('.ssb-tab-panel');
+                sibs.forEach(function (s) { if (s !== panel) s.classList.remove('active'); });
+                var tabContainer = panel.parentElement.querySelector('.ssb-tabs');
+                if (tabContainer) {
+                    tabContainer.querySelectorAll('.ssb-tab-btn').forEach(function (btn) { btn.classList.remove('active'); });
+                    var subBtn = tabContainer.querySelector('[onclick*="submissions"]');
+                    if (subBtn) subBtn.classList.add('active');
+                }
+            });
+        }
+    });
+
+    function switchTab(btn, panelId) {
+        var tabBar = btn.closest('.ssb-tabs');
+        tabBar.querySelectorAll('.ssb-tab-btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+
+        var panels = tabBar.parentElement.querySelectorAll('.ssb-tab-panel');
+        panels.forEach(function (p) { p.classList.remove('active'); });
+        document.getElementById(panelId).classList.add('active');
+    }
+
+    function openSubmitModal(assignmentId, assignmentTitle) {
+        document.getElementById('modalAssignmentTitle').textContent = assignmentTitle;
+        document.getElementById('submitForm').action = '/student/submit_assignment/' + assignmentId + '/';
+        document.getElementById('submitModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSubmitModal() {
+        document.getElementById('submitModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('submitModal').addEventListener('click', function (e) {
+        if (e.target === this) closeSubmitModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeSubmitModal();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,813 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | Student Eskwela ALS{% endblock %}
+
+{% block page_title %}My ALS Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    .sd-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── PROFILE CARD ── */
+    .sd-profile-card {
+        background: var(--forest-green);
+        border-radius: 16px;
+        padding: 28px 32px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 20px rgba(27, 58, 45, .15);
+        flex-wrap: wrap;
+    }
+
+    .sd-profile-info {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .sd-profile-info h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 8px;
+        color: #ffffff;
+    }
+
+    .sd-profile-info p {
+        color: rgba(255, 255, 255, .75);
+        margin: 0 0 16px;
+        font-size: .9rem;
+    }
+
+    .sd-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+
+    .sd-detail-item {
+        background: rgba(255, 255, 255, .1);
+        padding: 14px 16px;
+        border-radius: 10px;
+    }
+
+    .sd-detail-label {
+        font-size: .7rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        opacity: .75;
+        margin-bottom: 4px;
+    }
+
+    .sd-detail-value {
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
+
+    .sd-profile-icon {
+        font-size: 6rem;
+        opacity: .2;
+        color: #ffffff;
+        flex-shrink: 0;
+    }
+
+    /* ── GRADE SECTION ── */
+    .sd-grade-section {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .sd-grade-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .sd-grade-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: #e6f7ed;
+        color: var(--forest-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+    }
+
+    .sd-grade-header h2 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0;
+    }
+
+    .sd-grade-display {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .sd-grade-badge {
+        background: var(--forest-green);
+        color: #ffffff;
+        padding: 14px 28px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.3rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 12px rgba(34, 139, 34, .2);
+    }
+
+    .sd-grade-badge i {
+        color: var(--emerald);
+    }
+
+    .sd-grade-message {
+        color: #6b7c7a;
+        font-size: .9rem;
+        line-height: 1.6;
+        flex: 1;
+    }
+
+    .sd-grade-message i {
+        color: var(--emerald);
+    }
+
+    .sd-assessment-pending {
+        background: #f8fdf8;
+        border-left: 4px solid var(--emerald);
+        padding: 20px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+    }
+
+    .sd-assessment-pending i {
+        font-size: 2.5rem;
+        color: var(--emerald);
+        flex-shrink: 0;
+    }
+
+    .sd-assessment-pending h3 {
+        color: #1b3a2d;
+        margin-bottom: 5px;
+        font-size: 1rem;
+    }
+
+    .sd-assessment-pending p {
+        color: #6b7c7a;
+        font-size: .88rem;
+    }
+
+    /* ── STAT CARDS ── */
+    .sd-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .sd-stat {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 22px 24px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        transition: transform .18s, box-shadow .18s;
+    }
+
+    .sd-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(34, 139, 34, .1);
+    }
+
+    .sd-stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-size: 1.2rem;
+    }
+
+    .icon-modules {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .icon-completed {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .icon-total {
+        background: #fef3cd;
+        color: #d97706;
+    }
+
+    .sd-stat-label {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #8a9aa8;
+        margin-bottom: 4px;
+    }
+
+    .sd-stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+    }
+
+    /* ── SCHEDULE SECTION ── */
+    .sd-schedule-section {
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .sd-schedule-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .sd-schedule-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .sd-schedule-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: #e6f7ed;
+        color: var(--forest-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .sd-schedule-header-left h2 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0 0 2px;
+    }
+
+    .sd-schedule-subtitle {
+        font-size: .8rem;
+        color: #8a9aa8;
+    }
+
+    .sd-view-all {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 16px;
+        background: var(--forest-green);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: .84rem;
+        transition: filter .15s;
+    }
+
+    .sd-view-all:hover {
+        filter: brightness(.9);
+    }
+
+    /* ── SCHEDULE LIST ── */
+    .sd-schedule-body {
+        padding: 20px 24px;
+    }
+
+    .sd-schedule-day-group {
+        margin-bottom: 20px;
+    }
+
+    .sd-schedule-day-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .sd-day-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .sd-day-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: .85rem;
+        color: #1b3a2d;
+        background: #f0f7f0;
+    }
+
+    .sd-day-badge.today {
+        background: var(--emerald);
+        color: #ffffff;
+    }
+
+    .sd-schedule-count {
+        font-size: .78rem;
+        color: #8a9aa8;
+        font-weight: 600;
+    }
+
+    .sd-schedule-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .sd-schedule-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 16px;
+        background: #fafdfa;
+        border-radius: 10px;
+        border: 1px solid #eaf2ea;
+        transition: transform .15s, box-shadow .15s;
+    }
+
+    .sd-schedule-card:hover {
+        transform: translateX(4px);
+        box-shadow: 0 3px 12px rgba(34, 139, 34, .08);
+    }
+
+    .sd-schedule-card.featured {
+        background: #f0f7f0;
+        border-left: 3px solid var(--emerald);
+    }
+
+    .sd-schedule-time-block {
+        min-width: 110px;
+        padding: 8px 12px;
+        background: #ffffff;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid #eaf2ea;
+    }
+
+    .sd-schedule-time {
+        font-weight: 700;
+        color: var(--forest-green);
+        font-size: .88rem;
+        margin-bottom: 3px;
+    }
+
+    .sd-grade-level-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: .68rem;
+        font-weight: 600;
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .sd-schedule-content {
+        flex: 1;
+    }
+
+    .sd-schedule-subject {
+        font-weight: 700;
+        color: #1b3a2d;
+        margin-bottom: 6px;
+        font-size: .95rem;
+    }
+
+    .sd-schedule-meta {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: center;
+        font-size: .82rem;
+        color: #6b7c7a;
+    }
+
+    .sd-schedule-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .sd-schedule-meta i {
+        color: #4a6a5a;
+        font-size: .78rem;
+    }
+
+    .sd-schedule-notes {
+        margin-top: 8px;
+        padding: 6px 12px;
+        background: #fef3cd;
+        border-left: 3px solid #d97706;
+        border-radius: 4px;
+        font-size: .82rem;
+        color: #92400e;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* ── EMPTY STATE ── */
+    .sd-empty {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .sd-empty-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #f0f7f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 2rem;
+        color: #8a9aa8;
+    }
+
+    .sd-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .sd-empty p {
+        color: #8a9aa8;
+        font-size: .88rem;
+        margin-bottom: 8px;
+    }
+
+    .sd-info-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 8px;
+        text-align: left;
+        margin: 12px auto 0;
+        max-width: 480px;
+    }
+
+    .sd-info-box.warning {
+        background: #fef3cd;
+        border-left: 3px solid #d97706;
+        color: #92400e;
+    }
+
+    .sd-info-box.info {
+        background: #eff6ff;
+        border-left: 3px solid #2a56c6;
+        color: #1e3a8a;
+    }
+
+    .sd-info-box i {
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .sd-info-box strong {
+        display: block;
+        font-size: .85rem;
+        margin-bottom: 2px;
+    }
+
+    .sd-info-box p {
+        font-size: .8rem;
+        margin: 0;
+        color: inherit;
+    }
+
+    .sd-btn-schedule {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 22px;
+        background: var(--forest-green);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 9px;
+        font-weight: 700;
+        font-size: .88rem;
+        margin-top: 16px;
+        transition: filter .15s;
+    }
+
+    .sd-btn-schedule:hover {
+        filter: brightness(.9);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+        .sd-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .sd-detail-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .sd-stats {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .sd-detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sd-profile-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .sd-profile-icon {
+            font-size: 4rem;
+        }
+
+        .sd-schedule-card {
+            flex-direction: column;
+        }
+
+        .sd-schedule-time-block {
+            min-width: auto;
+            display: inline-block;
+        }
+
+        .sd-grade-display {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="sd-wrap">
+
+    <!-- ══ PROFILE CARD ══ -->
+    <div class="sd-profile-card">
+        <div class="sd-profile-info">
+            <h2>Welcome, {{ request.user.first_name }}!</h2>
+            <p>Your journey to completing Alternative Learning System starts here.</p>
+            <div class="sd-detail-grid">
+                <div class="sd-detail-item">
+                    <div class="sd-detail-label">Campus</div>
+                    <div class="sd-detail-value">
+                        {% if request.user.student_profile %}
+                        {{ request.user.student_profile.campus.name|default:"Not Assigned" }}
+                        {% else %}
+                        Not Assigned
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="sd-detail-item">
+                    <div class="sd-detail-label">Enrollment Date</div>
+                    <div class="sd-detail-value">
+                        {% if request.user.student_profile %}
+                        {{ request.user.student_profile.created_at|date:"M d, Y"|default:"Pending" }}
+                        {% else %}
+                        Pending
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="sd-detail-item">
+                    <div class="sd-detail-label">Learner Ref</div>
+                    <div class="sd-detail-value">
+                        {% if request.user.student_profile %}
+                        ALS-{{ request.user.student_profile.id }}
+                        {% else %}
+                        ALS-0000
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sd-profile-icon">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+    </div>
+
+    <!-- ══ GRADE LEVEL ══ -->
+    <div class="sd-grade-section">
+        <div class="sd-grade-header">
+            <div class="sd-grade-icon"><i class="fas fa-clipboard-check"></i></div>
+            <h2>Your Grade Level Placement</h2>
+        </div>
+
+        <div class="sd-grade-display">
+            {% if request.user.student_profile and request.user.student_profile.enrolled_in %}
+            <div class="sd-grade-badge">
+                <i class="fas fa-star"></i>
+                {{ request.user.student_profile.get_enrolled_in_display }}
+            </div>
+            <div class="sd-grade-message">
+                <p><i class="fas fa-check-circle"></i> Your grade level has been assigned based on your face-to-face
+                    assessment results.</p>
+                <p style="margin-top: 8px; font-size: .85rem;">Please proceed with the learning modules for {{ request.user.student_profile.get_enrolled_in_display }}.</p>
+            </div>
+            {% else %}
+            <div class="sd-assessment-pending">
+                <i class="fas fa-clipboard-list"></i>
+                <div>
+                    <h3>Assessment Pending</h3>
+                    <p>Please visit your ALS campus to take the face-to-face placement assessment. Once completed, the
+                        admin will assign your grade level.</p>
+                    <p style="margin-top: 8px; color: var(--emerald);"><i class="fas fa-info-circle"></i> After taking
+                        the assessment, wait for admin to update your record.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ══ STAT CARDS ══ -->
+    <div class="sd-stats">
+        <div class="sd-stat">
+            <div class="sd-stat-icon icon-modules"><i class="fas fa-book-open"></i></div>
+            <div class="sd-stat-label">Learning Modules</div>
+            <div class="sd-stat-value">{{ total_modules }}</div>
+        </div>
+        <div class="sd-stat">
+            <div class="sd-stat-icon icon-completed"><i class="fas fa-check-circle"></i></div>
+            <div class="sd-stat-label">Completed</div>
+            <div class="sd-stat-value">{{ completed_requirements }}</div>
+        </div>
+        <div class="sd-stat">
+            <div class="sd-stat-icon icon-total"><i class="fas fa-clipboard-list"></i></div>
+            <div class="sd-stat-label">Total Requirements</div>
+            <div class="sd-stat-value">{{ total_requirements }}</div>
+        </div>
+    </div>
+
+    <!-- ══ SCHEDULE SECTION ══ -->
+    <div class="sd-schedule-section">
+        <div class="sd-schedule-header">
+            <div class="sd-schedule-header-left">
+                <div class="sd-schedule-icon"><i class="fas fa-calendar-day"></i></div>
+                <div>
+                    <h2>My Schedule</h2>
+                    <p class="sd-schedule-subtitle">Your upcoming classes and activities</p>
+                </div>
+            </div>
+            <a href="{% url 'student_schedule' %}" class="sd-view-all">
+                View Full Schedule <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="sd-schedule-body">
+            {% if has_schedule %}
+            <!-- Today's Schedule -->
+            {% if upcoming_schedules.today %}
+            <div class="sd-schedule-day-group">
+                <div class="sd-day-header">
+                    <span class="sd-day-badge today">
+                        <i class="fas fa-sun"></i> Today
+                    </span>
+                    <span class="sd-schedule-count">{{ upcoming_schedules.today|length }} class{% if upcoming_schedules.today|length > 1 %}es{% endif %}</span>
+                </div>
+                <div class="sd-schedule-list">
+                    {% for schedule in upcoming_schedules.today %}
+                    <div class="sd-schedule-card featured">
+                        <div class="sd-schedule-time-block">
+                            <div class="sd-schedule-time">{{ schedule.time_range }}</div>
+                            <span class="sd-grade-level-tag">{{ schedule.get_grade_level_display }}</span>
+                        </div>
+                        <div class="sd-schedule-content">
+                            <div class="sd-schedule-subject">{{ schedule.subject }}</div>
+                            <div class="sd-schedule-meta">
+                                <span><i class="fas fa-chalkboard-teacher"></i> {{ schedule.teacher.user.get_full_name }}</span>
+                                {% if schedule.room %}
+                                <span><i class="fas fa-door-open"></i> {{ schedule.room }}</span>
+                                {% endif %}
+                            </div>
+                            {% if schedule.notes %}
+                            <div class="sd-schedule-notes">
+                                <i class="fas fa-sticky-note"></i> {{ schedule.notes|truncatechars:40 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Upcoming Days -->
+            {% for day_data in upcoming_schedules.upcoming %}
+            <div class="sd-schedule-day-group">
+                <div class="sd-day-header">
+                    <span class="sd-day-badge">
+                        <i class="far fa-calendar"></i> {{ day_data.day }}
+                    </span>
+                    <span class="sd-schedule-count">{{ day_data.schedules|length }} class{% if day_data.schedules|length > 1 %}es{% endif %}</span>
+                </div>
+                <div class="sd-schedule-list">
+                    {% for schedule in day_data.schedules %}
+                    <div class="sd-schedule-card">
+                        <div class="sd-schedule-time-block">
+                            <div class="sd-schedule-time">{{ schedule.time_range }}</div>
+                            <span class="sd-grade-level-tag">{{ schedule.get_grade_level_display }}</span>
+                        </div>
+                        <div class="sd-schedule-content">
+                            <div class="sd-schedule-subject">{{ schedule.subject }}</div>
+                            <div class="sd-schedule-meta">
+                                <span><i class="fas fa-chalkboard-teacher"></i> {{ schedule.teacher.user.get_full_name|truncatechars:20 }}</span>
+                                {% if schedule.room %}
+                                <span><i class="fas fa-door-open"></i> {{ schedule.room }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            {% else %}
+            <!-- Empty State -->
+            <div class="sd-empty">
+                <div class="sd-empty-icon"><i class="fas fa-calendar-alt"></i></div>
+                <h3>No Schedule Yet</h3>
+                <p>Your teacher will provide your class schedule soon.</p>
+
+                {% if not student_profile.campus %}
+                <div class="sd-info-box warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Campus not assigned</strong>
+                        <p>Please contact the administrator to assign your campus.</p>
+                    </div>
+                </div>
+                {% elif not student_profile.enrolled_in %}
+                <div class="sd-info-box info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Grade level pending</strong>
+                        <p>Complete your assessment to receive your grade level assignment.</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="sd-info-box info">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <strong>No classes scheduled</strong>
+                        <p>Check back later or contact your teacher.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <a href="{% url 'student_schedule' %}" class="sd-btn-schedule">
+                    <i class="fas fa-calendar-alt"></i> Go to Schedule Page
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

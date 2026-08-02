@@ -1,0 +1,586 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+{% load schedule_extras %}
+
+{% block title %}My Schedule | Eskwela ALS{% endblock %}
+
+{% block page_title %}My Class Schedule{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .ss-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── CAMPUS BADGE ── */
+    .ss-campus-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: #e8f0fe;
+        color: #2a56c6;
+        border-radius: 20px;
+        font-size: .85rem;
+        font-weight: 600;
+        margin-bottom: 24px;
+        border: 1px solid #bfdbfe;
+    }
+
+    .ss-campus-badge i {
+        font-size: .9rem;
+    }
+
+    /* ── FILTER SECTION ── */
+    .ss-filter-section {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .ss-filter-header {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ss-filter-header i {
+        color: var(--emerald);
+    }
+
+    .ss-filter-form {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .ss-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 160px;
+    }
+
+    .ss-filter-group label {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .ss-select {
+        padding: 9px 32px 9px 12px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 8px;
+        font-size: .84rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .ss-select:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .ss-btn-row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+    .ss-btn {
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: .84rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: filter .15s, transform .15s;
+        border: none;
+    }
+
+    .ss-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    .btn-filter {
+        background: var(--forest-green);
+        color: #fff;
+    }
+
+    .btn-clear {
+        background: #8a9aa8;
+        color: #fff;
+    }
+
+    /* ── ACTIVE FILTERS ── */
+    .ss-active-filters {
+        padding: 12px 16px;
+        background: #eff6ff;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: .85rem;
+    }
+
+    .ss-active-filters i {
+        color: #2a56c6;
+    }
+
+    .ss-filter-tag {
+        background: #2a56c6;
+        color: #fff;
+        font-size: .72rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+    }
+
+    .ss-filter-count {
+        margin-left: auto;
+        color: #6b7c7a;
+        font-weight: 600;
+        font-size: .82rem;
+    }
+
+    /* ── INFO BANNER ── */
+    .ss-info-banner {
+        padding: 12px 16px;
+        background: #eff6ff;
+        border-left: 3px solid #2a56c6;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: .85rem;
+        color: #1e3a8a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ss-info-banner i {
+        color: #2a56c6;
+    }
+
+    /* ── DAY SECTION ── */
+    .ss-day-section {
+        background: #ffffff;
+        border-radius: 14px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .ss-day-header {
+        padding: 14px 20px;
+        background: #f8fdf8;
+        border-bottom: 2px solid #dceadc;
+    }
+
+    .ss-day-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--forest-green);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ss-day-title i {
+        color: var(--emerald);
+    }
+
+    /* ── TABLE ── */
+    .ss-table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .ss-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .875rem;
+        min-width: 650px;
+    }
+
+    .ss-table thead th {
+        background: #f0f7f0;
+        padding: 12px 14px;
+        text-align: left;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #4a6a5a;
+        border-bottom: 2px solid #dceadc;
+        white-space: nowrap;
+    }
+
+    .ss-table tbody tr {
+        border-bottom: 1px solid #f0f5f0;
+        transition: background .15s;
+    }
+
+    .ss-table tbody tr:hover {
+        background: #f5fbf5;
+    }
+
+    .ss-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .ss-table tbody td {
+        padding: 13px 14px;
+        color: #2d3f36;
+        vertical-align: top;
+    }
+
+    .ss-time-cell {
+        font-weight: 700;
+        color: var(--forest-green);
+        font-size: .85rem;
+        white-space: nowrap;
+    }
+
+    .ss-subject-cell {
+        font-weight: 700;
+        color: #1b3a2d;
+        font-size: .9rem;
+    }
+
+    .ss-grade-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: .7rem;
+        font-weight: 600;
+        background: #e8f0fe;
+        color: #2a56c6;
+        margin-top: 3px;
+    }
+
+    .ss-teacher-info {
+        font-size: .82rem;
+        color: #6b7c7a;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 3px;
+    }
+
+    .ss-teacher-info i {
+        color: #4a6a5a;
+        font-size: .75rem;
+    }
+
+    .ss-room-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        background: #f0f7f0;
+        color: #4a6a5a;
+        border-radius: 12px;
+        font-size: .8rem;
+        font-weight: 500;
+    }
+
+    .ss-notes-text {
+        font-size: .82rem;
+        color: #6b7c7a;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* ── EMPTY STATE ── */
+    .ss-empty {
+        text-align: center;
+        padding: 50px 20px;
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .ss-empty-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #f0f7f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 2rem;
+        color: #8a9aa8;
+    }
+
+    .ss-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .ss-empty>p {
+        color: #8a9aa8;
+        font-size: .88rem;
+        margin-bottom: 16px;
+    }
+
+    .ss-empty-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: .85rem;
+        font-weight: 500;
+    }
+
+    .ss-empty-note.warning {
+        background: #fef3cd;
+        border-left: 3px solid #d97706;
+        color: #92400e;
+    }
+
+    .ss-empty-note.info {
+        background: #eff6ff;
+        border-left: 3px solid #2a56c6;
+        color: #1e3a8a;
+    }
+
+    .ss-empty-note i {
+        font-size: 1rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .ss-filter-form {
+            flex-direction: column;
+        }
+
+        .ss-filter-group {
+            width: 100%;
+        }
+
+        .ss-btn-row {
+            width: 100%;
+        }
+
+        .ss-btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .ss-active-filters {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .ss-filter-count {
+            margin-left: 0;
+        }
+    }
+</style>
+
+<div class="ss-wrap">
+
+    <!-- Campus Badge -->
+    <div class="ss-campus-badge">
+        <i class="fas fa-school"></i>
+        {{ student_profile.campus.name|default:"Campus not assigned" }}
+    </div>
+
+    <!-- Filter Section -->
+    <div class="ss-filter-section">
+        <div class="ss-filter-header">
+            <i class="fas fa-filter"></i> Filter Schedule
+        </div>
+
+        <form method="GET" action="{% url 'student_schedule' %}" class="ss-filter-form">
+            <div class="ss-filter-group">
+                <label><i class="fas fa-graduation-cap"></i> Grade Level</label>
+                <select name="grade_level" class="ss-select">
+                    <option value="all" {% if current_filter.grade == 'all' %}selected{% endif %}>All Grade Levels
+                    </option>
+                    {% if current_grade %}
+                    <option value="my_level" {% if current_filter.grade == 'my_level' %}selected{% endif %}>
+                        My Level ({{ current_grade }})
+                    </option>
+                    {% endif %}
+                    {% for level in grade_levels %}
+                    <option value="{{ level }}" {% if current_filter.grade == level %}selected{% endif %}>{{ level }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="ss-filter-group">
+                <label><i class="fas fa-calendar-day"></i> Day</label>
+                <select name="day" class="ss-select">
+                    <option value="all" {% if current_filter.day == 'all' %}selected{% endif %}>All Days</option>
+                    {% for day in days_order %}
+                    <option value="{{ day }}" {% if current_filter.day == day %}selected{% endif %}>{{ day }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="ss-btn-row">
+                <button type="submit" class="ss-btn btn-filter">
+                    <i class="fas fa-search"></i> Apply
+                </button>
+                <a href="{% url 'student_schedule' %}" class="ss-btn btn-clear">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Filters -->
+    {% if current_filter.grade != 'all' or current_filter.day != 'all' %}
+    <div class="ss-active-filters">
+        <i class="fas fa-tags"></i>
+        <strong style="color: #2a56c6;">Active Filters:</strong>
+        {% if current_filter.grade != 'all' %}
+        <span class="ss-filter-tag">
+            Grade: {% if current_filter.grade == 'my_level' %}My Level ({{ current_grade }}){% else %}{{ current_filter.grade }}{% endif %}
+        </span>
+        {% endif %}
+        {% if current_filter.day != 'all' %}
+        <span class="ss-filter-tag">Day: {{ current_filter.day }}</span>
+        {% endif %}
+        <span class="ss-filter-count">{{ campus_schedules.count }} schedule(s) found</span>
+    </div>
+    {% endif %}
+
+    {% if has_schedule %}
+    <!-- Grade Level Info -->
+    {% if student_profile.enrolled_in %}
+    <div class="ss-info-banner">
+        <i class="fas fa-info-circle"></i>
+        Showing schedules for <strong>{{ student_profile.get_enrolled_in_display }}</strong> and All Levels
+    </div>
+    {% endif %}
+
+    <!-- Schedule by Day -->
+    {% for day in days_order %}
+    {% with day_schedules=schedules_by_day|get_item:day %}
+    {% if day_schedules %}
+    <div class="ss-day-section">
+        <div class="ss-day-header">
+            <div class="ss-day-title">
+                <i class="far fa-calendar-alt"></i> {{ day }}
+            </div>
+        </div>
+        <div class="ss-table-scroll">
+            <table class="ss-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Subject</th>
+                        <th>Teacher</th>
+                        <th>Room</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for schedule in day_schedules %}
+                    <tr>
+                        <td class="ss-time-cell">{{ schedule.start_time }} - {{ schedule.end_time }}</td>
+                        <td>
+                            <span class="ss-subject-cell">{{ schedule.subject }}</span>
+                            <br>
+                            <span class="ss-grade-tag">{{ schedule.get_grade_level_display }}</span>
+                        </td>
+                        <td>
+                            {{ schedule.teacher.user.get_full_name }}
+                            <div class="ss-teacher-info">
+                                <i class="fas fa-school"></i> {{ schedule.teacher.campus.name }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if schedule.room %}
+                            <span class="ss-room-badge">
+                                <i class="fas fa-door-open"></i> {{ schedule.room }}
+                            </span>
+                            {% else %}
+                            <span style="color: #8a9aa8;">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if schedule.notes %}
+                            <span class="ss-notes-text" title="{{ schedule.notes }}">{{ schedule.notes|truncatechars:30 }}</span>
+                            {% else %}
+                            <span style="color: #8a9aa8;">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% endfor %}
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="ss-empty">
+        <div class="ss-empty-icon">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        <h3>No Schedule Available</h3>
+        <p>Your teacher hasn't created any schedules for your campus yet.</p>
+
+        {% if not student_profile.campus %}
+        <div class="ss-empty-note warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span><strong>Campus not assigned.</strong> Please contact the admin to assign your campus.</span>
+        </div>
+        {% elif not student_profile.enrolled_in %}
+        <div class="ss-empty-note info">
+            <i class="fas fa-info-circle"></i>
+            <span><strong>Grade level not assigned.</strong> Please complete your assessment to receive your grade level
+                assignment.</span>
+        </div>
+        {% else %}
+        <div class="ss-empty-note info">
+            <i class="fas fa-info-circle"></i>
+            <span><strong>No schedules yet.</strong> Check back later or contact your teacher.</span>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,444 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+
+{% block title %}Requirements | Eskwela ALS{% endblock %}
+
+{% block page_title %}My Requirements{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .sr-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── STATUS SUMMARY ── */
+    .sr-status-summary {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .sr-status-box {
+        flex: 1;
+        padding: 20px 24px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #eaf2ea;
+        transition: transform .18s, box-shadow .18s;
+    }
+
+    .sr-status-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(34, 139, 34, .1);
+    }
+
+    .sr-status-box.completed {
+        background: #e6f7ed;
+        border-color: #c3e6cb;
+    }
+
+    .sr-status-box.pending {
+        background: #fef3cd;
+        border-color: #ffeeba;
+    }
+
+    .sr-status-count {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 3px;
+        line-height: 1;
+    }
+
+    .sr-status-box.completed .sr-status-count {
+        color: #1a7a3f;
+    }
+
+    .sr-status-box.pending .sr-status-count {
+        color: #92400e;
+    }
+
+    .sr-status-label {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .sr-status-box.completed .sr-status-label {
+        color: #1a7a3f;
+    }
+
+    .sr-status-box.pending .sr-status-label {
+        color: #92400e;
+    }
+
+    /* ── SECTION CARD ── */
+    .sr-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    .sr-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .sr-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+    }
+
+    .sr-section-title .sr-title-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #e6f7ed;
+        color: var(--forest-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+    }
+
+    .sr-section-count {
+        font-size: .78rem;
+        font-weight: 600;
+        color: #8a9aa8;
+        background: #f0f7f0;
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+
+    /* ── REQUIREMENT LIST ── */
+    .sr-list {
+        padding: 16px 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .sr-card {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 20px;
+        background: #fafdfa;
+        border-radius: 12px;
+        border: 1px solid #eaf2ea;
+        transition: transform .15s, box-shadow .15s;
+    }
+
+    .sr-card:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(34, 139, 34, .08);
+    }
+
+    .sr-card-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: var(--forest-green);
+        flex-shrink: 0;
+        border: 1.5px solid #dceadc;
+    }
+
+    .sr-card-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .sr-card-info h4 {
+        font-size: .95rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0 0 4px;
+    }
+
+    .sr-card-info>p {
+        font-size: .84rem;
+        color: #6b7c7a;
+        margin: 0 0 6px;
+    }
+
+    .sr-card-meta {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: .78rem;
+        color: #8a9aa8;
+    }
+
+    .sr-card-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .sr-card-meta .meta-verified {
+        color: #1a7a3f;
+        font-weight: 600;
+    }
+
+    .sr-card-meta .meta-waiting {
+        color: #d97706;
+        font-weight: 600;
+    }
+
+    .sr-card-meta .meta-missing {
+        color: #c0392b;
+        font-weight: 600;
+    }
+
+    .sr-view-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 6px;
+        font-size: .82rem;
+        font-weight: 600;
+        color: #2a56c6;
+        text-decoration: none;
+        padding: 4px 10px;
+        background: #eff6ff;
+        border-radius: 6px;
+        transition: background .15s;
+    }
+
+    .sr-view-link:hover {
+        background: #dbeafe;
+    }
+
+    /* ── STATUS BADGE ── */
+    .sr-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: .78rem;
+        font-weight: 700;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .sr-status-badge.completed {
+        background: #e6f7ed;
+        color: #1a7a3f;
+        border: 1px solid #c3e6cb;
+    }
+
+    .sr-status-badge.pending {
+        background: #fef3cd;
+        color: #92400e;
+        border: 1px solid #ffeeba;
+    }
+
+    .sr-status-badge.not-submitted {
+        background: #fdecea;
+        color: #c0392b;
+        border: 1px solid #f5c6cb;
+    }
+
+    /* ── INFO NOTE ── */
+    .sr-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 18px 20px;
+        background: #eff6ff;
+        border-radius: 12px;
+        border-left: 4px solid #2a56c6;
+    }
+
+    .sr-note-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: #dbeafe;
+        color: #2a56c6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .sr-note-text {
+        font-size: .88rem;
+        color: #1e3a8a;
+        line-height: 1.5;
+    }
+
+    .sr-note-text strong {
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .sr-status-summary {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sr-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .sr-status-badge {
+            align-self: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .sr-card-meta {
+            flex-direction: column;
+            gap: 4px;
+        }
+    }
+</style>
+
+<div class="sr-wrap">
+
+    <!-- Status Summary -->
+    <div class="sr-status-summary">
+        <div class="sr-status-box completed">
+            <div class="sr-status-count">{{ completed_requirements }}</div>
+            <div class="sr-status-label">Completed</div>
+        </div>
+        <div class="sr-status-box pending">
+            <div class="sr-status-count">{{ pending_requirements }}</div>
+            <div class="sr-status-label">Pending</div>
+        </div>
+    </div>
+
+    <!-- Enrollment Requirements Section -->
+    <div class="sr-section">
+        <div class="sr-section-header">
+            <div class="sr-section-title">
+                <div class="sr-title-icon"><i class="fas fa-file-alt"></i></div>
+                Enrollment Requirements
+            </div>
+            <span class="sr-section-count">{{ total_requirements }} item{{ total_requirements|pluralize }}</span>
+        </div>
+
+        <div class="sr-list">
+            <!-- Birth Certificate -->
+            <div class="sr-card">
+                <div class="sr-card-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="sr-card-info">
+                    <h4>Birth Certificate</h4>
+                    <p>PSA-authenticated or Barangay-certified birth certificate</p>
+                    {% if profile and profile.birth_certificate %}
+                    <div class="sr-card-meta">
+                        {% if profile.documents_uploaded_at %}
+                        <span><i class="fas fa-calendar"></i> Submitted: {{ profile.documents_uploaded_at|date:"F d, Y" }}</span>
+                        {% endif %}
+                        {% if profile.bc_status == 'completed' %}
+                        <span class="meta-verified"><i class="fas fa-check-circle"></i> Verified by Admin</span>
+                        {% else %}
+                        <span class="meta-waiting"><i class="fas fa-clock"></i> Awaiting Verification</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ profile.birth_certificate.url }}" target="_blank" class="sr-view-link">
+                        <i class="fas fa-eye"></i> View Submitted File
+                    </a>
+                    {% else %}
+                    <div class="sr-card-meta">
+                        <span class="meta-missing"><i class="fas fa-exclamation-circle"></i> Not yet submitted</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if profile and profile.bc_status == 'completed' %}
+                    <span class="sr-status-badge completed"><i class="fas fa-check-circle"></i> Completed</span>
+                    {% elif profile and profile.birth_certificate %}
+                    <span class="sr-status-badge pending"><i class="fas fa-clock"></i> Pending Verification</span>
+                    {% else %}
+                    <span class="sr-status-badge not-submitted"><i class="fas fa-times-circle"></i> Not Submitted</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Valid ID -->
+            <div class="sr-card">
+                <div class="sr-card-icon">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div class="sr-card-info">
+                    <h4>Valid ID</h4>
+                    <p>School ID, Government ID, or Barangay ID</p>
+                    {% if profile and profile.valid_id %}
+                    <div class="sr-card-meta">
+                        {% if profile.documents_uploaded_at %}
+                        <span><i class="fas fa-calendar"></i> Submitted: {{ profile.documents_uploaded_at|date:"F d, Y" }}</span>
+                        {% endif %}
+                        {% if profile.vid_status == 'completed' %}
+                        <span class="meta-verified"><i class="fas fa-check-circle"></i> Verified by Admin</span>
+                        {% else %}
+                        <span class="meta-waiting"><i class="fas fa-clock"></i> Awaiting Verification</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ profile.valid_id.url }}" target="_blank" class="sr-view-link">
+                        <i class="fas fa-eye"></i> View Submitted File
+                    </a>
+                    {% else %}
+                    <div class="sr-card-meta">
+                        <span class="meta-missing"><i class="fas fa-exclamation-circle"></i> Not yet submitted</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if profile and profile.vid_status == 'completed' %}
+                    <span class="sr-status-badge completed"><i class="fas fa-check-circle"></i> Completed</span>
+                    {% elif profile and profile.valid_id %}
+                    <span class="sr-status-badge pending"><i class="fas fa-clock"></i> Pending Verification</span>
+                    {% else %}
+                    <span class="sr-status-badge not-submitted"><i class="fas fa-times-circle"></i> Not Submitted</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Note -->
+    <div class="sr-note">
+        <div class="sr-note-icon">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="sr-note-text">
+            <strong>Important Note</strong>
+            Requirements are submitted during registration. If you need to update a document, please contact your ALS
+            coordinator or visit your assigned campus.
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

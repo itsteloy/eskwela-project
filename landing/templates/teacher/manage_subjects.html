@@ -1,0 +1,2149 @@
+{% extends 'teacher/teacher_base.html' %}
+{% load static %}
+
+{% block title %}Manage Subjects | Teacher Eskwela{% endblock %}
+
+{% block page_title %}Manage Subjects{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .ms-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── STAT CARDS ── */
+    .ms-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .ms-stat {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        transition: transform .18s, box-shadow .18s;
+    }
+
+    .ms-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(34, 139, 34, .1);
+    }
+
+    .ms-stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .icon-subjects {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .icon-modules {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .icon-assignments {
+        background: #fef3cd;
+        color: #d97706;
+    }
+
+    .icon-downloads {
+        background: #f3e8ff;
+        color: #7c3aed;
+    }
+
+    .ms-stat-body {
+        flex: 1;
+    }
+
+    .ms-stat-label {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #8a9aa8;
+        margin-bottom: 4px;
+    }
+
+    .ms-stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+    }
+
+    /* ── LAYOUT ── */
+    .ms-layout {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+    }
+
+    /* ── SIDEBAR ── */
+    .ms-sidebar {
+        width: 280px;
+        flex-shrink: 0;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+        position: sticky;
+        top: 20px;
+    }
+
+    .ms-sidebar-head {
+        background: var(--forest-green);
+        color: #ffffff;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .ms-sidebar-head h3 {
+        font-size: .95rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #ffffff;
+    }
+
+    .ms-btn-add {
+        background: var(--emeraldv2);
+        color: #ffffff;
+        border: none;
+        border-radius: 7px;
+        padding: 6px 14px;
+        font-size: .8rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-family: inherit;
+        transition: filter .15s, transform .15s;
+    }
+
+    .ms-btn-add:hover {
+        filter: brightness(.9);
+        transform: translateY(-1px);
+    }
+
+    .ms-subject-list {
+        list-style: none;
+        padding: 8px 0;
+        margin: 0;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .ms-subject-item {
+        border-bottom: 1px solid #f0f5f0;
+    }
+
+    .ms-subject-item:last-child {
+        border-bottom: none;
+    }
+
+    .ms-subject-btn {
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 13px 20px;
+        text-align: left;
+        cursor: pointer;
+        font-size: .88rem;
+        color: #4a6a5a;
+        font-weight: 500;
+        font-family: inherit;
+        transition: background .15s, color .15s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ms-subject-btn:hover {
+        background: #f5fbf5;
+        color: #1b3a2d;
+    }
+
+    .ms-subject-btn.active {
+        background: #e6f7ed;
+        color: var(--forest-green);
+        font-weight: 700;
+    }
+
+    .ms-subject-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: #f0f7f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .82rem;
+        flex-shrink: 0;
+        color: var(--forest-green);
+    }
+
+    .ms-subject-btn.active .ms-subject-icon {
+        background: var(--forest-green);
+        color: #ffffff;
+    }
+
+    .ms-subject-name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ms-subject-badge {
+        font-size: .7rem;
+        background: #f0f7f0;
+        color: #4a6a5a;
+        border-radius: 10px;
+        padding: 2px 8px;
+        flex-shrink: 0;
+        font-weight: 600;
+    }
+
+    .ms-no-subjects {
+        text-align: center;
+        padding: 30px 20px;
+        color: #8a9aa8;
+        font-size: .85rem;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .ms-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* ── SECTION CARDS ── */
+    .ms-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    .ms-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 16px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .ms-section-header h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--forest-green);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+
+    /* ── FILTER BAR ── */
+    .ms-filter-bar {
+        padding: 14px 24px;
+        background: #f8fdf8;
+        border-bottom: 1px solid #eaf2ea;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .ms-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .ms-filter-group label {
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .ms-select {
+        padding: 8px 32px 8px 12px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 8px;
+        font-size: .84rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .ms-select:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .ms-btn-filter {
+        padding: 8px 18px;
+        background: var(--forest-green);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        font-size: .84rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: filter .15s;
+    }
+
+    .ms-btn-filter:hover {
+        filter: brightness(.9);
+    }
+
+    /* ── CARD GRID ── */
+    .ms-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+        padding: 20px 24px;
+    }
+
+    .ms-card {
+        border: 1.5px solid #eaf2ea;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: box-shadow .2s, transform .2s;
+        background: #fafdfa;
+    }
+
+    .ms-card:hover {
+        box-shadow: 0 6px 20px rgba(34, 139, 34, .1);
+        transform: translateY(-2px);
+    }
+
+    .ms-card.inactive {
+        opacity: .55;
+    }
+
+    .ms-card-cover {
+        height: 110px;
+        background: linear-gradient(135deg, var(--forest-green), #1a5c1a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ms-card-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .ms-card-cover i {
+        font-size: 2.5rem;
+        color: rgba(255, 255, 255, .3);
+    }
+
+    .ms-card-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: .68rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 10px;
+    }
+
+    .status-active {
+        background: var(--emerald);
+        color: #fff;
+    }
+
+    .status-inactive {
+        background: #8a9aa8;
+        color: #fff;
+    }
+
+    .ms-card-body {
+        padding: 14px 16px;
+    }
+
+    .ms-card-title {
+        font-weight: 700;
+        font-size: .9rem;
+        color: #1b3a2d;
+        margin-bottom: 8px;
+    }
+
+    .ms-card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .ms-tag {
+        font-size: .7rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .tag-grade {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .tag-subject {
+        background: #f0f7f0;
+        color: #4a6a5a;
+    }
+
+    .tag-quarter {
+        background: #fef3cd;
+        color: #92400e;
+    }
+
+    .ms-card-meta {
+        display: flex;
+        gap: 12px;
+        font-size: .75rem;
+        color: #8a9aa8;
+        margin-bottom: 12px;
+    }
+
+    .ms-card-meta span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .ms-card-actions {
+        display: flex;
+        gap: 5px;
+        border-top: 1px solid #eaf2ea;
+        padding-top: 10px;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border-radius: 7px;
+        font-size: .75rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        flex: 1;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .12);
+    }
+
+    .act-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .act-view {
+        background: #4a6fa5;
+        color: #ffffff;
+    }
+
+    .act-download {
+        background: #0891b2;
+        color: #ffffff;
+    }
+
+    .act-edit {
+        background: #d97706;
+        color: #ffffff;
+    }
+
+    .act-toggle {
+        background: #6d28d9;
+        color: #ffffff;
+    }
+
+    .act-delete {
+        background: #c0392b;
+        color: #ffffff;
+    }
+
+    /* ── ASSIGNMENT LIST ── */
+    .ms-assignment-list {
+        padding: 16px 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .ms-assignment-card {
+        border: 1.5px solid #eaf2ea;
+        border-radius: 12px;
+        padding: 18px 20px;
+        background: #fafdfa;
+        transition: box-shadow .2s;
+        position: relative;
+    }
+
+    .ms-assignment-card:hover {
+        box-shadow: 0 4px 16px rgba(34, 139, 34, .08);
+    }
+
+    .ms-assignment-card.inactive {
+        opacity: .55;
+    }
+
+    .ms-assignment-status {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+    }
+
+    .ms-assignment-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin-bottom: 4px;
+        padding-right: 80px;
+    }
+
+    .ms-assignment-grade {
+        font-size: .8rem;
+        color: #8a9aa8;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .ms-assignment-desc {
+        font-size: .85rem;
+        color: #6b7c7a;
+        margin-bottom: 12px;
+        line-height: 1.5;
+    }
+
+    .ms-assignment-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        font-size: .8rem;
+        color: #6b7c7a;
+        margin-bottom: 12px;
+    }
+
+    .ms-assignment-meta span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .past-due {
+        color: #c0392b;
+        font-weight: 600;
+    }
+
+    .ms-assignment-stats {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+
+    .ms-stat-mini {
+        text-align: center;
+        background: #f0f7f0;
+        border-radius: 8px;
+        padding: 8px 16px;
+    }
+
+    .ms-stat-mini-val {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--forest-green);
+    }
+
+    .ms-stat-mini-lbl {
+        font-size: .65rem;
+        color: #8a9aa8;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .ms-assignment-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #eaf2ea;
+        padding-top: 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .ms-btn-submissions {
+        background: var(--forest-green);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 7px 16px;
+        font-size: .82rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: filter .15s;
+    }
+
+    .ms-btn-submissions:hover {
+        filter: brightness(.9);
+    }
+
+    .ms-assignment-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    /* ── SUBMISSIONS TAB ── */
+    .ms-submissions-selector {
+        padding: 16px 24px;
+        background: #f8fdf8;
+        border-bottom: 1px solid #eaf2ea;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .ms-submissions-selector label {
+        font-size: .85rem;
+        font-weight: 600;
+        color: #4a6a5a;
+        white-space: nowrap;
+    }
+
+    .ms-submissions-selector select {
+        flex: 1;
+        min-width: 220px;
+    }
+
+    .ms-submission-banner {
+        padding: 16px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        display: none;
+    }
+
+    .ms-submission-banner.visible {
+        display: block;
+    }
+
+    .ms-submission-banner h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--forest-green);
+        margin: 0 0 4px;
+    }
+
+    .ms-submission-banner p {
+        font-size: .83rem;
+        color: #6b7c7a;
+        margin: 0 0 10px;
+    }
+
+    .ms-banner-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        font-size: .8rem;
+        color: #6b7c7a;
+    }
+
+    .ms-banner-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .ms-submission-stats {
+        padding: 14px 24px;
+        background: #f8fdf8;
+        border-bottom: 1px solid #eaf2ea;
+        display: none;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .ms-submission-stats.visible {
+        display: flex;
+    }
+
+    .ms-sub-stat {
+        flex: 1;
+        min-width: 80px;
+        text-align: center;
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px 14px;
+        border: 1.5px solid #eaf2ea;
+    }
+
+    .ms-sub-stat-val {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--forest-green);
+    }
+
+    .ms-sub-stat-lbl {
+        font-size: .68rem;
+        color: #8a9aa8;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    /* ── SUBMISSIONS TABLE ── */
+    .ms-table-scroll {
+        overflow-x: auto;
+        display: none;
+    }
+
+    .ms-table-scroll.visible {
+        display: block;
+    }
+
+    .ms-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .875rem;
+        min-width: 650px;
+    }
+
+    .ms-table thead th {
+        background: #f0f7f0;
+        padding: 12px 14px;
+        text-align: left;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #4a6a5a;
+        border-bottom: 2px solid #dceadc;
+        white-space: nowrap;
+    }
+
+    .ms-table tbody tr {
+        border-bottom: 1px solid #f0f5f0;
+        transition: background .15s;
+    }
+
+    .ms-table tbody tr:hover {
+        background: #f5fbf5;
+    }
+
+    .ms-table tbody td {
+        padding: 13px 14px;
+        color: #2d3f36;
+        vertical-align: top;
+    }
+
+    .ms-student-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .ms-student-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--forest-green);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: .85rem;
+        flex-shrink: 0;
+    }
+
+    .ms-student-name {
+        font-weight: 600;
+        color: #1b3a2d;
+        font-size: .88rem;
+    }
+
+    .ms-student-email {
+        font-size: .75rem;
+        color: #8a9aa8;
+    }
+
+    .ms-grade-badge {
+        background: #e6f7ed;
+        color: #1a7a3f;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: .85rem;
+    }
+
+    .ms-grade-form-wrap {
+        margin-top: 12px;
+        padding: 14px;
+        background: #f8fdf8;
+        border-radius: 8px;
+        border: 1.5px solid #eaf2ea;
+        display: none;
+    }
+
+    .ms-grade-form-wrap textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 6px;
+        font-size: .83rem;
+        font-family: inherit;
+        resize: vertical;
+        margin-bottom: 10px;
+    }
+
+    .ms-grade-form-wrap textarea:focus {
+        outline: none;
+        border-color: var(--emerald);
+    }
+
+    .ms-grade-input-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .ms-grade-input-row input[type="number"] {
+        width: 90px;
+        padding: 7px 10px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 6px;
+        font-size: .88rem;
+        text-align: center;
+    }
+
+    .ms-grade-input-row input[type="number"]:focus {
+        outline: none;
+        border-color: var(--emerald);
+    }
+
+    .ms-grade-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-save-grade {
+        background: var(--emerald);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 7px 16px;
+        font-size: .82rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+    }
+
+    .btn-cancel-grade {
+        background: #e5e7eb;
+        color: #374151;
+        border: none;
+        border-radius: 6px;
+        padding: 7px 14px;
+        font-size: .82rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+    }
+
+    .ms-submissions-empty {
+        text-align: center;
+        padding: 50px 20px;
+        color: #8a9aa8;
+        display: none;
+    }
+
+    .ms-submissions-empty.visible {
+        display: block;
+    }
+
+            .ms-submissions-prompt {
+        text-align: center;
+        padding: 50px 20px;
+        color: #8a9aa8;
+    }
+
+    /* ── TAB BUTTONS ── */
+    .subject-tab-btn {
+        flex: 1;
+        background: none;
+        color: #8a9aa8;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        font-size: .85rem;
+        transition: background .15s, color .15s;
+    }
+    .subject-tab-btn:hover {
+        background: #ace8ac;
+        color: #4a6a5a;
+    }
+
+    .subject-tab-btn.active {
+        background: var(--forest-green);
+        color: #fff;
+    }
+
+    .subject-tab-btn span {
+        font-size: .7rem;
+        padding: 2px 7px;
+        border-radius: 8px;
+    }
+
+    .subject-tab-btn.active span {
+        background: rgba(255, 255, 255, .2);
+    }
+
+    .subject-tab-btn:not(.active) span {
+        background: #f0f5f0;
+    }
+
+    .ms-empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: #8a9aa8;
+    }
+
+    .ms-empty i {
+        font-size: 2.5rem;
+        color: #c8dfc8;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    /* ── MODAL ── */
+    .ms-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 40, 30, .55);
+        backdrop-filter: blur(4px);
+        z-index: 9000;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .ms-modal.open {
+        display: flex;
+    }
+
+    .ms-modal-box {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .22);
+        width: 100%;
+        max-width: 560px;
+        overflow: hidden;
+        animation: modalIn .22s ease;
+    }
+
+    @keyframes modalIn {
+        from {
+            opacity: 0;
+            transform: scale(.95) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .ms-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        color: #ffffff;
+    }
+
+    .head-create {
+        background: var(--forest-green);
+    }
+
+    .head-edit {
+        background: #d97706;
+    }
+
+    .ms-modal-head h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+    }
+
+    .ms-modal-close {
+        background: rgba(255, 255, 255, .15);
+        border: none;
+        color: #ffffff;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .15s;
+    }
+
+    .ms-modal-close:hover {
+        background: rgba(255, 255, 255, .28);
+    }
+
+    .ms-modal-body {
+        padding: 24px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .ms-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .ms-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .ms-form-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .ms-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .ms-input:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .ms-select-modal {
+        padding: 10px 36px 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .ms-select-modal:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    textarea.ms-input {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .ms-hint {
+        font-size: .75rem;
+        color: #8a9aa8;
+    }
+
+    .ms-modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .btn-save {
+        background: var(--emerald);
+        color: #fff;
+    }
+
+    .btn-save:hover {
+        background: var(--forest-green);
+        filter: none;
+    }
+
+    .btn-cancel {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-cancel:hover {
+        background: #d1d5db;
+        filter: none;
+    }
+
+    .ms-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 22px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s, transform .15s;
+    }
+
+    .ms-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+        .ms-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 900px) {
+        .ms-layout {
+            flex-direction: column;
+        }
+
+        .ms-sidebar {
+            width: 100%;
+            position: static;
+        }
+
+        .ms-stats {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .ms-card-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ms-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ms-assignment-footer {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="ms-wrap">
+
+    <!-- ══ STAT CARDS ══ -->
+    <div class="ms-stats">
+        <div class="ms-stat">
+            <div class="ms-stat-icon icon-subjects"><i class="fas fa-layer-group"></i></div>
+            <div class="ms-stat-body">
+                <div class="ms-stat-label">Total Subjects</div>
+                <div class="ms-stat-value">{{ subjects|length }}</div>
+            </div>
+        </div>
+        <div class="ms-stat">
+            <div class="ms-stat-icon icon-modules"><i class="fas fa-book-open"></i></div>
+            <div class="ms-stat-body">
+                <div class="ms-stat-label">Total Modules</div>
+                <div class="ms-stat-value">{{ total_modules }}</div>
+            </div>
+        </div>
+        <div class="ms-stat">
+            <div class="ms-stat-icon icon-assignments"><i class="fas fa-tasks"></i></div>
+            <div class="ms-stat-body">
+                <div class="ms-stat-label">Assignments</div>
+                <div class="ms-stat-value">{{ total_assignments }}</div>
+            </div>
+        </div>
+        <div class="ms-stat">
+            <div class="ms-stat-icon icon-downloads"><i class="fas fa-download"></i></div>
+            <div class="ms-stat-body">
+                <div class="ms-stat-label">Downloads</div>
+                <div class="ms-stat-value">{{ total_downloads }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MAIN LAYOUT ══ -->
+    <div class="ms-layout">
+
+        <!-- SIDEBAR -->
+        <div class="ms-sidebar">
+            <div class="ms-sidebar-head">
+                <h3><i class="fas fa-layer-group"></i> Subjects</h3>
+                <button class="ms-btn-add" onclick="openModal('addSubjectModal')">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+            </div>
+
+            {% if subjects %}
+            <ul class="ms-subject-list">
+                {% for subject in subjects %}
+                <li class="ms-subject-item">
+                    <button
+                        class="ms-subject-btn {% if subject.value == active_subject or forloop.first and not active_subject %}active{% endif %}"
+                        onclick="selectSubject('{{ subject.value }}', this)" data-subject="{{ subject.value }}">
+                        <span class="ms-subject-icon"><i class="fas fa-book"></i></span>
+                        <span class="ms-subject-name">{{ subject.label }}</span>
+                        <span class="ms-subject-badge">{{ subject.module_count|default:0 }}M / {{ subject.assignment_count|default:0 }}A</span>
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="ms-no-subjects">
+                <i class="fas fa-layer-group" style="font-size:2rem;margin-bottom:8px;display:block;color:#c8dfc8;"></i>
+                No subjects yet.<br>Click <strong>Add</strong> to create one.
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="ms-content">
+            {% if subjects %}
+
+            <!-- Subject Header -->
+            <div class="ms-section" style="background: var(--forest-green); color: #fff; margin-bottom: 20px;">
+                <div
+                    style="padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <h2 style="font-size: 1.3rem; font-weight: 700; margin: 0 0 4px; color: #fff;"
+                            id="activeSubjectName">
+                            {% for subject in subjects %}{% if subject.value == active_subject or forloop.first and not active_subject %}{{ subject.label }}{% endif %}{% endfor %}
+                        </h2>
+                        <p style="margin: 0; color: rgba(255,255,255,.75); font-size: .85rem;" id="activeSubjectMeta">
+                            <i class="fas fa-cubes"></i>
+                            {% for subject in subjects %}{% if subject.value == active_subject or forloop.first and not active_subject %}{{ subject.module_count|default:0 }}{% endif %}{% endfor %}
+                            modules · <i class="fas fa-tasks"></i>
+                            {% for subject in subjects %}{% if subject.value == active_subject or forloop.first and not active_subject %}{{ subject.assignment_count|default:0 }}{% endif %}{% endfor %}
+                            assignments
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="ms-btn"
+                            style="background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.3);"
+                            onclick="openModal('uploadModuleModal')">
+                            <i class="fas fa-upload"></i> Upload Module
+                        </button>
+                        <button class="ms-btn" style="background: var(--emeraldv2); color: #fff;"
+                            onclick="openModal('createAssignmentModal')">
+                            <i class="fas fa-plus"></i> New Assignment
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div
+                style="display: flex; background: #fff; border-radius: 12px; padding: 6px; box-shadow: 0 1px 4px rgba(34,139,34,.06); border: 1px solid #eaf2ea; margin-bottom: 20px; gap: 4px;">
+                <button class="subject-tab-btn active" id="tabBtnModules" onclick="switchTab('modules')">
+                    <i class="fas fa-book-open"></i> Modules
+                    <span>
+                        {% for subject in subjects %}{% if subject.value == active_subject or forloop.first and not active_subject %}{{ subject.module_count|default:0 }}{% endif %}{% endfor %}
+                    </span>
+                </button>
+                <button class="subject-tab-btn" id="tabBtnAssignments" onclick="switchTab('assignments')">
+                    <i class="fas fa-tasks"></i> Assignments
+                    <span>
+                        {% for subject in subjects %}{% if subject.value == active_subject or forloop.first and not active_subject %}{{ subject.assignment_count|default:0 }}{% endif %}{% endfor %}
+                    </span>
+                </button>
+                <button class="subject-tab-btn" id="tabBtnSubmissions" onclick="switchTab('submissions')">
+                    <i class="fas fa-inbox"></i> Submissions
+                </button>
+            </div>
+
+            <!-- Modules Tab -->
+            <div class="tab-panel active" id="tabModules">
+                <div class="ms-section">
+                    <div class="ms-section-header">
+                        <h3><i class="fas fa-book-open"></i> Learning Modules</h3>
+                    </div>
+
+                    <div class="ms-filter-bar">
+                        <div class="ms-filter-group">
+                            <label>Grade</label>
+                            <select name="grade_level" class="ms-select">
+                                <option value="all">All Grades</option>
+                                {% for grade in grade_levels %}<option value="{{ grade }}" {% if current_filter.grade == grade %}selected{% endif %}>{{ grade }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div class="ms-filter-group">
+                            <label>Quarter</label>
+                            <select name="quarter" class="ms-select">
+                                <option value="all">All Quarters</option>
+                                {% for quarter in quarters %}<option value="{{ quarter }}" {% if current_filter.quarter == quarter %}selected{% endif %}>{{ quarter }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div class="ms-filter-group">
+                            <label>Status</label>
+                            <select name="status" class="ms-select">
+                                <option value="all">All</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="ms-btn-filter">
+                            <i class="fas fa-search"></i> Filter
+                        </button>
+                    </div>
+
+                    {% if modules %}
+                    <div class="ms-card-grid">
+                        {% for module in modules %}
+                        <div class="ms-card {% if not module.is_active %}inactive{% endif %}">
+                            <div class="ms-card-cover">
+                                {% if module.thumbnail %}<img src="{{ module.thumbnail.url }}"
+                                    alt="{{ module.title }}">{% else %}<i class="fas fa-file-pdf"></i>{% endif %}
+                                <span
+                                    class="ms-card-status {% if module.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                    {% if module.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </div>
+                            <div class="ms-card-body">
+                                <div class="ms-card-title">{{ module.title|truncatechars:40 }}</div>
+                                <div class="ms-card-tags">
+                                    <span class="ms-tag tag-grade">{{ module.grade_level }}</span>
+                                    <span class="ms-tag tag-quarter">{{ module.quarter }}</span>
+                                </div>
+                                <div class="ms-card-meta">
+                                    <span><i class="fas fa-download"></i> {{ module.download_count }}</span>
+                                    <span><i class="far fa-calendar"></i> {{ module.created_at|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="ms-card-actions">
+                                    <a href="{% url 'teacher_view_module' module.id %}" class="act-btn act-view"
+                                        target="_blank" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'download_module' module.id %}" class="act-btn act-download"
+                                        title="Download">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    <button class="act-btn act-edit" onclick="editModule('{{ module.id }}')"
+                                        title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <form method="POST" action="{% url 'toggle_module' module.id %}"
+                                        style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="act-btn act-toggle" title="Toggle">
+                                            <i
+                                                class="fas {% if module.is_active %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{% url 'delete_module' module.id %}"
+                                        style="display:inline;"
+                                        onsubmit="return confirm('Delete this module? This cannot be undone.');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="act-btn act-delete" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="ms-empty">
+                        <i class="fas fa-book-open"></i>
+                        <p>No modules uploaded for this subject yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Assignments Tab -->
+            <div class="tab-panel" id="tabAssignments" style="display: none;">
+                <div class="ms-section">
+                    <div class="ms-section-header">
+                        <h3><i class="fas fa-tasks"></i> Assignments</h3>
+                    </div>
+
+                    {% if assignments %}
+                    <div class="ms-assignment-list">
+                        {% for assignment in assignments %}
+                        <div class="ms-assignment-card {% if not assignment.is_active %}inactive{% endif %}">
+                            <span
+                                class="ms-assignment-status ms-card-status {% if assignment.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                {% if assignment.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                            <div class="ms-assignment-title">{{ assignment.title }}</div>
+                            <div class="ms-assignment-grade"><i class="fas fa-graduation-cap"></i> {{ assignment.grade_level }}</div>
+                            <div class="ms-assignment-desc">{{ assignment.description|truncatechars:150 }}</div>
+                            <div class="ms-assignment-meta">
+                                <span class="{% if assignment.is_past_due %}past-due{% endif %}">
+                                    <i class="far fa-clock"></i> Due: {{ assignment.due_date|date:"M d, Y h:i A" }}
+                                </span>
+                                <span><i class="fas fa-star"></i> {{ assignment.total_points }} pts</span>
+                                {% if assignment.attachment %}
+                                <span>
+                                    <a href="{{ assignment.attachment.url }}" target="_blank" style="color:#1a7a3f;text-decoration:underline;">
+                                        <i class="fas fa-paperclip"></i> View File
+                                    </a>
+                                </span>
+                                {% endif %}
+                            </div>
+                            <div class="ms-assignment-stats">
+                                <div class="ms-stat-mini">
+                                    <div class="ms-stat-mini-val">{{ assignment.submission_count|default:0 }}</div>
+                                    <div class="ms-stat-mini-lbl">Submitted</div>
+                                </div>
+                                <div class="ms-stat-mini">
+                                    <div class="ms-stat-mini-val">{{ assignment.graded_count|default:0 }}</div>
+                                    <div class="ms-stat-mini-lbl">Graded</div>
+                                </div>
+                                <div class="ms-stat-mini">
+                                    <div class="ms-stat-mini-val">{{ assignment.pending_count|default:0 }}</div>
+                                    <div class="ms-stat-mini-lbl">Pending</div>
+                                </div>
+                            </div>
+                            <div class="ms-assignment-footer">
+                                <button class="ms-btn-submissions" onclick="switchToSubmissions('{{ assignment.id }}')">
+                                    <i class="fas fa-inbox"></i> View Submissions
+                                </button>
+                                <div class="ms-assignment-actions">
+                                    <button class="act-btn act-edit" onclick="editAssignment('{{ assignment.id }}')"
+                                        title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <form method="POST" action="{% url 'toggle_assignment' assignment.id %}"
+                                        style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="act-btn act-toggle" title="Toggle">
+                                            <i
+                                                class="fas {% if assignment.is_active %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{% url 'delete_assignment' assignment.id %}"
+                                        style="display:inline;" onsubmit="return confirm('Delete this assignment?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="act-btn act-delete" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="ms-empty">
+                        <i class="fas fa-tasks"></i>
+                        <p>No assignments created for this subject yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Submissions Tab -->
+            <div class="tab-panel" id="tabSubmissions" style="display: none;">
+                <div class="ms-section">
+                    <div class="ms-section-header">
+                        <h3><i class="fas fa-inbox"></i> Student Submissions</h3>
+                    </div>
+
+                    <div class="ms-submissions-selector">
+                        <label><i class="fas fa-tasks"></i> Select Assignment:</label>
+                        <select id="submissionAssignmentSelect" onchange="loadSubmissions(this.value)"
+                            class="ms-select">
+                            <option value="">— Choose an assignment —</option>
+                            {% for assignment in assignments %}
+                            <option value="{{ assignment.id }}">{{ assignment.title }} — {{ assignment.grade_level }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="ms-submission-banner" id="submissionBanner">
+                        <h4 id="bannerTitle"></h4>
+                        <p id="bannerDescription"></p>
+                        <div class="ms-banner-meta">
+                            <span id="bannerSubject"></span>
+                            <span id="bannerGrade"></span>
+                            <span id="bannerPoints"></span>
+                            <span id="bannerDue"></span>
+                        </div>
+                    </div>
+
+                    <div class="ms-submission-stats" id="submissionStatsStrip">
+                        <div class="ms-sub-stat">
+                            <div class="ms-sub-stat-val" id="statTotal">0</div>
+                            <div class="ms-sub-stat-lbl">Total</div>
+                        </div>
+                        <div class="ms-sub-stat">
+                            <div class="ms-sub-stat-val" id="statGraded">0</div>
+                            <div class="ms-sub-stat-lbl">Graded</div>
+                        </div>
+                        <div class="ms-sub-stat">
+                            <div class="ms-sub-stat-val" id="statPending">0</div>
+                            <div class="ms-sub-stat-lbl">Pending</div>
+                        </div>
+                        <div class="ms-sub-stat">
+                            <div class="ms-sub-stat-val" id="statLate">0</div>
+                            <div class="ms-sub-stat-lbl">Late</div>
+                        </div>
+                    </div>
+
+                    <div class="ms-table-scroll" id="submissionsTableWrap">
+                        <table class="ms-table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th>Grade</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="submissionsTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="ms-submissions-empty" id="submissionsEmpty">
+                        <i class="fas fa-inbox"></i>
+                        <p>No submissions yet for this assignment.</p>
+                    </div>
+
+                    <div class="ms-submissions-prompt" id="submissionsPrompt">
+                        <i class="fas fa-hand-pointer"></i>
+                        <p>Select an assignment above to view student submissions.</p>
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="ms-empty" style="padding: 80px 20px;">
+                <i class="fas fa-layer-group"></i>
+                <h3 style="color: #4a6a5a; margin-bottom: 8px;">No Subjects Yet</h3>
+                <p>Create your first subject to start managing modules and assignments.</p>
+                <button class="ms-btn btn-save" style="margin-top: 16px;" onclick="openModal('addSubjectModal')">
+                    <i class="fas fa-plus"></i> Add Your First Subject
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- MODALS (same as original but with new classes) -->
+<!-- Add Subject Modal -->
+<div id="addSubjectModal" class="ms-modal">
+    <div class="ms-modal-box">
+        <div class="ms-modal-head head-create">
+            <h3><i class="fas fa-plus-circle"></i> Add Subject</h3>
+            <button class="ms-modal-close" onclick="closeModal('addSubjectModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <form method="POST" action="{% url 'manage_subjects' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_subject">
+                <div class="ms-form-group">
+                    <label>Subject Name *</label>
+                    <select name="subject_name" class="ms-select-modal" required>
+                        <option value="">Select a subject</option>
+                        {% for value, label in all_subject_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ms-form-group">
+                    <label>Grade Level *</label>
+                    <select name="grade_level" class="ms-select-modal" required>
+                        <option value="">Select grade level</option>
+                        {% for grade in grade_levels %}<option value="{{ grade }}">{{ grade }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ms-modal-actions">
+                    <button type="button" class="ms-btn btn-cancel"
+                        onclick="closeModal('addSubjectModal')">Cancel</button>
+                    <button type="submit" class="ms-btn btn-save"><i class="fas fa-check"></i> Create Subject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Module Modal -->
+<div id="uploadModuleModal" class="ms-modal">
+    <div class="ms-modal-box">
+        <div class="ms-modal-head head-create">
+            <h3><i class="fas fa-upload"></i> Upload Module</h3>
+            <button class="ms-modal-close" onclick="closeModal('uploadModuleModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <form method="POST" action="{% url 'upload_module' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="ms-form-group">
+                    <label>Module Title *</label>
+                    <input type="text" name="title" class="ms-input" required placeholder="Enter module title">
+                </div>
+                <div class="ms-form-group">
+                    <label>Description</label>
+                    <textarea name="description" class="ms-input" rows="3"
+                        placeholder="Describe this module..."></textarea>
+                </div>
+                <div class="ms-form-grid">
+                    <div class="ms-form-group">
+                        <label>Subject *</label>
+                        <select name="subject" id="uploadModuleSubject" class="ms-select-modal" required>
+                            <option value="">Select Subject</option>
+                            {% for subject in subjects %}<option value="{{ subject.value }}">{{ subject.label }}
+                            </option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="ms-form-group">
+                        <label>Grade Level *</label>
+                        <select name="grade_level" class="ms-select-modal" required>
+                            <option value="">Select Grade</option>
+                            {% for grade in grade_levels %}<option value="{{ grade }}">{{ grade }}</option>{% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="ms-form-grid">
+                    <div class="ms-form-group">
+                        <label>Quarter *</label>
+                        <select name="quarter" class="ms-select-modal" required>
+                            <option value="">Select Quarter</option>
+                            {% for quarter in quarters %}<option value="{{ quarter }}">{{ quarter }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="ms-form-group">
+                        <label>Cover Image <span class="ms-hint">(optional)</span></label>
+                        <input type="file" name="cover_image" class="ms-input" accept="image/*" style="padding: 8px;">
+                    </div>
+                </div>
+                <div class="ms-form-group">
+                    <label>PDF File *</label>
+                    <input type="file" name="pdf_file" class="ms-input" accept=".pdf" required style="padding: 8px;">
+                    <span class="ms-hint">PDF only — Max 50MB</span>
+                </div>
+                <div class="ms-modal-actions">
+                    <button type="button" class="ms-btn btn-cancel"
+                        onclick="closeModal('uploadModuleModal')">Cancel</button>
+                    <button type="submit" class="ms-btn btn-save"><i class="fas fa-cloud-upload-alt"></i>
+                        Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Module Modal -->
+<div id="editModuleModal" class="ms-modal">
+    <div class="ms-modal-box">
+        <div class="ms-modal-head head-edit">
+            <h3><i class="fas fa-edit"></i> Edit Module</h3>
+            <button class="ms-modal-close" onclick="closeModal('editModuleModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <form method="POST" action="" id="editModuleForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="ms-form-group"><label>Title *</label><input type="text" name="title" id="edit_module_title"
+                        class="ms-input" required></div>
+                <div class="ms-form-group"><label>Description</label><textarea name="description"
+                        id="edit_module_description" class="ms-input" rows="3"></textarea></div>
+                <div class="ms-form-grid">
+                    <div class="ms-form-group"><label>Subject *</label><select name="subject" id="edit_module_subject"
+                            class="ms-select-modal" required>{% for subject in subjects %}<option
+                                value="{{ subject.value }}">{{ subject.label }}</option>{% endfor %}</select></div>
+                    <div class="ms-form-group"><label>Grade Level *</label><select name="grade_level"
+                            id="edit_module_grade" class="ms-select-modal" required>{% for grade in grade_levels %}
+                            <option value="{{ grade }}">{{ grade }}</option>{% endfor %}
+                        </select></div>
+                </div>
+                <div class="ms-form-grid">
+                    <div class="ms-form-group"><label>Quarter *</label><select name="quarter" id="edit_module_quarter"
+                            class="ms-select-modal" required>{% for quarter in quarters %}<option value="{{ quarter }}">
+                                {{ quarter }}</option>{% endfor %}</select></div>
+                    <div class="ms-form-group"><label>New Cover Image</label><input type="file" name="cover_image"
+                            class="ms-input" accept="image/*" style="padding: 8px;"><span class="ms-hint">Leave empty to
+                            keep current</span></div>
+                </div>
+                <div class="ms-form-group"><label>New PDF File</label><input type="file" name="pdf_file"
+                        class="ms-input" accept=".pdf" style="padding: 8px;"><span class="ms-hint">Leave empty to keep
+                        current</span></div>
+                <div class="ms-modal-actions">
+                    <button type="button" class="ms-btn btn-cancel"
+                        onclick="closeModal('editModuleModal')">Cancel</button>
+                    <button type="submit" class="ms-btn btn-save"><i class="fas fa-save"></i> Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Create Assignment Modal -->
+<div id="createAssignmentModal" class="ms-modal">
+    <div class="ms-modal-box">
+        <div class="ms-modal-head head-create">
+            <h3><i class="fas fa-plus"></i> New Assignment</h3>
+            <button class="ms-modal-close" onclick="closeModal('createAssignmentModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <form method="POST" action="{% url 'create_assignment' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="ms-form-group"><label>Title *</label><input type="text" name="title" class="ms-input"
+                        required></div>
+                <div class="ms-form-group"><label>Description *</label><textarea name="description" class="ms-input"
+                        rows="4" required></textarea></div>
+                <div class="ms-form-grid">
+                    <div class="ms-form-group"><label>Subject *</label><select name="subject"
+                            id="createAssignmentSubject" class="ms-select-modal" required>{% for value, label in all_subject_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
+                    </div>
+                    <div class="ms-form-group"><label>Grade Level *</label><select name="grade_level"
+                            class="ms-select-modal" required>{% for grade in grade_levels %}<option value="{{ grade }}">
+                                {{ grade }}</option>{% endfor %}</select></div>
+                </div>
+                <div class="ms-form-grid">
+                    <div class="ms-form-group"><label>Due Date *</label><input type="datetime-local" name="due_date"
+                            class="ms-input" required></div>
+                    <div class="ms-form-group"><label>Total Points</label><input type="number" name="total_points"
+                            class="ms-input" value="100" min="1" max="1000"></div>
+                </div>
+                <div class="ms-form-group">
+                    <label>Attachment File <span class="ms-hint">(optional)</span></label>
+                    <input type="file" name="attachment" class="ms-input" style="padding: 8px;">
+                    <span class="ms-hint">PDF, DOC, DOCX, ZIP — Max 50MB</span>
+                </div>
+                <div class="ms-modal-actions">
+                    <button type="button" class="ms-btn btn-cancel"
+                        onclick="closeModal('createAssignmentModal')">Cancel</button>
+                    <button type="submit" class="ms-btn btn-save"><i class="fas fa-save"></i> Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Assignment Modal -->
+<div id="editAssignmentModal" class="ms-modal">
+    <div class="ms-modal-box">
+        <div class="ms-modal-head head-edit">
+            <h3><i class="fas fa-edit"></i> Edit Assignment</h3>
+            <button class="ms-modal-close" onclick="closeModal('editAssignmentModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <form method="POST" action="" id="editAssignmentForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="ms-form-group"><label>Title *</label><input type="text" name="title" id="edit_asgn_title"
+                        class="ms-input" required></div>
+                <div class="ms-form-group"><label>Description *</label><textarea name="description"
+                        id="edit_asgn_description" class="ms-input" rows="4" required></textarea></div>
+                <div class="ms-form-grid">
+                    <div class="ms-form-group"><label>Subject *</label><select name="subject" id="edit_asgn_subject"
+                            class="ms-select-modal" required>{% for value, label in all_subject_choices %}<option
+                                value="{{ value }}">{{ label }}</option>{% endfor %}</select></div>
+                    <div class="ms-form-group"><label>Grade Level *</label><select name="grade_level"
+                            id="edit_asgn_grade" class="ms-select-modal" required>{% for grade in grade_levels %}<option
+                                value="{{ grade }}">{{ grade }}</option>{% endfor %}</select></div>
+                </div>
+                <div class="ms-form-grid">
+                    <div class="ms-form-group"><label>Due Date *</label><input type="datetime-local" name="due_date"
+                            id="edit_asgn_due_date" class="ms-input" required></div>
+                    <div class="ms-form-group"><label>Total Points</label><input type="number" name="total_points"
+                            id="edit_asgn_points" class="ms-input" min="1" max="1000"></div>
+                </div>
+                <div class="ms-form-group">
+                    <label>Attachment File <span class="ms-hint">(optional)</span></label>
+                    <input type="file" name="attachment" class="ms-input" style="padding: 8px;">
+                    <span class="ms-hint">Leave empty to keep current file</span>
+                </div>
+                <div class="ms-modal-actions">
+                    <button type="button" class="ms-btn btn-cancel"
+                        onclick="closeModal('editAssignmentModal')">Cancel</button>
+                    <button type="submit" class="ms-btn btn-save"><i class="fas fa-save"></i> Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Submission data - populated below
+    const SUBMISSIONS_DATA = {};
+
+    // Note: The following Django template syntax is processed server-side before JavaScript execution
+    // eslint-disable-next-line no-unused-vars
+    {% for assignment in assignments %}
+    SUBMISSIONS_DATA["{{ assignment.id }}"] = {
+        title: "{{ assignment.title|escapejs }}",
+        description: "{{ assignment.description|truncatechars:200|escapejs }}",
+        subject: "{{ assignment.get_subject_display|escapejs }}",
+        grade: "{{ assignment.grade_level|escapejs }}",
+        points: {{ assignment.total_points }},
+    due: "{{ assignment.due_date|date:'M d, Y h:i A' }}",
+        stats: {
+        total: {{ assignment.submission_count|default:0 }},
+        graded: {{ assignment.graded_count|default:0 }},
+        pending: {{ assignment.pending_count|default:0 }},
+        late: {{ assignment.late_count|default:0 }}
+    },
+    submissions: [
+        {% for sub in assignment.submissions_detail %}
+    {
+        id: {{ sub.id }},
+        studentName: "{{ sub.student.user.get_full_name|default:sub.student.user.username|escapejs }}",
+            studentEmail: "{{ sub.student.user.email|escapejs }}",
+                studentInitial: "{{ sub.student.user.first_name|first|default:sub.student.user.username|first|upper }}",
+                    submittedAt: "{{ sub.submitted_at|date:'M d, Y h:i A' }}",
+                        isLate: {% if sub.status == 'late' %} true{% else %} false{% endif %},
+        status: "{{ sub.status }}",
+            statusDisplay: "{{ sub.get_status_display }}",
+                grade: {% if sub.grade is not None %}{{ sub.grade }}{% else %}null{% endif %},
+        feedback: "{{ sub.feedback|escapejs }}",
+            fileUrl: "{% if sub.submission_file %}{{ sub.submission_file.url }}{% endif %}"
+    } {% if not forloop.last %}, {% endif %}
+    {% endfor %}
+        ]
+    };
+    {% endfor %}
+</script>
+
+<script>
+    // ===== STATE =====
+    let activeSubject = '{{ active_subject|default:subjects.0.value|escapejs }}';
+    let activeTab = 'modules';
+
+    // ===== MODAL HELPERS =====
+    function openModal(id) {
+        document.getElementById(id).style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    window.addEventListener('click', function (e) {
+        ['addSubjectModal', 'uploadModuleModal', 'editModuleModal', 'createAssignmentModal', 'editAssignmentModal'].forEach(id => {
+            const modal = document.getElementById(id);
+            if (modal && e.target === modal) closeModal(id);
+        });
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            ['addSubjectModal', 'uploadModuleModal', 'editModuleModal', 'createAssignmentModal', 'editAssignmentModal'].forEach(closeModal);
+        }
+    });
+
+    // ===== SUBJECT SELECTION =====
+    function selectSubject(subjectValue, btn) {
+        activeSubject = subjectValue;
+        document.querySelectorAll('.subject-list-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const url = new URL(window.location.href);
+        url.searchParams.set('subject', subjectValue);
+        url.searchParams.set('tab', activeTab);
+        window.location.href = url.toString();
+    }
+
+    // ===== TAB SWITCHING =====
+    function switchTab(tab) {
+        activeTab = tab;
+        document.querySelectorAll('.tab-panel').forEach(p => {
+            p.classList.remove('active');
+            p.style.display = 'none';
+        });
+        document.querySelectorAll('.subject-tab-btn').forEach(b => b.classList.remove('active'));
+        const panelKey = tab.charAt(0).toUpperCase() + tab.slice(1);
+        const panel = document.getElementById('tab' + panelKey);
+        const btn = document.getElementById('tabBtn' + panelKey);
+        if (panel) {
+            panel.classList.add('active');
+            panel.style.display = '';
+        }
+        if (btn) btn.classList.add('active');
+    }
+
+    // Restore tab from URL on page load
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab && ['modules', 'assignments', 'submissions'].includes(tab)) {
+            switchTab(tab);
+        }
+        // Auto-load assignment in submissions tab if specified in URL
+        const asgnParam = params.get('assignment');
+        if (asgnParam) {
+            switchTab('submissions');
+            loadSubmissions(asgnParam);
+        }
+    })();
+
+    // ===== "View Submissions" shortcut from Assignments tab =====
+    function switchToSubmissions(assignmentId) {
+        switchTab('submissions');
+        loadSubmissions(assignmentId);
+        // Scroll to submissions tab
+        document.getElementById('tabSubmissions')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ===== MODAL OPENERS =====
+    function openAddSubjectModal() { openModal('addSubjectModal'); }
+
+    function openUploadModuleModal() {
+        const sel = document.getElementById('uploadModuleSubject');
+        if (sel && activeSubject) sel.value = activeSubject;
+        openModal('uploadModuleModal');
+    }
+
+    function openCreateAssignmentModal() {
+        const sel = document.getElementById('createAssignmentSubject');
+        if (sel && activeSubject) sel.value = activeSubject;
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        document.getElementById('newDueDate').min =
+            `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        openModal('createAssignmentModal');
+    }
+
+    // ===== EDIT MODULE =====
+    function editModule(moduleId) {
+        fetch(`/teacher/modules/edit/${moduleId}/`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('edit_module_title').value = data.title;
+                document.getElementById('edit_module_description').value = data.description;
+                document.getElementById('edit_module_subject').value = data.subject;
+                document.getElementById('edit_module_grade').value = data.grade_level;
+                document.getElementById('edit_module_quarter').value = data.quarter;
+                document.getElementById('editModuleForm').action = `/teacher/modules/edit/${moduleId}/`;
+                openModal('editModuleModal');
+            });
+    }
+
+    // ===== EDIT ASSIGNMENT =====
+    function editAssignment(assignmentId) {
+        fetch(`/teacher/assignments/edit/${assignmentId}/`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('edit_asgn_title').value = data.title;
+                document.getElementById('edit_asgn_description').value = data.description;
+                document.getElementById('edit_asgn_subject').value = data.subject;
+                document.getElementById('edit_asgn_grade').value = data.grade_level;
+                document.getElementById('edit_asgn_due_date').value = data.due_date;
+                document.getElementById('edit_asgn_points').value = data.total_points;
+                document.getElementById('editAssignmentForm').action = `/teacher/assignments/edit/${assignmentId}/`;
+                openModal('editAssignmentModal');
+            });
+    }
+
+    // ===== SUBMISSIONS TAB LOGIC =====
+    function loadSubmissions(assignmentId) {
+        // Sync the dropdown
+        const sel = document.getElementById('submissionAssignmentSelect');
+        if (sel) sel.value = assignmentId || '';
+
+        const banner = document.getElementById('submissionBanner');
+        const statsStrip = document.getElementById('submissionStatsStrip');
+        const tableWrap = document.getElementById('submissionsTableWrap');
+        const emptyMsg = document.getElementById('submissionsEmpty');
+        const prompt = document.getElementById('submissionsPrompt');
+
+        // Reset all
+        banner.classList.remove('visible');
+        statsStrip.classList.remove('visible');
+        tableWrap.classList.remove('visible');
+        emptyMsg.classList.remove('visible');
+        prompt.style.display = '';
+
+        if (!assignmentId || !SUBMISSIONS_DATA[assignmentId]) return;
+
+        prompt.style.display = 'none';
+
+        const asgn = SUBMISSIONS_DATA[assignmentId];
+
+        // --- Banner ---
+        document.getElementById('bannerTitle').textContent = asgn.title;
+        document.getElementById('bannerDescription').textContent = asgn.description;
+        document.getElementById('bannerSubject').innerHTML = `<i class="fas fa-book"></i> ${asgn.subject}`;
+        document.getElementById('bannerGrade').innerHTML = `<i class="fas fa-graduation-cap"></i> ${asgn.grade}`;
+        document.getElementById('bannerPoints').innerHTML = `<i class="fas fa-star"></i> ${asgn.points} points`;
+        document.getElementById('bannerDue').innerHTML = `<i class="far fa-clock"></i> Due: ${asgn.due}`;
+        banner.classList.add('visible');
+
+        // --- Stats ---
+        document.getElementById('statTotal').textContent = asgn.stats.total;
+        document.getElementById('statGraded').textContent = asgn.stats.graded;
+        document.getElementById('statPending').textContent = asgn.stats.pending;
+        document.getElementById('statLate').textContent = asgn.stats.late;
+        statsStrip.classList.add('visible');
+
+        // --- Table rows ---
+        const tbody = document.getElementById('submissionsTableBody');
+        tbody.innerHTML = '';
+
+        if (!asgn.submissions || asgn.submissions.length === 0) {
+            emptyMsg.classList.add('visible');
+            return;
+        }
+
+        tableWrap.classList.add('visible');
+
+        asgn.submissions.forEach(sub => {
+            const gradeHtml = sub.grade !== null
+                ? `<span class="grade-badge">${sub.grade}/${asgn.points}</span>`
+                : `<span style="color:#999;">—</span>`;
+
+            const fileBtn = sub.fileUrl
+                ? `<a href="${sub.fileUrl}" class="btn-view-file" target="_blank"><i class="fas fa-eye"></i> View</a>`
+                : '';
+
+            const lateNote = sub.isLate ? `<br><small style="color:#fd7e14;">(Late)</small>` : '';
+            const statusCls = 'status-' + sub.status;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <div class="student-cell">
+                        <div class="student-avatar">${sub.studentInitial}</div>
+                        <div>
+                            <div class="student-name">${sub.studentName}</div>
+                            <div class="student-email">${sub.studentEmail}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${sub.submittedAt}${lateNote}</td>
+                <td><span class="status-badge ${statusCls}">${sub.statusDisplay}</span></td>
+                <td>${gradeHtml}</td>
+                <td>
+                    <div class="tbl-action-row">
+                        ${fileBtn}
+                        <button class="btn-grade-open" onclick="toggleGradeForm(${sub.id})">
+                            <i class="fas fa-star"></i> Grade
+                        </button>
+                    </div>
+                    <div id="gradeForm_${sub.id}" class="grade-form-wrap" style="display:none;">
+                        <form method="POST" action="/teacher/assignments/grade/${sub.id}/">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${getCsrf()}">
+                            <textarea name="feedback" rows="3" placeholder="Feedback for student...">${sub.feedback || ''}</textarea>
+                            <div class="grade-input-row">
+                                <input type="number" name="grade" min="0" max="${asgn.points}"
+                                    value="${sub.grade !== null ? sub.grade : ''}"
+                                    placeholder="Score" required>
+                                <span class="divider">/ ${asgn.points} pts</span>
+                            </div>
+                            <div class="grade-form-actions">
+                                <button type="submit" class="btn-save-grade"><i class="fas fa-save"></i> Save Grade</button>
+                                <button type="button" class="btn-cancel-grade" onclick="toggleGradeForm(${sub.id})"><i class="fas fa-times"></i> Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function toggleGradeForm(submissionId) {
+        const form = document.getElementById(`gradeForm_${submissionId}`);
+        if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function getCsrf() {
+        const cookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+        return cookie ? cookie.trim().split('=')[1] : '';
+    }
+</script>
+{% endblock %}

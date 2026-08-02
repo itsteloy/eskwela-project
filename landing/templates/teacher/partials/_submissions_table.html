@@ -1,0 +1,68 @@
+<table class="submissions-table">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Submitted</th>
+            <th>Status</th>
+            <th>Grade</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for submission in submissions %}
+        <tr>
+            <td>
+                <div class="student-info">
+                    <div class="student-avatar">
+                        {{ submission.student.user.first_name|first|default:submission.student.user.username|first|upper
+                        }}
+                    </div>
+                    <div>
+                        <div class="student-name">{{
+                            submission.student.user.get_full_name|default:submission.student.user.username }}</div>
+                        <div class="student-email">{{ submission.student.user.email }}</div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                {{ submission.submitted_at|date:"M d, Y h:i A" }}
+                {% if submission.status == 'late' %}
+                <br><small style="color: #dc3545;">(Late)</small>
+                {% endif %}
+            </td>
+            <td>
+                <span class="status-badge status-{{ submission.status }}">
+                    {{ submission.get_status_display }}
+                </span>
+            </td>
+            <td>
+                {% if submission.grade %}
+                <span class="grade-badge">{{ submission.grade }}/{{ assignment.total_points }}</span>
+                {% else %}
+                <span style="color: #999;">—</span>
+                {% endif %}
+            </td>
+            <td>
+                <div class="action-buttons">
+                    {% if submission.submission_file %}
+                    <a href="{{ submission.submission_file.url }}" class="btn-view-file" target="_blank">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'grade_submission' submission.id %}" class="btn-grade">
+                        <i class="fas fa-star"></i> Grade
+                    </a>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="empty-message">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                <h3>No Submissions Yet</h3>
+                <p>Students haven't submitted this assignment yet.</p>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

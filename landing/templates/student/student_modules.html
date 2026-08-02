@@ -1,0 +1,576 @@
+{% extends 'student/student_base.html' %}
+{% load static %}
+
+{% block title %}Learning Modules | Eskwela ALS{% endblock %}
+
+{% block page_title %}Learning Modules{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .sm-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── GRADE BADGE ── */
+    .sm-grade-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--forest-green);
+        color: #ffffff;
+        padding: 9px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: .9rem;
+        margin-bottom: 24px;
+    }
+
+    /* ── STATS ── */
+    .sm-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .sm-stat {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .sm-stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 8px;
+        font-size: 1.1rem;
+    }
+
+    .icon-total {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .icon-new {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .icon-subjects {
+        background: #fef3cd;
+        color: #d97706;
+    }
+
+    .sm-stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+        margin-bottom: 3px;
+    }
+
+    .sm-stat-label {
+        font-size: .7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #8a9aa8;
+    }
+
+    /* ── FILTER ── */
+    .sm-filter {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .sm-filter-form {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .sm-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .sm-filter-group label {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .sm-select,
+    .sm-input {
+        padding: 9px 12px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 8px;
+        font-size: .84rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff;
+    }
+
+    .sm-select {
+        padding: 9px 32px 9px 12px;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .sm-select:focus,
+    .sm-input:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .sm-btn-row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+    .sm-btn {
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: .84rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: filter .15s, transform .15s;
+        border: none;
+    }
+
+    .sm-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    .btn-filter {
+        background: var(--forest-green);
+        color: #fff;
+    }
+
+    .btn-clear {
+        background: #8a9aa8;
+        color: #fff;
+    }
+
+    /* ── SUBJECT SECTION ── */
+    .sm-subject-section {
+        margin-bottom: 28px;
+    }
+
+    .sm-subject-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #dceadc;
+    }
+
+    .sm-subject-header i {
+        font-size: 1.3rem;
+        color: var(--forest-green);
+    }
+
+    .sm-subject-header h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0;
+    }
+
+    .sm-subject-count {
+        margin-left: auto;
+        background: #f0f7f0;
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-size: .78rem;
+        color: #4a6a5a;
+        font-weight: 600;
+    }
+
+    /* ── CARD GRID ── */
+    .sm-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+    }
+
+    .sm-card {
+        background: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #eaf2ea;
+        transition: box-shadow .2s, transform .2s;
+        position: relative;
+    }
+
+    .sm-card:hover {
+        box-shadow: 0 6px 20px rgba(34, 139, 34, .1);
+        transform: translateY(-2px);
+    }
+
+    .sm-card.new::before {
+        content: 'NEW';
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: var(--emerald);
+        color: #fff;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: .68rem;
+        font-weight: 700;
+        z-index: 1;
+    }
+
+    .sm-card-cover {
+        height: 110px;
+        background: linear-gradient(135deg, var(--forest-green), #1a5c1a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, .4);
+        font-size: 2.5rem;
+    }
+
+    .sm-card-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .sm-card-body {
+        padding: 16px;
+    }
+
+    .sm-card-title {
+        font-weight: 700;
+        color: #1b3a2d;
+        margin-bottom: 8px;
+        font-size: .92rem;
+    }
+
+    .sm-card-tags {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+    }
+
+    .sm-tag {
+        font-size: .7rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .tag-subject {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .tag-quarter {
+        background: #fef3cd;
+        color: #92400e;
+    }
+
+    .sm-card-desc {
+        color: #6b7c7a;
+        font-size: .82rem;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        max-height: 40px;
+        overflow: hidden;
+    }
+
+    .sm-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #eaf2ea;
+        padding-top: 12px;
+    }
+
+    .sm-card-meta {
+        display: flex;
+        gap: 10px;
+        font-size: .75rem;
+        color: #8a9aa8;
+    }
+
+    .sm-card-meta span {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .sm-card-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    /* ── BUTTONS ── */
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border-radius: 7px;
+        font-size: .76rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    .act-view {
+        background: #4a6fa5;
+        color: #ffffff;
+    }
+
+    .act-dl {
+        background: #0891b2;
+        color: #ffffff;
+    }
+
+    /* ── EMPTY STATE ── */
+    .sm-empty {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+    }
+
+    .sm-empty-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #f0f7f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 2rem;
+        color: #8a9aa8;
+    }
+
+    .sm-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .sm-empty p {
+        color: #8a9aa8;
+        font-size: .88rem;
+    }
+
+    .sm-empty-note {
+        margin-top: 14px;
+        background: #eff6ff;
+        border-radius: 8px;
+        padding: 10px 16px;
+        color: #1e3a8a;
+        font-size: .85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .sm-stats {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .sm-filter-form {
+            flex-direction: column;
+        }
+
+        .sm-filter-group {
+            width: 100%;
+        }
+
+        .sm-card-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="sm-wrap">
+
+    {% if not has_grade_level %}
+    <div class="sm-empty">
+        <div class="sm-empty-icon"><i class="fas fa-graduation-cap"></i></div>
+        <h3>Grade Level Not Assigned</h3>
+        <p>Please complete your assessment to receive your grade level assignment.</p>
+        <div class="sm-empty-note">
+            <i class="fas fa-info-circle"></i>
+            Learning modules will be available once your grade level is assigned.
+        </div>
+    </div>
+
+    {% elif total_modules == 0 %}
+    <div class="sm-empty">
+        <div class="sm-empty-icon"><i class="fas fa-book-open"></i></div>
+        <h3>No Learning Modules Yet</h3>
+        <p>Your teacher hasn't uploaded any modules for {{ current_grade }} yet.</p>
+        <div class="sm-empty-note">
+            <i class="fas fa-info-circle"></i>
+            Check back later for new learning materials.
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Grade Badge -->
+    <div class="sm-grade-badge">
+        <i class="fas fa-graduation-cap"></i> {{ current_grade }} Learning Modules
+    </div>
+
+    <!-- Stats -->
+    <div class="sm-stats">
+        <div class="sm-stat">
+            <div class="sm-stat-icon icon-total"><i class="fas fa-book-open"></i></div>
+            <div class="sm-stat-value">{{ total_modules }}</div>
+            <div class="sm-stat-label">Total Modules</div>
+        </div>
+        <div class="sm-stat">
+            <div class="sm-stat-icon icon-new"><i class="fas fa-star"></i></div>
+            <div class="sm-stat-value">{{ new_modules }}</div>
+            <div class="sm-stat-label">New Modules</div>
+        </div>
+        <div class="sm-stat">
+            <div class="sm-stat-icon icon-subjects"><i class="fas fa-layer-group"></i></div>
+            <div class="sm-stat-value">{{ subjects|length }}</div>
+            <div class="sm-stat-label">Subjects</div>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="sm-filter">
+        <form method="GET" action="{% url 'student_modules' %}" class="sm-filter-form">
+            <div class="sm-filter-group">
+                <label><i class="fas fa-search"></i> Search</label>
+                <input type="text" name="search" class="sm-input" placeholder="Search modules..."
+                    value="{{ current_filter.search }}">
+            </div>
+            <div class="sm-filter-group">
+                <label><i class="fas fa-book"></i> Subject</label>
+                <select name="subject" class="sm-select">
+                    <option value="all" {% if current_filter.subject=='all' %}selected{% endif %}>All Subjects</option>
+                    {% for subject in subjects_list %}
+                    <option value="{{ subject }}" {% if current_filter.subject==subject %}selected{% endif %}>{{ subject
+                        }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="sm-filter-group">
+                <label><i class="fas fa-calendar"></i> Quarter</label>
+                <select name="quarter" class="sm-select">
+                    <option value="all" {% if current_filter.quarter=='all' %}selected{% endif %}>All Quarters</option>
+                    {% for quarter in quarters %}
+                    <option value="{{ quarter }}" {% if current_filter.quarter==quarter %}selected{% endif %}>{{ quarter
+                        }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="sm-btn-row">
+                <button type="submit" class="sm-btn btn-filter"><i class="fas fa-filter"></i> Apply</button>
+                <a href="{% url 'student_modules' %}" class="sm-btn btn-clear"><i class="fas fa-times"></i> Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modules by Subject -->
+    {% for subject, module_list in subjects.items %}
+    {% if module_list %}
+    <div class="sm-subject-section">
+        <div class="sm-subject-header">
+            <i class="fas fa-book"></i>
+            <h2>{{ subject }}</h2>
+            <span class="sm-subject-count">{{ module_list|length }} module{{ module_list|length|pluralize }}</span>
+        </div>
+
+        <div class="sm-card-grid">
+            {% for module in module_list %}
+            <div class="sm-card {% if module.id not in accessed_modules %}new{% endif %}">
+                <div class="sm-card-cover">
+                    {% if module.thumbnail %}
+                    <img src="{{ module.thumbnail.url }}" alt="{{ module.title }}">
+                    {% else %}
+                    <i class="fas fa-file-pdf"></i>
+                    {% endif %}
+                </div>
+                <div class="sm-card-body">
+                    <div class="sm-card-title">{{ module.title }}</div>
+                    <div class="sm-card-tags">
+                        <span class="sm-tag tag-subject">{{ module.subject }}</span>
+                        <span class="sm-tag tag-quarter">{{ module.quarter }}</span>
+                    </div>
+                    {% if module.description %}
+                    <div class="sm-card-desc">{{ module.description|truncatechars:80 }}</div>
+                    {% endif %}
+                    <div class="sm-card-footer">
+                        <div class="sm-card-meta">
+                            <span><i class="fas fa-download"></i> {{ module.download_count }}</span>
+                            <span><i class="far fa-calendar"></i> {{ module.created_at|date:"M d" }}</span>
+                            <span><i class="fas fa-file"></i> {{ module.get_file_size_display }}</span>
+                        </div>
+                        <div class="sm-card-actions">
+                            <a href="{% url 'view_module' module.id %}" class="act-btn act-view"><i
+                                    class="fas fa-eye"></i> View</a>
+                            <a href="{% url 'student_download_module' module.id %}" class="act-btn act-dl"><i
+                                    class="fas fa-download"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+</div>
+{% endblock %}

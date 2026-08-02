@@ -1,0 +1,952 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALS Enrollment Form | Modified ALS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/green-theme.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: var(--mint-bg);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--white);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(34, 139, 34, 0.15);
+            border-radius: 8px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid var(--forest-green);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+        }
+
+        .header h1 {
+            color: var(--forest-green);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .header h2 {
+            color: var(--charcoal);
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+
+        .form-title {
+            background: var(--forest-green);
+            color: var(--white);
+            padding: 12px 20px;
+            margin: 25px 0 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        .form-section {
+            border: 2px solid var(--sage);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .section-header {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--sage);
+            color: var(--forest-green);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: var(--forest-green);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="number"],
+        input[type="file"],
+        select,
+        textarea {
+            padding: 10px;
+            border: 1px solid var(--sage);
+            font-size: 0.95rem;
+            background: var(--mint-bg);
+            color: var(--charcoal);
+            border-radius: 4px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 2px solid var(--emerald);
+            border-color: var(--emerald);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .checkbox-group input[type="checkbox"],
+        .checkbox-group input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            accent-color: var(--forest-green);
+        }
+
+        .radio-inline {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .radio-inline label {
+            display: flex;
+            align-items: center;
+            font-weight: normal;
+            margin-bottom: 0;
+            color: var(--charcoal);
+        }
+
+        .radio-inline input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            accent-color: var(--forest-green);
+        }
+
+        .grade-level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .btn {
+            background: var(--emerald) !important;
+            color: var(--white) !important;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            text-transform: uppercase;
+            transition: background 0.3s;
+            border-radius: 4px;
+        }
+
+        .btn:hover {
+            background: var(--forest-green) !important;
+        }
+
+        .info-text {
+            font-size: 0.85rem;
+            color: var(--charcoal);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .required::after {
+            content: " *";
+            color: #d00;
+        }
+
+        .notice-box {
+            background: #fffbcc;
+            border: 2px solid #e6d800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .notice-box p {
+            margin: 5px 0;
+            font-size: 0.95rem;
+            color: var(--charcoal);
+        }
+
+        a {
+            color: var(--forest-green);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: var(--emerald);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Modified ALS Enrollment Form</h1>
+            <h2>Alternative Learning System</h2>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: var(--charcoal);">Learner's Basic Profile (AF2)</p>
+        </div>
+
+        <form method="POST" action="{% url 'register' %}" id="registrationForm" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- DATE OF REGISTRATION -->
+            <div class="form-section" style="background: var(--mint-bg); border: 2px solid var(--sage);">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Date of Registration</label>
+                        <input type="date" name="registration_date" id="registration_date" required readonly
+                            style="background: #e9ecef;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. LEARNER'S PERSONAL INFORMATION -->
+            <div class="form-title">1. Learner's Personal Information</div>
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Last Name</label>
+                        <input type="text" name="last_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">First Name</label>
+                        <input type="text" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Middle Name</label>
+                        <input type="text" name="middle_name">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Extension Name (e.g., Jr., III)</label>
+                        <input type="text" name="extension_name">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Birthdate (mm/dd/yyyy)</label>
+                        <input type="date" name="birthdate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Age</label>
+                        <input type="number" name="age" min="1" max="120" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Sex</label>
+                        <select name="sex" required>
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Civil Status</label>
+                        <select name="civil_status">
+                            <option value="">Select</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Widowed">Widowed</option>
+                            <option value="Separated">Separated</option>
+                            <option value="Sole Parent">Sole Parent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Place of Birth</label>
+                        <input type="text" name="place_of_birth" placeholder="City/Municipality, Province">
+                    </div>
+                    <div class="form-group">
+                        <label>Religion</label>
+                        <input type="text" name="religion">
+                    </div>
+                    <div class="form-group">
+                        <label>Mother Tongue</label>
+                        <input type="text" name="mother_tongue">
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 20px;">Belonging to any Indigenous Peoples (IP)
+                    Community/Indigenous Cultural Community?</div>
+                <div class="radio-inline">
+                    <label><input type="radio" name="indigenous_people" value="Yes"> Yes (please specify)</label>
+                    <label><input type="radio" name="indigenous_people" value="No" checked> No</label>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <input type="text" name="indigenous_specify" placeholder="If Yes, please specify">
+                </div>
+
+                <div class="section-header" style="margin-top: 20px;">Is your family beneficiary of 4Ps?</div>
+                <div class="radio-inline">
+                    <label><input type="radio" name="is_4ps_beneficiary" value="Yes" id="4ps_yes"> Yes (please provide
+                        Household ID Number)</label>
+                    <label><input type="radio" name="is_4ps_beneficiary" value="No" id="4ps_no" checked> No</label>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <input type="text" name="4ps_household_id" id="4ps_household_id"
+                        placeholder="If Yes, enter 4Ps Household ID Number">
+                </div>
+            </div>
+
+            <!-- 2. CURRENT ADDRESS -->
+            <div class="form-title">2. Current Address</div>
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Street/Street Name</label>
+                        <input type="text" name="street_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Province</label>
+                        <input type="text" name="province">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Municipality/City</label>
+                        <input type="text" name="municipality">
+                    </div>
+                    <div class="form-group">
+                        <label>Barangay</label>
+                        <input type="text" name="barangay">
+                    </div>
+                    <div class="form-group">
+                        <label>Zip Code</label>
+                        <input type="text" name="zip_code" maxlength="4">
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 20px;">Is your Current Address same with your Permanent
+                    Address?</div>
+                <div class="radio-inline">
+                    <label><input type="radio" name="same_address" value="Yes" id="same_address_yes" checked>
+                        Yes</label>
+                    <label><input type="radio" name="same_address" value="No" id="same_address_no"> No (if No, please
+                        specify below)</label>
+                </div>
+
+                <div id="permanent_address_section"
+                    style="display: none; margin-top: 15px; padding: 15px; background: var(--mint-bg); border: 1px solid var(--sage);">
+                    <div class="section-header" style="margin-top: 0;">Permanent Address</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Street/Street Name</label>
+                            <input type="text" name="permanent_street_name">
+                        </div>
+                        <div class="form-group">
+                            <label>Province</label>
+                            <input type="text" name="permanent_province">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Municipality/City</label>
+                            <input type="text" name="permanent_municipality">
+                        </div>
+                        <div class="form-group">
+                            <label>Barangay</label>
+                            <input type="text" name="permanent_barangay">
+                        </div>
+                        <div class="form-group">
+                            <label>Zip Code</label>
+                            <input type="text" name="permanent_zip_code" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. CONTACT INFORMATION -->
+            <div class="form-title">3. Contact Information</div>
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Contact Number(s)</label>
+                        <input type="tel" name="contact_numbers" required placeholder="e.g., 09123456789">
+                        <div class="info-text">You can provide multiple numbers separated by comma</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Email Address</label>
+                        <input type="email" name="email" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. EDUCATIONAL INFORMATION -->
+            <div class="form-title">4. Educational Information</div>
+            <div class="form-section">
+                <div class="section-header">a. Is the Learner PWD?</div>
+                <div class="radio-inline">
+                    <label><input type="radio" name="is_pwd" value="Yes"> Yes</label>
+                    <label><input type="radio" name="is_pwd" value="No" checked> No</label>
+                </div>
+
+                <div class="section-header" style="margin-top: 15px;">b. Does the Learner have a PWD ID?</div>
+                <div class="radio-inline">
+                    <label><input type="radio" name="has_pwd_id" value="Yes"> Yes</label>
+                    <label><input type="radio" name="has_pwd_id" value="No" checked> No</label>
+                </div>
+
+                <div class="section-header" style="margin-top: 15px;">c. Type of Disability</div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Intellectual Disability"> Intellectual
+                        Disability</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Learning Disability"> Learning
+                        Disability</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Multiple Disabilities"> Multiple
+                        Disabilities</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Orthopedic/Physical Handicap">
+                        Orthopedic/Physical Handicap</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Speech/Language Disorder">
+                        Speech/Language Disorder</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type"
+                            value="Attention Deficit Hyperactivity Disorder"> Attention Deficit Hyperactivity
+                        Disorder</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Autism Spectrum Disorder"> Autism
+                        Spectrum Disorder</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Cerebral Palsy"> Cerebral Palsy</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Emotional-Behaviour Disorder">
+                        Emotional-Behaviour Disorder</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Hearing Impairment"> Hearing
+                        Impairment</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Special Health Problem/Chronic Disease"
+                            id="special_health_check"> Special Health Problem/Chronic Disease</label>
+                </div>
+                <div style="margin-left: 40px; margin-top: 5px;">
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="disability_subtype" value="Cancer"
+                                class="special-health-sub"> Cancer</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="disability_subtype" value="Non-Cancer"
+                                class="special-health-sub"> Non-Cancer</label>
+                    </div>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="disability_type" value="Visual Impairment"
+                            id="visual_impairment_check"> Visual Impairment</label>
+                </div>
+                <div style="margin-left: 40px; margin-top: 5px;">
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="disability_subtype" value="Blind"
+                                class="visual-impairment-sub"> Blind</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="disability_subtype" value="Low-Vision"
+                                class="visual-impairment-sub"> Low-Vision</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. LAST GRADE LEVEL COMPLETED -->
+            <div class="form-title">5. Last Grade Level Completed (Check only if applicable)</div>
+            <div class="form-section">
+                <div class="section-header">ELEMENTARY</div>
+                <div class="grade-level-grid">
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Kinder"> Kinder</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 1"> Grade 1</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 2"> Grade 2</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 3"> Grade 3</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 4"> Grade 4</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 5"> Grade 5</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 6"> Grade 6</label>
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 20px;">JUNIOR HIGH SCHOOL</div>
+                <div class="grade-level-grid">
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 7"> Grade 7</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 8"> Grade 8</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 9"> Grade 9</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 10"> Grade 10</label>
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 20px;">SENIOR HIGH SCHOOL</div>
+                <div class="grade-level-grid">
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 11"> Grade 11</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="grade_level" value="Grade 12"> Grade 12</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5A. ALS ATTENDANCE HISTORY -->
+            <div class="form-title">5A. ALS Attendance History</div>
+            <div class="form-section">
+                <div class="section-header">Have you attended ALS learning sessions before?</div>
+                <div class="radio-inline">
+                    <label><input type="radio" name="attended_als_before" value="Yes" id="attended_als_yes"> Yes</label>
+                    <label><input type="radio" name="attended_als_before" value="No" id="attended_als_no" checked>
+                        No</label>
+                </div>
+
+                <div id="als_program_section"
+                    style="display: none; margin-top: 15px; padding: 15px; background: var(--mint-bg); border: 1px solid var(--sage);">
+                    <div class="section-header" style="margin-top: 0;">If Yes, check the appropriate program:</div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="als_program" value="Basic Literacy"> Basic Literacy</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="als_program" value="A&E Elementary"> A&E Elementary</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="als_program" value="A&E Secondary"> A&E Secondary</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="als_program" value="ALS SHS"> ALS SHS</label>
+                    </div>
+
+                    <div class="section-header" style="margin-top: 15px;">Have you completed in the program?</div>
+                    <div class="radio-inline">
+                        <label><input type="radio" name="als_completed" value="Yes" id="als_completed_yes"> Yes</label>
+                        <label><input type="radio" name="als_completed" value="No" id="als_completed_no"> No</label>
+                    </div>
+
+                    <div id="als_not_completed_section" style="display: none; margin-top: 15px;">
+                        <div class="form-group">
+                            <label>If No, state the reason:</label>
+                            <textarea name="als_not_completed_reason" rows="3"
+                                placeholder="Please explain why you did not complete the program"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. REASONS NOT ATTENDING SCHOOL -->
+            <div class="form-title">6. Physical/other reasons you did not attend/complete schooling?</div>
+            <div class="form-section">
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="reason_not_schooling" value="No school in community"> No school
+                        in community</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="reason_not_schooling" value="School is too far from home">
+                        School is too far from home</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="reason_not_schooling" value="No money for needs/family"> No
+                        money for needs/family</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="reason_not_schooling"
+                            value="Unable to pay for miscellaneous and other expenses"> Unable to pay for miscellaneous
+                        and other expenses</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="reason_not_schooling" value="Others"> Others (Please
+                        specify)</label>
+                </div>
+                <input type="text" name="reason_not_schooling_other" placeholder="If others, please specify"
+                    style="margin-top: 10px;">
+            </div>
+
+            <!-- 7. ACCESSIBILITY AND AVAILABILITY OF CLC -->
+            <div class="form-title">7. Accessibility and Availability of CLC</div>
+            <div class="form-section">
+                <div class="section-header">How far is your home to your Learning Center?</div>
+                <div class="radio-inline">
+                    <label><input type="radio" name="learning_center_distance" value="If None"> If None</label>
+                </div>
+
+                <div class="section-header" style="margin-top: 15px;">How do you get from your home to your Learning
+                    Center?</div>
+                <div class="radio-inline">
+                    <label><input type="radio" name="learning_center_transport" value="Walking"> Walking</label>
+                    <label><input type="radio" name="learning_center_transport" value="Motorcycle"> Motorcycle</label>
+                    <label><input type="radio" name="learning_center_transport" value="Bicycle"> Bicycle</label>
+                    <label><input type="radio" name="learning_center_transport" value="Others"> Others (Please
+                        specify)</label>
+                </div>
+                <input type="text" name="learning_center_transport_other" placeholder="If others, please specify"
+                    style="margin-top: 10px;">
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Travel Time (in hours and mins)</label>
+                    <input type="text" name="travel_time" placeholder="e.g., 30 minutes">
+                </div>
+
+                <div class="section-header" style="margin-top: 20px;">Please provide the specific day and time you can
+                    be at your learning center</div>
+                <div class="info-text" style="margin-bottom: 10px;">Example: Monday - 10:00 AM</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Monday</label>
+                        <input type="text" name="availability_monday" placeholder="e.g., 10:00 AM or Not Available">
+                    </div>
+                    <div class="form-group">
+                        <label>Tuesday</label>
+                        <input type="text" name="availability_tuesday" placeholder="e.g., 2:00 PM or Not Available">
+                    </div>
+                    <div class="form-group">
+                        <label>Wednesday</label>
+                        <input type="text" name="availability_wednesday" placeholder="e.g., 9:00 AM or Not Available">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Thursday</label>
+                        <input type="text" name="availability_thursday" placeholder="e.g., 1:00 PM or Not Available">
+                    </div>
+                    <div class="form-group">
+                        <label>Friday</label>
+                        <input type="text" name="availability_friday" placeholder="e.g., 3:00 PM or Not Available">
+                    </div>
+                    <div class="form-group">
+                        <label>Saturday</label>
+                        <input type="text" name="availability_saturday" placeholder="e.g., 11:00 AM or Not Available">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sunday</label>
+                        <input type="text" name="availability_sunday" placeholder="e.g., Not Available">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. PARENT'S/GUARDIAN'S INFORMATION -->
+            <div class="form-title">8. Parent's/Guardian's Information</div>
+            <div class="form-section">
+                <div class="section-header">Father's Name</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="father_first_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Middle Name</label>
+                        <input type="text" name="father_middle_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="father_last_name">
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 15px;">Mother's Maiden Name</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="mother_first_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Middle Name</label>
+                        <input type="text" name="mother_middle_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="mother_last_name">
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-top: 15px;">Legal Guardian's Name (if applicable)</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="guardian_first_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Middle Name</label>
+                        <input type="text" name="guardian_middle_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="guardian_last_name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. LEARNING MODALITIES -->
+            <div class="form-title">9. If the school will implement other distance learning modalities aside from
+                face-to-face instruction, what would you prefer for the learner?</div>
+            <div class="form-section">
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="learning_modality" value="Modular (Print)"> Modular
+                        (Print)</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="learning_modality" value="Modular (Digital)"> Modular
+                        (Digital)</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="learning_modality" value="Online"> Online</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="learning_modality" value="Educational Television"> Educational
+                        Television</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="learning_modality" value="Radio-Based Instruction"> Radio-Based
+                        Instruction</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="learning_modality" value="Homeschooling"> Homeschooling</label>
+                </div>
+
+                <div class="section-header" style="margin-top: 20px;">Criteria I plan to apply for (Check all that
+                    apply):</div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="criteria_plan" value="Pantawid Pamilya"> Pantawid
+                        Pamilya</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="criteria_plan" value="Educational Television"> Educational
+                        Television</label>
+                </div>
+            </div>
+
+            <!-- DOCUMENT UPLOADS & ADDITIONAL INFO -->
+            <div class="form-title">Required Documents & Additional Information</div>
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label>LRN (Learner Reference Number)</label>
+                        <input type="text" name="lrn" placeholder="Enter 12-digit LRN" maxlength="12">
+                        <div class="info-text">If available</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label class="required">Campus/Learning Center</label>
+                        <select name="campus" required>
+                            <option value="">Select Campus</option>
+                            {% for campus in campuses %}
+                            <option value="{{ campus.id }}">{{ campus.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Scanned Birth Certificate</label>
+                        <input type="file" name="birth_certificate" accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="info-text">Allowed: PDF, JPG, PNG. Max size: 5MB (optional)</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Scanned Valid ID</label>
+                        <input type="file" name="valid_id" accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="info-text">Allowed: PDF, JPG, PNG. Max size: 5MB (optional)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOTICE BOX -->
+            <div class="notice-box">
+                <p><strong>IMPORTANT NOTICE:</strong></p>
+                <p>I hereby certify that the information provided above is true and accurate to the best of my
+                    knowledge. I authorize the school to utilize the details specified above for the purpose of creating
+                    and/or updating my learner profile in the Learner Information System.</p>
+                <p style="margin-top: 10px;">The information herein shall be treated as confidential in compliance with
+                    the Data Privacy Act of 2012.</p>
+            </div>
+
+            <!-- CERTIFICATION -->
+            <div class="checkbox-group" style="margin: 20px 0;">
+                <label>
+                    <input type="checkbox" name="terms" required>
+                    <strong>I certify that all information provided above is accurate and I authorize the school to use
+                        my data in accordance with the Data Privacy Act of 2012.</strong>
+                </label>
+            </div>
+
+            <button type="submit" class="btn" id="registerBtn">
+                <i class="fas fa-paper-plane"></i> Submit Enrollment Form
+            </button>
+
+            <div class="info-text" style="text-align: center; margin-top: 15px;">
+                <i class="fas fa-info-circle"></i> Your registration will be reviewed by the administrator. You will
+                receive your account credentials via email once approved.
+            </div>
+        </form>
+
+        <div style="text-align: center; margin-top: 25px;">
+            <p>Already have an account? <a href="{% url 'student_login' %}">Login here</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Set current date for registration date
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            document.getElementById('registration_date').value = `${year}-${month}-${day}`;
+        });
+
+        // Auto-calculate age from birthdate
+        document.querySelector('input[name="birthdate"]').addEventListener('change', function () {
+            const birthDate = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            document.querySelector('input[name="age"]').value = age;
+        });
+
+        // Toggle permanent address section
+        document.getElementById('same_address_yes').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('permanent_address_section').style.display = 'none';
+            }
+        });
+        document.getElementById('same_address_no').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('permanent_address_section').style.display = 'block';
+            }
+        });
+
+        // Toggle ALS program section
+        document.getElementById('attended_als_yes').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('als_program_section').style.display = 'block';
+            }
+        });
+        document.getElementById('attended_als_no').addEventListener('change', function () {
+            if (this.checked) {
+                document.getElementById('als_program_section').style.display = 'none';
+            }
+        });
+
+        // Toggle ALS not completed reason section
+        const alsCompletedYes = document.getElementById('als_completed_yes');
+        const alsCompletedNo = document.getElementById('als_completed_no');
+        if (alsCompletedYes && alsCompletedNo) {
+            alsCompletedYes.addEventListener('change', function () {
+                if (this.checked) {
+                    document.getElementById('als_not_completed_section').style.display = 'none';
+                }
+            });
+            alsCompletedNo.addEventListener('change', function () {
+                if (this.checked) {
+                    document.getElementById('als_not_completed_section').style.display = 'block';
+                }
+            });
+        }
+
+        // Show loading on submit
+        document.getElementById('registrationForm').addEventListener('submit', function () {
+            document.getElementById('registerBtn').disabled = true;
+            document.getElementById('registerBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        });
+
+        // Validate contact numbers (allow multiple)
+        document.querySelector('input[name="contact_numbers"]').addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9,\s]/g, '');
+        });
+    </script>
+</body>
+
+</html>

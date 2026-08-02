@@ -1,0 +1,38 @@
+<table class="students-table">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Campus</th>
+            <th>Status</th>
+            <th>Last Updated</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in my_students %}
+        <tr>
+            <td>
+                <div class="student-info">
+                    <div class="student-avatar">
+                        {{ student.user.first_name|default:student.user.username|slice:":1"|upper }}
+                    </div>
+                    <div>
+                        <div class="student-name">{{ student.user.get_full_name|default:student.user.username }}</div>
+                        <div class="student-email">{{ student.user.email }}</div>
+                    </div>
+                </div>
+            </td>
+            <td>{{ student.campus }}</td>
+            <td><span class="status-badge status-{{ student.status }}">{{ student.get_status_display }}</span></td>
+            <td>{{ student.updated_at|date:"M d, Y h:i A" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="empty-message">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                <h3>No Students Found</h3>
+                <p>No approved students assigned to your campus yet.</p>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,287 @@
+{% extends 'administrator/admin_base.html' %}
+{% load static %}
+
+{% block title %}Edit Teacher | Eskwela{% endblock %}
+
+{% block page_title %}Edit Teacher{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .et-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .et-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .et-section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .et-section-header .header-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #fef3cd;
+        color: #d97706;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+    }
+
+    .et-section-header h2 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0;
+    }
+
+    .et-form-body {
+        padding: 24px;
+    }
+
+    /* Info box */
+    .et-info-box {
+        background: #eff6ff;
+        border-left: 4px solid #2a56c6;
+        padding: 16px 20px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        font-size: .9rem;
+        color: #1e3a8a;
+    }
+
+    .et-info-box i {
+        font-size: 1.3rem;
+        color: #2a56c6;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    .et-info-box p {
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Form grid */
+    .et-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .et-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .et-form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .et-form-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .et-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .et-input:focus {
+        outline: none;
+        border-color: #d97706;
+        box-shadow: 0 0 0 3px rgba(217, 119, 6, .12);
+    }
+
+    .et-input.readonly {
+        background: #f5fbf5;
+        color: #6b7c7a;
+        cursor: not-allowed;
+        border-color: #dceadc;
+    }
+
+    .et-hint {
+        font-size: .75rem;
+        color: #8a9aa8;
+        display: block;
+        margin-top: 4px;
+    }
+
+    /* Buttons */
+    .et-btn-row {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+
+    .et-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 11px 28px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+    }
+
+    .et-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, .12);
+    }
+
+    .et-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .btn-save {
+        background: #1a7a3f;
+        color: #ffffff;
+    }
+
+    .btn-cancel {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .btn-cancel:hover {
+        background: #d1d5db;
+        filter: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+        .et-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .et-btn-row {
+            flex-direction: column-reverse;
+        }
+
+        .et-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="et-wrap">
+
+    <div class="et-section">
+        <div class="et-section-header">
+            <div class="header-icon"><i class="fas fa-edit"></i></div>
+            <h2>Edit Teacher: {{ teacher.get_full_name }}</h2>
+        </div>
+
+        <div class="et-form-body">
+
+            <!-- Info Notice -->
+            <div class="et-info-box">
+                <i class="fas fa-info-circle"></i>
+                <p><strong>Note:</strong> Username cannot be changed. To reset the password, use the <strong>"Reset
+                        Pwd"</strong> button in the teacher list.</p>
+            </div>
+
+            <form method="POST" action="{% url 'edit_teacher' teacher.id %}">
+                {% csrf_token %}
+
+                <!-- Username (Read Only) -->
+                <div class="et-form-group full-width" style="margin-bottom: 20px;">
+                    <label><i class="fas fa-key"></i> Username</label>
+                    <input type="text" class="et-input readonly" value="{{ teacher.username }}" readonly tabindex="-1">
+                    <span class="et-hint">Username cannot be changed</span>
+                </div>
+
+                <!-- Name Fields -->
+                <div class="et-form-grid">
+                    <div class="et-form-group">
+                        <label><i class="fas fa-user"></i> First Name</label>
+                        <input type="text" name="first_name" class="et-input" value="{{ teacher.first_name }}" required>
+                    </div>
+                    <div class="et-form-group">
+                        <label><i class="fas fa-user"></i> Last Name</label>
+                        <input type="text" name="last_name" class="et-input" value="{{ teacher.last_name }}" required>
+                    </div>
+                </div>
+
+                <!-- Email & Phone -->
+                <div class="et-form-grid">
+                    <div class="et-form-group">
+                        <label><i class="fas fa-envelope"></i> Email Address</label>
+                        <input type="email" name="email" class="et-input" value="{{ teacher.email }}" required>
+                    </div>
+                    <div class="et-form-group">
+                        <label><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="text" name="phone" class="et-input" value="{{ profile.phone|default:'' }}"
+                            placeholder="09123456789">
+                    </div>
+                </div>
+
+                <!-- School (Read Only) -->
+                <div class="et-form-group full-width" style="margin-top: 4px;">
+                    <label><i class="fas fa-school"></i> Assigned School</label>
+                    <input type="text" class="et-input readonly" value="{{ profile.get_campus_display }}" readonly
+                        tabindex="-1">
+                    <span class="et-hint">School assignment cannot be changed. Create a new teacher account for a
+                        different school.</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="et-btn-row" style="margin-top: 32px;">
+                    <a href="{% url 'teacher_management' %}" class="et-btn btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="et-btn btn-save">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

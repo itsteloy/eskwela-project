@@ -1,0 +1,445 @@
+{% extends 'administrator/admin_base.html' %}
+{% load static %}
+
+{% block title %}Profile Settings | Eskwela{% endblock %}
+
+{% block page_title %}Profile Settings{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .ap-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+        max-width: 880px;
+        margin: 0 auto;
+    }
+
+    /* ── PROFILE CARD ── */
+    .ap-profile-card {
+        background: #1b3a2d;
+        border-radius: 16px;
+        padding: 32px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 20px rgba(27, 58, 45, .15);
+        flex-wrap: wrap;
+    }
+
+    .ap-avatar {
+        width: 90px;
+        height: 90px;
+        background: rgba(255, 255, 255, .12);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #ffffff;
+        flex-shrink: 0;
+    }
+
+    .ap-avatar i {
+        font-size: 2.5rem;
+        color: #ffffff;
+    }
+
+    .ap-profile-info {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .ap-profile-info h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+        color: #ffffff;
+    }
+
+    .ap-profile-info .ap-role {
+        display: inline-block;
+        background: rgba(255, 255, 255, .15);
+        color: #ffffff;
+        font-size: .78rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+    }
+
+    .ap-profile-info .ap-meta {
+        font-size: .9rem;
+        color: rgba(255, 255, 255, .8);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+    }
+
+    .ap-profile-info .ap-meta i {
+        width: 18px;
+        opacity: .8;
+    }
+
+    /* ── TWO COLUMN LAYOUT ── */
+    .ap-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    /* ── SECTION CARDS ── */
+    .ap-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .ap-section-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+    }
+
+    .ap-section-header .ap-header-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .ap-header-icon.icon-username {
+        background: #eff6ff;
+        color: #2a56c6;
+    }
+
+    .ap-header-icon.icon-password {
+        background: #fef3cd;
+        color: #d97706;
+    }
+
+    .ap-section-header .ap-header-text h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0 0 2px 0;
+    }
+
+    .ap-section-header .ap-header-text p {
+        font-size: .8rem;
+        color: #8a9aa8;
+        margin: 0;
+    }
+
+    .ap-form-body {
+        padding: 24px;
+    }
+
+    /* ── FORM STYLES ── */
+    .ap-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 18px;
+    }
+
+    .ap-form-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .ap-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .ap-input:focus {
+        outline: none;
+        border-color: #1a7a3f;
+        box-shadow: 0 0 0 3px rgba(26, 122, 63, .12);
+    }
+
+    .ap-readonly {
+        background: #f5fbf5;
+        color: #6b7c7a;
+        cursor: not-allowed;
+        border-color: #dceadc;
+        font-weight: 500;
+    }
+
+    .ap-hint {
+        font-size: .75rem;
+        color: #8a9aa8;
+        display: block;
+        margin-top: 4px;
+    }
+
+    /* ── BUTTONS ── */
+    .ap-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 11px 24px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .ap-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, .12);
+    }
+
+    .ap-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .btn-username {
+        background: #2a56c6;
+        color: #ffffff;
+    }
+
+    .btn-password {
+        background: #d97706;
+        color: #ffffff;
+    }
+
+    /* ── SECURITY TIPS ── */
+    .ap-tips-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        border-left: 4px solid #1a7a3f;
+        overflow: hidden;
+    }
+
+    .ap-tips-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .ap-tips-header i {
+        font-size: 1.3rem;
+        color: #1a7a3f;
+    }
+
+    .ap-tips-header h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0;
+    }
+
+    .ap-tips-body {
+        padding: 20px 24px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .ap-tip-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: .9rem;
+        color: #4a6a5a;
+    }
+
+    .ap-tip-item i {
+        color: #1a7a3f;
+        font-size: .9rem;
+        flex-shrink: 0;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .ap-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ap-tips-body {
+            grid-template-columns: 1fr;
+        }
+
+        .ap-profile-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .ap-profile-info .ap-meta {
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="ap-wrap">
+
+    <!-- ══ PROFILE CARD ══ -->
+    <div class="ap-profile-card">
+        <div class="ap-avatar">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <div class="ap-profile-info">
+            <h2>{{ request.user.get_full_name|default:request.user.username }}</h2>
+            <span class="ap-role">Administrator</span>
+            <div class="ap-meta">
+                <i class="fas fa-envelope"></i> {{ request.user.email }}
+            </div>
+            <div class="ap-meta">
+                <i class="fas fa-calendar-alt"></i> Member since {{ request.user.date_joined|date:"F d, Y" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ TWO COLUMN FORMS ══ -->
+    <div class="ap-grid">
+
+        <!-- Change Username -->
+        <div class="ap-section">
+            <div class="ap-section-header">
+                <div class="ap-header-icon icon-username">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                <div class="ap-header-text">
+                    <h3>Change Username</h3>
+                    <p>Update your display username</p>
+                </div>
+            </div>
+            <div class="ap-form-body">
+                <form method="POST" action="{% url 'admin_profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_username">
+
+                    <div class="ap-form-group">
+                        <label><i class="fas fa-tag"></i> Current Username</label>
+                        <input type="text" class="ap-input ap-readonly" value="{{ request.user.username }}" readonly
+                            tabindex="-1">
+                    </div>
+
+                    <div class="ap-form-group">
+                        <label><i class="fas fa-user-plus"></i> New Username</label>
+                        <input type="text" name="new_username" class="ap-input" required
+                            placeholder="Enter new username">
+                    </div>
+
+                    <div class="ap-form-group">
+                        <label><i class="fas fa-check-circle"></i> Confirm New Username</label>
+                        <input type="text" name="confirm_username" class="ap-input" required
+                            placeholder="Confirm new username">
+                    </div>
+
+                    <button type="submit" class="ap-btn btn-username">
+                        <i class="fas fa-save"></i> Update Username
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="ap-section">
+            <div class="ap-section-header">
+                <div class="ap-header-icon icon-password">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="ap-header-text">
+                    <h3>Change Password</h3>
+                    <p>Update your account password</p>
+                </div>
+            </div>
+            <div class="ap-form-body">
+                <form method="POST" action="{% url 'admin_profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div class="ap-form-group">
+                        <label><i class="fas fa-lock"></i> Current Password</label>
+                        <input type="password" name="current_password" class="ap-input" required
+                            placeholder="Enter current password">
+                    </div>
+
+                    <div class="ap-form-group">
+                        <label><i class="fas fa-lock"></i> New Password</label>
+                        <input type="password" name="new_password" class="ap-input" required
+                            placeholder="Enter new password">
+                        <span class="ap-hint">Minimum 8 characters</span>
+                    </div>
+
+                    <div class="ap-form-group">
+                        <label><i class="fas fa-check-circle"></i> Confirm New Password</label>
+                        <input type="password" name="confirm_password" class="ap-input" required
+                            placeholder="Confirm new password">
+                    </div>
+
+                    <button type="submit" class="ap-btn btn-password">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SECURITY TIPS ══ -->
+    <div class="ap-tips-section">
+        <div class="ap-tips-header">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Security Tips</h3>
+        </div>
+        <div class="ap-tips-body">
+            <div class="ap-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Use a strong password with a mix of letters, numbers & symbols</span>
+            </div>
+            <div class="ap-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Never share your password with anyone</span>
+            </div>
+            <div class="ap-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Change your password regularly</span>
+            </div>
+            <div class="ap-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Choose a unique and professional username</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,1043 @@
+{% extends 'administrator/admin_base.html' %}
+{% load static %}
+
+{% block title %}Teacher Management | Eskwela{% endblock %}
+
+{% block page_title %}Teacher Management{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .tm-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── STAT CARDS ── */
+    .tm-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .tm-stat {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        transition: transform .18s, box-shadow .18s;
+    }
+
+    .tm-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+    }
+
+    .tm-stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .icon-teachers {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .icon-campuses {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .icon-assigned {
+        background: #fef3cd;
+        color: #d97706;
+    }
+
+    .tm-stat-body {
+        flex: 1;
+    }
+
+    .tm-stat-label {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #8a9aa8;
+        margin-bottom: 4px;
+    }
+
+    .tm-stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+    }
+
+    /* ── SECTION CARDS ── */
+    .tm-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        margin-bottom: 28px;
+        overflow: hidden;
+    }
+
+    .tm-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .tm-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+    }
+
+    .tm-section-title .title-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #e6f7ed;
+        color: #1a7a3f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+    }
+
+    .tm-count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #fef3cd;
+        color: #856404;
+        font-size: .75rem;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 20px;
+        border: 1px solid #f0d080;
+        margin-left: 4px;
+    }
+
+    /* ── FORM STYLES ── */
+    .tm-form-body {
+        padding: 24px;
+    }
+
+    .tm-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .tm-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .tm-form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .tm-form-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .tm-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .tm-input:focus {
+        outline: none;
+        border-color: #1a7a3f;
+        box-shadow: 0 0 0 3px rgba(26, 122, 63, .12);
+    }
+
+    .tm-select {
+        padding: 10px 36px 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .tm-select:focus {
+        outline: none;
+        border-color: #1a7a3f;
+        box-shadow: 0 0 0 3px rgba(26, 122, 63, .12);
+    }
+
+    .tm-hint {
+        font-size: .75rem;
+        color: #8a9aa8;
+        display: block;
+        margin-top: 4px;
+    }
+
+    /* ── BUTTONS ── */
+    .tm-btn-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .tm-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 11px 24px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+    }
+
+    .tm-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .12);
+    }
+
+    .tm-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .btn-create {
+        background: #1a7a3f;
+        color: #ffffff;
+    }
+
+    .btn-reset {
+        background: #8a9aa8;
+        color: #ffffff;
+    }
+
+    /* ── TABLE ── */
+    .tm-table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tm-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .875rem;
+        min-width: 800px;
+    }
+
+    .tm-table thead tr {
+        background: #f0f7f0;
+    }
+
+    .tm-table th {
+        padding: 13px 16px;
+        text-align: left;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #4a6a5a;
+        white-space: nowrap;
+        border-bottom: 2px solid #dceadc;
+    }
+
+    .tm-table td {
+        padding: 14px 16px;
+        color: #2d3f36;
+        border-bottom: 1px solid #f0f5f0;
+        vertical-align: middle;
+    }
+
+    .tm-table tbody tr {
+        transition: background .14s;
+    }
+
+    .tm-table tbody tr:hover {
+        background: #f5fbf5;
+    }
+
+    .tm-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* ── BADGES ── */
+    .campus-badge {
+        display: inline-block;
+        background: #e8f0fe;
+        color: #2a56c6;
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .78rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+    .status-covered {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .status-uncovered {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    /* ── ACTION BUTTONS — ALL DISTINCT SOLID COLORS ── */
+    .act-group {
+        display: flex;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border-radius: 7px;
+        font-size: .78rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        line-height: 1.4;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    }
+
+    .act-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .act-view {
+        background: #4a6fa5;
+        color: #ffffff;
+    }
+
+    .act-edit {
+        background: #ffa500;
+        color: #ffffff;
+    }
+
+    .act-reset {
+        background: #6d28d9;
+        color: #ffffff;
+    }
+
+    .act-delete {
+        background: #c0392b;
+        color: #ffffff;
+    }
+
+    .act-assign {
+        background: #0891b2;
+        color: #ffffff;
+    }
+
+    /* ── CREDENTIALS CARD ── */
+    .cred-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 2px solid #1a7a3f;
+        padding: 24px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 12px rgba(26, 122, 63, .1);
+    }
+
+    .cred-card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a7a3f;
+        margin-bottom: 20px;
+    }
+
+    .cred-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .cred-item {
+        background: #f8fdf8;
+        border-radius: 10px;
+        padding: 14px 16px;
+        border-left: 4px solid #1a7a3f;
+    }
+
+    .cred-label {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cred-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1b3a2d;
+        font-family: 'DM Mono', monospace;
+        background: #ffffff;
+        padding: 5px 12px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .cred-copy-btn {
+        background: none;
+        border: none;
+        color: #2a56c6;
+        cursor: pointer;
+        font-size: .85rem;
+        padding: 4px 8px;
+        transition: color .15s;
+    }
+
+    .cred-copy-btn:hover {
+        color: #1e3a8a;
+    }
+
+    .cred-info-box {
+        background: #eff6ff;
+        border-left: 4px solid #2a56c6;
+        padding: 14px 16px;
+        border-radius: 8px;
+        margin-top: 16px;
+        font-size: .9rem;
+        color: #1e3a8a;
+    }
+
+    /* ── FILTER ── */
+    .tm-filter-select {
+        padding: 8px 32px 8px 12px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .tm-filter-select:focus {
+        outline: none;
+        border-color: #1a7a3f;
+    }
+
+    /* ── MODAL ── */
+    .tm-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 40, 30, .55);
+        backdrop-filter: blur(4px);
+        z-index: 9000;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .tm-modal.open {
+        display: flex;
+    }
+
+    .tm-modal-box {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .22);
+        width: 100%;
+        max-width: 480px;
+        overflow: hidden;
+        animation: modalIn .22s ease;
+    }
+
+    @keyframes modalIn {
+        from {
+            opacity: 0;
+            transform: scale(.95) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .tm-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        background: #1b3a2d;
+        color: #ffffff;
+    }
+
+    .tm-modal-head h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+    }
+
+    .tm-modal-close {
+        background: rgba(255, 255, 255, .15);
+        border: none;
+        color: #ffffff;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .15s;
+        line-height: 1;
+    }
+
+    .tm-modal-close:hover {
+        background: rgba(255, 255, 255, .28);
+    }
+
+    .tm-modal-body {
+        padding: 24px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .tm-detail-item {
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        background: #f8fdf8;
+        border-radius: 8px;
+        border-left: 3px solid #1a7a3f;
+    }
+
+    .tm-detail-item label {
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .tm-detail-item p {
+        margin: 0;
+        color: #1b3a2d;
+        font-size: .95rem;
+        font-weight: 500;
+    }
+
+    /* ── EMPTY STATE ── */
+    .tm-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: #8a9aa8;
+    }
+
+    .tm-empty i {
+        font-size: 3rem;
+        color: #c8dfc8;
+        margin-bottom: 14px;
+        display: block;
+    }
+
+    .tm-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .tm-empty p {
+        font-size: .9rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+        .tm-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 800px) {
+        .tm-stats {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .tm-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cred-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .act-group {
+            flex-direction: column;
+        }
+
+        .tm-btn-row {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .tm-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="tm-wrap">
+
+    <!-- ══ STAT CARDS ══ -->
+    <div class="tm-stats">
+        <div class="tm-stat">
+            <div class="tm-stat-icon icon-teachers"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div class="tm-stat-body">
+                <div class="tm-stat-label">Total Teachers</div>
+                <div class="tm-stat-value">{{ teachers.count }}</div>
+            </div>
+        </div>
+        <div class="tm-stat">
+            <div class="tm-stat-icon icon-campuses"><i class="fas fa-school"></i></div>
+            <div class="tm-stat-body">
+                <div class="tm-stat-label">Total Campuses</div>
+                <div class="tm-stat-value">{{ total_campuses|default:"5" }}</div>
+            </div>
+        </div>
+        <div class="tm-stat">
+            <div class="tm-stat-icon icon-assigned"><i class="fas fa-check-circle"></i></div>
+            <div class="tm-stat-body">
+                <div class="tm-stat-label">Assigned / Total</div>
+                <div class="tm-stat-value">{{ teachers.count }}/{{ total_campuses|default:"5" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CREDENTIALS DISPLAY (After Create) ══ -->
+    {% if created_teacher %}
+    <div class="cred-card">
+        <div class="cred-card-header">
+            <i class="fas fa-check-circle"></i> Teacher Account Created Successfully
+        </div>
+
+        <div class="cred-grid">
+            <div class="cred-item">
+                <div class="cred-label">
+                    <i class="fas fa-user"></i> Username
+                    <button class="cred-copy-btn" onclick="copyToClipboard('{{ created_teacher.username }}')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="cred-value">{{ created_teacher.username }}</div>
+            </div>
+
+            <div class="cred-item">
+                <div class="cred-label">
+                    <i class="fas fa-lock"></i> Password
+                    <button class="cred-copy-btn" onclick="copyToClipboard('{{ created_teacher.password }}')">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="cred-value">{{ created_teacher.password }}</div>
+            </div>
+
+            <div class="cred-item">
+                <div class="cred-label"><i class="fas fa-envelope"></i> Email</div>
+                <div class="cred-value">{{ created_teacher.email }}</div>
+            </div>
+
+            <div class="cred-item">
+                <div class="cred-label"><i class="fas fa-school"></i> Campus</div>
+                <div class="cred-value">{{ created_teacher.school }}</div>
+            </div>
+        </div>
+
+        <div class="cred-info-box">
+            <i class="fas fa-info-circle"></i>
+            <strong>Login Instructions:</strong> Direct the teacher to the
+            <a href="{% url 'teacher_login' %}" target="_blank" style="color: #2a56c6; font-weight: 600;">Teacher Login
+                Page</a>
+            and provide them with the credentials above.
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ══ CREATE TEACHER FORM ══ -->
+    <div class="tm-section">
+        <div class="tm-section-header">
+            <div class="tm-section-title">
+                <div class="title-icon"><i class="fas fa-user-plus"></i></div>
+                Create New Teacher Account
+            </div>
+        </div>
+        <div class="tm-form-body">
+            <form method="POST" action="{% url 'create_teacher' %}">
+                {% csrf_token %}
+
+                <div class="tm-form-grid">
+                    <div class="tm-form-group">
+                        <label><i class="fas fa-user"></i> First Name</label>
+                        <input type="text" name="first_name" class="tm-input" required placeholder="Enter first name">
+                    </div>
+                    <div class="tm-form-group">
+                        <label><i class="fas fa-user"></i> Last Name</label>
+                        <input type="text" name="last_name" class="tm-input" required placeholder="Enter last name">
+                    </div>
+
+                    <div class="tm-form-group">
+                        <label><i class="fas fa-envelope"></i> Email Address</label>
+                        <input type="email" name="email" class="tm-input" required placeholder="teacher@school.edu">
+                    </div>
+                    <div class="tm-form-group">
+                        <label><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="text" name="phone" class="tm-input" placeholder="09123456789">
+                    </div>
+
+                    <div class="tm-form-group">
+                        <label><i class="fas fa-school"></i> Assigned Campus</label>
+                        <select name="campus" class="tm-select" required>
+                            <option value="" disabled selected>Select a campus</option>
+                            {% for campus in campuses %}
+                            <option value="{{ campus.id }}" {% if campus.teacher %}disabled
+                                title="Already assigned: {{ campus.teacher.user.get_full_name }}" {% endif %}>
+                                {{ campus.name }}
+                                {% if campus.teacher %} (Assigned){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <span class="tm-hint"><i class="fas fa-info-circle"></i> One teacher per campus only.</span>
+                    </div>
+                    <div class="tm-form-group">
+                        <label><i class="fas fa-key"></i> Username</label>
+                        <input type="text" name="username" class="tm-input" placeholder="Auto-generated if left blank">
+                        <span class="tm-hint">Leave blank for auto-generated username</span>
+                    </div>
+                </div>
+
+                <div class="tm-form-grid">
+                    <div class="tm-form-group">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="text" name="password" class="tm-input" placeholder="Auto-generated if left blank">
+                        <span class="tm-hint">Leave blank for auto-generated password</span>
+                    </div>
+                </div>
+
+                <div class="tm-btn-row">
+                    <button type="submit" class="tm-btn btn-create">
+                        <i class="fas fa-save"></i> Create Teacher Account
+                    </button>
+                    <button type="reset" class="tm-btn btn-reset">
+                        <i class="fas fa-undo"></i> Reset Form
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══ TEACHER ACCOUNTS TABLE ══ -->
+    <div class="tm-section">
+        <div class="tm-section-header">
+            <div class="tm-section-title">
+                <div class="title-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                Teacher Accounts
+                <span class="tm-count-badge">{{ teachers.count }}</span>
+            </div>
+            <div>
+                <select id="campusFilter" class="tm-filter-select" onchange="filterByCampus()">
+                    <option value="all">All Campuses</option>
+                    {% for campus in campuses %}
+                    <option value="{{ campus.id }}">{{ campus.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="tm-table-scroll">
+            <table class="tm-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Campus</th>
+                        <th>Phone</th>
+                        <th>Date Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr class="teacher-row" data-campus="{{ teacher.teacher_profile.campus.id }}">
+                        <td><strong>{{ teacher.username }}</strong></td>
+                        <td>{{ teacher.last_name }}, {{ teacher.first_name }}</td>
+                        <td>{{ teacher.email }}</td>
+                        <td>
+                            <span class="campus-badge">
+                                {{ teacher.teacher_profile.campus.name|default:"Not Assigned" }}
+                            </span>
+                        </td>
+                        <td>{{ teacher.teacher_profile.phone|default:"—" }}</td>
+                        <td>{{ teacher.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="act-group">
+                                <button class="act-btn act-view" onclick='viewTeacher(
+                                    "{{ teacher.id }}",
+                                    "{{ teacher.username|escapejs }}",
+                                    "{{ teacher.first_name|escapejs }}",
+                                    "{{ teacher.last_name|escapejs }}",
+                                    "{{ teacher.email|escapejs }}",
+                                    "{{ teacher.teacher_profile.phone|default:", "|escapejs }}",
+                                    "{{ teacher.teacher_profile.campus.name|default:","|escapejs }}"
+                                )'>
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <a href="{% url 'edit_teacher' teacher.id %}" class="act-btn act-edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{% url 'reset_teacher_password' teacher.id %}" class="act-btn act-reset"
+                                    onclick="return confirm('Reset password for {{ teacher.first_name|escapejs }}? A new password will be generated.')">
+                                    <i class="fas fa-key"></i> Reset Pwd
+                                </a>
+                                <a href="{% url 'delete_teacher' teacher.id %}" class="act-btn act-delete"
+                                    onclick="return confirm('Delete {{ teacher.first_name|escapejs }} {{ teacher.last_name|escapejs }}\'s account? This cannot be undone.')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="tm-empty">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <h3>No Teacher Accounts Yet</h3>
+                                <p>Use the form above to create teacher accounts for each campus.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ══ CAMPUS COVERAGE TABLE ══ -->
+    <div class="tm-section">
+        <div class="tm-section-header">
+            <div class="tm-section-title">
+                <div class="title-icon"><i class="fas fa-school"></i></div>
+                Campus Coverage Status
+            </div>
+        </div>
+
+        <div class="tm-table-scroll">
+            <table class="tm-table">
+                <thead>
+                    <tr>
+                        <th>Campus</th>
+                        <th>Status</th>
+                        <th>Assigned Teacher</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for campus in campuses %}
+                    <tr>
+                        <td><strong>{{ campus.name }}</strong></td>
+                        <td>
+                            {% if campus.teacher %}
+                            <span class="status-badge status-covered">
+                                <i class="fas fa-check-circle"></i> Covered
+                            </span>
+                            {% else %}
+                            <span class="status-badge status-uncovered">
+                                <i class="fas fa-exclamation-triangle"></i> Uncovered
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if campus.teacher %}
+                            {{ campus.teacher.user.get_full_name }}
+                            {% else %}
+                            <span style="color: #8a9aa8;">No teacher assigned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not campus.teacher %}
+                            <a href="{% url 'create_teacher' %}?campus={{ campus.id }}" class="act-btn act-assign">
+                                <i class="fas fa-plus"></i> Assign Teacher
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div><!-- /.tm-wrap -->
+
+<!-- ══ VIEW TEACHER MODAL ══ -->
+<div id="viewTeacherModal" class="tm-modal">
+    <div class="tm-modal-box">
+        <div class="tm-modal-head">
+            <h3><i class="fas fa-chalkboard-teacher"></i> Teacher Information</h3>
+            <button class="tm-modal-close" onclick="closeTeacherModal()">&times;</button>
+        </div>
+        <div class="tm-modal-body" id="teacherDetails"></div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function viewTeacher(id, username, firstName, lastName, email, phone, school) {
+        const detailsHtml = `
+            <div class="tm-detail-item">
+                <label>Teacher ID</label>
+                <p>#${id}</p>
+            </div>
+            <div class="tm-detail-item">
+                <label>Username</label>
+                <p><strong>${username}</strong></p>
+            </div>
+            <div class="tm-detail-item">
+                <label>Full Name</label>
+                <p>${lastName}, ${firstName}</p>
+            </div>
+            <div class="tm-detail-item">
+                <label>Email Address</label>
+                <p>${email}</p>
+            </div>
+            <div class="tm-detail-item">
+                <label>Phone Number</label>
+                <p>${phone || '—'}</p>
+            </div>
+            <div class="tm-detail-item">
+                <label>Assigned Campus</label>
+                <p><span class="campus-badge">${school || 'Not Assigned'}</span></p>
+            </div>
+        `;
+        document.getElementById('teacherDetails').innerHTML = detailsHtml;
+        document.getElementById('viewTeacherModal').classList.add('open');
+    }
+
+    function closeTeacherModal() {
+        document.getElementById('viewTeacherModal').classList.remove('open');
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function () {
+            alert('Copied to clipboard!');
+        }, function () {
+            alert('Failed to copy');
+        });
+    }
+
+    function filterByCampus() {
+        const campusId = document.getElementById('campusFilter').value;
+        const rows = document.querySelectorAll('.teacher-row');
+
+        rows.forEach(row => {
+            if (campusId === 'all') {
+                row.style.display = '';
+            } else {
+                row.style.display = row.dataset.campus === campusId ? '' : 'none';
+            }
+        });
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('viewTeacherModal').addEventListener('click', function (e) {
+        if (e.target === this) closeTeacherModal();
+    });
+
+    // Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeTeacherModal();
+    });
+</script>
+
+{% endblock %}

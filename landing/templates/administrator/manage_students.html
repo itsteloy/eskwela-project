@@ -1,0 +1,1163 @@
+{% extends 'administrator/admin_base.html' %}
+{% load static %}
+
+{% block title %}Manage Students | Eskwela{% endblock %}
+{% block page_title %}Manage Students{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .ms-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── STAT CARD ── */
+    .adm-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .adm-stat {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        transition: transform .18s, box-shadow .18s;
+    }
+
+    .adm-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+    }
+
+    .adm-stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .icon-students {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .adm-stat-body {
+        flex: 1;
+    }
+
+    .adm-stat-label {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #8a9aa8;
+        margin-bottom: 4px;
+    }
+
+    .adm-stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+    }
+
+    /* ── SEARCH / FILTER PANEL ── */
+    .adm-filter-panel {
+        background: #ffffff;
+        border-radius: 14px 14px 0 0;
+        border: 1px solid #eaf2ea;
+        border-bottom: none;
+        padding: 20px 24px;
+    }
+
+    .adm-filter-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .adm-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .adm-filter-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .adm-filter-group.grow {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .adm-filter-group.campus {
+        min-width: 180px;
+    }
+
+    .adm-input {
+        padding: 9px 13px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .adm-input:focus {
+        outline: none;
+        border-color: #1a7a3f;
+        box-shadow: 0 0 0 3px rgba(26, 122, 63, .12);
+    }
+
+    .adm-select-input {
+        padding: 9px 32px 9px 13px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .adm-select-input:focus {
+        outline: none;
+        border-color: #1a7a3f;
+        box-shadow: 0 0 0 3px rgba(26, 122, 63, .12);
+    }
+
+    .adm-btn-row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+    }
+
+    /* ── TABLE SECTION ── */
+    .adm-section {
+        background: #ffffff;
+        border-radius: 0 0 16px 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .adm-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .adm-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+    }
+
+    .adm-section-title .title-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #e6f7ed;
+        color: #1a7a3f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+    }
+
+    .adm-count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #fef3cd;
+        color: #856404;
+        font-size: .75rem;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 20px;
+        border: 1px solid #f0d080;
+        margin-left: 4px;
+    }
+
+    /* ── TABLE ── */
+    .adm-table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .adm-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .875rem;
+        min-width: 780px;
+    }
+
+    .adm-table thead tr {
+        background: #f0f7f0;
+    }
+
+    .adm-table th {
+        padding: 13px 16px;
+        text-align: left;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #4a6a5a;
+        white-space: nowrap;
+        border-bottom: 2px solid #dceadc;
+    }
+
+    .adm-table td {
+        padding: 14px 16px;
+        color: #2d3f36;
+        border-bottom: 1px solid #f0f5f0;
+        vertical-align: middle;
+    }
+
+    .adm-table tbody tr {
+        transition: background .14s;
+    }
+
+    .adm-table tbody tr:hover {
+        background: #f5fbf5;
+    }
+
+    .adm-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .lrn-cell {
+        font-family: 'DM Mono', monospace;
+        font-size: .8rem;
+        font-weight: 500;
+        color: #4a6a5a;
+        background: #f0f7f0;
+        padding: 3px 8px;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .campus-badge {
+        display: inline-block;
+        background: #e8f0fe;
+        color: #2a56c6;
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+    }
+
+    /* Requirements status badges */
+    .req-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .78rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+    .req-complete {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .req-none {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .req-partial {
+        background: #fff7e6;
+        color: #e07b00;
+    }
+
+    /* ── ACTION BUTTONS — all distinct ── */
+    .action-group {
+        display: flex;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border-radius: 7px;
+        font-size: .78rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        line-height: 1.4;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    }
+
+    .act-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    /* View — slate blue */
+    .act-view {
+        background: #4a6fa5;
+        color: #ffffff;
+    }
+
+    /* Edit — amber */
+    .act-edit {
+        background: #ffa500;
+        color: #ffffff;
+    }
+
+    /* Delete — crimson */
+    .act-delete {
+        background: #c0392b;
+        color: #ffffff;
+    }
+
+    /* ── FILTER SUBMIT / CLEAR BUTTONS ── */
+    .btn-filter {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 20px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s;
+    }
+
+    .btn-filter:hover {
+        filter: brightness(.9);
+        transform: translateY(-1px);
+    }
+
+    .btn-search {
+        background: #1a7a3f;
+        color: #ffffff;
+    }
+
+    .btn-clear {
+        background: #8a9aa8;
+        color: #ffffff;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* ── EMPTY STATE ── */
+    .adm-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: #8a9aa8;
+    }
+
+    .adm-empty i {
+        font-size: 3rem;
+        color: #c8dfc8;
+        margin-bottom: 14px;
+        display: block;
+    }
+
+    .adm-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .adm-empty p {
+        font-size: .9rem;
+    }
+
+    /* ── MODALS ── */
+    .adm-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 40, 30, .55);
+        backdrop-filter: blur(4px);
+        z-index: 9000;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .adm-modal.open {
+        display: flex;
+    }
+
+    .adm-modal-box {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .22);
+        width: 100%;
+        overflow: hidden;
+        animation: modalIn .22s ease;
+    }
+
+    @keyframes modalIn {
+        from {
+            opacity: 0;
+            transform: scale(.95) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .adm-modal-box.modal-lg {
+        max-width: 1050px;
+    }
+
+    .adm-modal-box.modal-sm {
+        max-width: 440px;
+    }
+
+    .adm-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        color: #ffffff;
+    }
+
+    .head-view {
+        background: #1b3a2d;
+    }
+
+    .head-edit {
+        background: #92400e;
+    }
+
+    .head-delete {
+        background: #7f1d1d;
+    }
+
+    .adm-modal-head h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+    }
+
+    .adm-modal-close {
+        background: rgba(255, 255, 255, .15);
+        border: none;
+        color: #ffffff;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .15s;
+        line-height: 1;
+    }
+
+    .adm-modal-close:hover {
+        background: rgba(255, 255, 255, .28);
+    }
+
+    .adm-modal-body {
+        overflow-y: auto;
+    }
+
+    .adm-modal-body.body-lg {
+        max-height: calc(90vh - 56px);
+        padding: 28px;
+        background: #f5fbf5;
+    }
+
+    .adm-modal-body.body-sm {
+        max-height: 80vh;
+        padding: 28px;
+    }
+
+    .adm-loading {
+        text-align: center;
+        padding: 50px 20px;
+        color: #6b7c7a;
+    }
+
+    .adm-loading i {
+        font-size: 2.5rem;
+        color: #1a7a3f;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    /* Readonly view form */
+    .ro-container {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+    }
+
+    .ro-header {
+        text-align: center;
+        padding-bottom: 20px;
+        margin-bottom: 26px;
+        border-bottom: 2px solid #1a7a3f;
+    }
+
+    .ro-header h1 {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #1b3a2d;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .ro-section-title {
+        background: #1b3a2d;
+        color: #ffffff;
+        padding: 10px 16px;
+        border-radius: 8px 8px 0 0;
+        font-size: .8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        margin-top: 20px;
+    }
+
+    .ro-section-body {
+        border: 1.5px solid #dceadc;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        overflow: hidden;
+    }
+
+    .ro-field {
+        padding: 13px 16px;
+        border-bottom: 1px solid #eaf2ea;
+        border-right: 1px solid #eaf2ea;
+    }
+
+    .ro-field:nth-child(even) {
+        border-right: none;
+    }
+
+    .ro-field:last-child,
+    .ro-field:nth-last-child(2):nth-child(odd) {
+        border-bottom: none;
+    }
+
+    .ro-field label {
+        font-size: .73rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .ro-field p {
+        font-size: .9rem;
+        color: #1b3a2d;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* Editable form inputs */
+    .edit-section {
+        border: 1.5px solid #dceadc;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .edit-section-title {
+        background: #92400e;
+        color: #ffffff;
+        padding: 10px 16px;
+        font-size: .8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+    }
+
+    .edit-fields {
+        padding: 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        background: #ffffff;
+    }
+
+    .edit-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .edit-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .edit-input {
+        padding: 9px 12px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 8px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .edit-input:focus {
+        outline: none;
+        border-color: #d97706;
+        box-shadow: 0 0 0 3px rgba(217, 119, 6, .12);
+    }
+
+    textarea.edit-input {
+        resize: vertical;
+        min-height: 60px;
+    }
+
+    .edit-input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    /* Edit save bar */
+    .edit-save-bar {
+        position: sticky;
+        bottom: 0;
+        background: #ffffff;
+        border-top: 2px solid #dceadc;
+        padding: 14px 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        z-index: 5;
+    }
+
+    .btn-save {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 24px;
+        background: #d97706;
+        color: #ffffff;
+        border: none;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        transition: filter .15s;
+    }
+
+    .btn-save:hover {
+        filter: brightness(.9);
+    }
+
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 20px;
+        background: #e5e7eb;
+        color: #374151;
+        border: none;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: background .15s;
+    }
+
+    .btn-cancel:hover {
+        background: #d1d5db;
+    }
+
+    /* Delete modal */
+    .delete-body {
+        text-align: center;
+    }
+
+    .delete-icon {
+        font-size: 3rem;
+        color: #c0392b;
+        margin-bottom: 16px;
+        display: block;
+    }
+
+    .delete-name {
+        display: inline-block;
+        background: #fdecea;
+        color: #c0392b;
+        padding: 5px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: .95rem;
+        margin-bottom: 10px;
+    }
+
+    .delete-warning {
+        color: #6b7c7a;
+        font-size: .9rem;
+        margin-bottom: 24px;
+    }
+
+    .delete-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn-confirm-delete {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 24px;
+        background: #c0392b;
+        color: #ffffff;
+        border: none;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
+        transition: filter .15s;
+        text-decoration: none;
+    }
+
+    .btn-confirm-delete:hover {
+        filter: brightness(.9);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+        .adm-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .adm-stats {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .adm-filter-row {
+            flex-direction: column;
+        }
+
+        .adm-filter-group.grow,
+        .adm-filter-group.campus {
+            min-width: unset;
+            width: 100%;
+        }
+
+        .adm-btn-row {
+            width: 100%;
+        }
+
+        .action-group {
+            flex-direction: column;
+        }
+
+        .ro-section-body,
+        .edit-fields {
+            grid-template-columns: 1fr;
+        }
+
+        .ro-field {
+            border-right: none;
+        }
+    }
+</style>
+
+<div class="ms-wrap">
+
+    <!-- ── STAT CARD ── -->
+    <div class="adm-stats" style="grid-template-columns: repeat(auto-fit, minmax(200px,1fr));">
+        <div class="adm-stat">
+            <div class="adm-stat-icon icon-students"><i class="fas fa-user-graduate"></i></div>
+            <div class="adm-stat-body">
+                <div class="adm-stat-label">Total Students</div>
+                <div class="adm-stat-value">{{ students|length }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FILTER PANEL ── -->
+    <div class="adm-filter-panel">
+        <form method="GET" action="{% url 'manage_students' %}">
+            <div class="adm-filter-row">
+                <div class="adm-filter-group grow">
+                    <label><i class="fas fa-search"></i> Search</label>
+                    <input type="text" name="search" value="{{ search_query }}" placeholder="Name, LRN, or Email…"
+                        class="adm-input">
+                </div>
+                <div class="adm-filter-group campus">
+                    <label><i class="fas fa-university"></i> Campus</label>
+                    <select name="campus" class="adm-select-input">
+                        <option value="">All Campuses</option>
+                        {% for campus in campuses %}
+                        <option value="{{ campus.id }}" {% if campus_filter == campus.id|stringformat:"s" %}selected{% endif %}>
+                            {{ campus.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="adm-btn-row">
+                    <button type="submit" class="btn-filter btn-search">
+                        <i class="fas fa-search"></i> Filter
+                    </button>
+                    <a href="{% url 'manage_students' %}" class="btn-filter btn-clear">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── STUDENTS TABLE ── -->
+    <div class="adm-section">
+        <div class="adm-section-header">
+            <div class="adm-section-title">
+                <div class="title-icon"><i class="fas fa-user-graduate"></i></div>
+                Approved Students
+                <span class="adm-count-badge">{{ students|length }}</span>
+            </div>
+        </div>
+
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>LRN</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Campus</th>
+                        <th>Requirements</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td><span class="lrn-cell">{{ student.lrn|default:'—' }}</span></td>
+                        <td>
+                            <strong>{{ student.user.last_name }}</strong>, {{ student.user.first_name }}
+                            {% if student.middle_name %} {{ student.middle_name }}{% endif %}
+                        </td>
+                        <td>{{ student.user.email }}</td>
+                        <td>{{ student.phone|default:'—' }}</td>
+                        <td><span class="campus-badge">{{ student.campus.name|default:'—' }}</span></td>
+                        <td>
+                            {% if student.bc_status == 'completed' and student.vid_status == 'completed' %}
+                            <span class="req-badge req-complete"><i class="fas fa-check-circle"></i> Complete</span>
+                            {% elif student.bc_status == 'not_available' and student.vid_status == 'not_available' %}
+                            <span class="req-badge req-none"><i class="fas fa-times-circle"></i> None</span>
+                            {% else %}
+                            <span class="req-badge req-partial"><i class="fas fa-exclamation-circle"></i> Partial</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <button class="act-btn act-view" onclick="viewStudent('{{ student.id }}')">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <a href="{% url 'edit_student' student.id %}" class="act-btn act-edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <button class="act-btn act-delete"
+                                    onclick="confirmDelete('{{ student.id }}', '{{ student.user.last_name }}, {{ student.user.first_name }}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="adm-empty">
+                                <i class="fas fa-user-graduate"></i>
+                                <h3>No Approved Students Found</h3>
+                                <p>{% if search_query %}No results for "{{ search_query }}".{% else %}No approved
+                                    students yet.{% endif %}</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div><!-- /.ms-wrap -->
+
+
+<!-- ══ VIEW MODAL ══ -->
+<div id="viewModal" class="adm-modal">
+    <div class="adm-modal-box modal-lg">
+        <div class="adm-modal-head head-view">
+            <h3><i class="fas fa-user-graduate"></i> Student Enrollment Information</h3>
+            <button class="adm-modal-close" onclick="closeAdmModal('viewModal')">&times;</button>
+        </div>
+        <div id="viewModalContent" class="adm-modal-body body-lg">
+            <div class="adm-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading student information…</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ══ DELETE MODAL ══ -->
+<div id="deleteModal" class="adm-modal">
+    <div class="adm-modal-box modal-sm">
+        <div class="adm-modal-head head-delete">
+            <h3><i class="fas fa-trash-alt"></i> Confirm Deletion</h3>
+            <button class="adm-modal-close" onclick="closeAdmModal('deleteModal')">&times;</button>
+        </div>
+        <div class="adm-modal-body body-sm">
+            <div class="delete-body">
+                <i class="fas fa-exclamation-triangle delete-icon"></i>
+                <p style="color:#374151; font-weight:600; margin-bottom:8px;">You are about to permanently delete:</p>
+                <div class="delete-name" id="deleteStudentName"></div>
+                <p class="delete-warning">This action cannot be undone. All associated data will be removed.</p>
+                <form id="deleteForm" method="POST">
+                    {% csrf_token %}
+                    <div class="delete-actions">
+                        <button type="button" class="btn-cancel" onclick="closeAdmModal('deleteModal')">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn-confirm-delete">
+                            <i class="fas fa-trash-alt"></i> Yes, Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function deleteUrl(id) { return "{% url 'delete_student' 0 %}".replace('/0/', '/' + id + '/'); }
+    function detailUrl(id) { return "{% url 'get_student_details' 0 %}".replace('/0/', '/' + id + '/'); }
+
+    function openAdmModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeAdmModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    document.querySelectorAll('.adm-modal').forEach(function (m) {
+        m.addEventListener('click', function (e) { if (e.target === m) closeAdmModal(m.id); });
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.adm-modal').forEach(function (m) { m.classList.remove('open'); });
+        }
+    });
+
+    /* ── View ── */
+    function viewStudent(studentId) {
+        var content = document.getElementById('viewModalContent');
+        content.innerHTML = '<div class="adm-loading"><i class="fas fa-spinner fa-spin"></i><p>Loading student information…</p></div>';
+        openAdmModal('viewModal');
+
+        fetch(detailUrl(studentId))
+            .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+            .then(function (d) {
+                var v = function (val) { return val || '—'; };
+                var vf = function (arr) { return (arr && arr.length > 0) ? arr.join(', ') : '—'; };
+                function field(label, value) {
+                    return '<div class="ro-field"><label>' + label + '</label><p>' + value + '</p></div>';
+                }
+                function section(title, fieldsHtml) {
+                    return '<div class="ro-section-title">' + title + '</div><div class="ro-section-body">' + fieldsHtml + '</div>';
+                }
+                var html = '<div class="ro-container">' +
+                    '<div class="ro-header"><h1>Student Enrollment Information</h1></div>';
+
+                html += section('Personal Details',
+                    field('LRN', v(d.lrn)) +
+                    field('First Name', v(d.first_name)) +
+                    field('Middle Name', v(d.middle_name)) +
+                    field('Last Name', v(d.last_name)) +
+                    field('Extension Name', v(d.extension_name)) +
+                    field('Email', v(d.email)) +
+                    field('Gender', v(d.gender)) +
+                    field('Birthdate', v(d.birthdate)) +
+                    field('Age', v(d.age)) +
+                    field('Place of Birth', v(d.place_of_birth)) +
+                    field('Civil Status', v(d.civil_status)) +
+                    field('Religion', v(d.religion)) +
+                    field('Mother Tongue', v(d.mother_tongue))
+                );
+
+                html += section('Contact Information',
+                    field('Phone', v(d.phone)) +
+                    field('Contact Numbers', v(d.contact_numbers))
+                );
+
+                html += section('Current Address',
+                    field('Street Name', v(d.street_name)) +
+                    field('Barangay', v(d.barangay)) +
+                    field('Municipality', v(d.municipality)) +
+                    field('Province', v(d.province)) +
+                    field('ZIP Code', v(d.zip_code))
+                );
+
+                html += section('Permanent Address',
+                    field('Same as Current Address', v(d.same_address)) +
+                    field('Street Name', v(d.permanent_street_name)) +
+                    field('Barangay', v(d.permanent_barangay)) +
+                    field('Municipality', v(d.permanent_municipality)) +
+                    field('Province', v(d.permanent_province)) +
+                    field('ZIP Code', v(d.permanent_zip_code))
+                );
+
+                html += section('Special Information',
+                    field('Indigenous People', d.is_indigenous_people ? 'Yes' : 'No') +
+                    field('Indigenous Group (Specify)', v(d.indigenous_specify)) +
+                    field('4Ps Beneficiary', d.is_4ps_beneficiary ? 'Yes' : 'No') +
+                    field('4Ps Household ID', v(d.fourps_household_id)) +
+                    field('Person with Disability (PWD)', d.is_pwd ? 'Yes' : 'No') +
+                    field('PWD ID', d.has_pwd_id ? 'Yes' : 'No') +
+                    field('Disability Types', vf(d.disability_types)) +
+                    field('Disability Subtypes', vf(d.disability_subtypes))
+                );
+
+                html += section('ALS History',
+                    field('Attended ALS Before', d.attended_als_before ? 'Yes' : 'No') +
+                    field('ALS Programs', vf(d.als_programs)) +
+                    field('ALS Completed', v(d.als_completed)) +
+                    field('ALS Not Completed Reason', v(d.als_not_completed_reason)) +
+                    field('Reasons Not Schooling', vf(d.reasons_not_schooling)) +
+                    field('Other Reason (Not Schooling)', v(d.reason_not_schooling_other))
+                );
+
+                html += section('Learning Center & Availability',
+                    field('Learning Center Distance', v(d.learning_center_distance)) +
+                    field('Learning Center Transport', v(d.learning_center_transport)) +
+                    field('Other Transport', v(d.learning_center_transport_other)) +
+                    field('Travel Time', v(d.travel_time)) +
+                    field('Monday Availability', v(d.availability ? d.availability.Monday : null)) +
+                    field('Tuesday Availability', v(d.availability ? d.availability.Tuesday : null)) +
+                    field('Wednesday Availability', v(d.availability ? d.availability.Wednesday : null)) +
+                    field('Thursday Availability', v(d.availability ? d.availability.Thursday : null)) +
+                    field('Friday Availability', v(d.availability ? d.availability.Friday : null)) +
+                    field('Saturday Availability', v(d.availability ? d.availability.Saturday : null)) +
+                    field('Sunday Availability', v(d.availability ? d.availability.Sunday : null))
+                );
+
+                html += section('Parents / Guardians',
+                    field('Father Name', v(d.father_name)) +
+                    field('Mother Name', v(d.mother_name)) +
+                    field('Guardian Name', v(d.guardian_name))
+                );
+
+                html += section('Enrollment Details',
+                    field('Last Grade Levels', vf(d.last_grade_levels)) +
+                    field('Learning Modalities', vf(d.learning_modalities)) +
+                    field('Criteria Plan', vf(d.criteria_plan)) +
+                    field('Campus', v(d.campus)) +
+                    field('Enrolled In', v(d.enrolled_in)) +
+                    field('Status', v(d.status)) +
+                    field('Registration Date', v(d.registration_date))
+                );
+
+                html += section('Requirements Status',
+                    field('Birth Certificate', v(d.bc_status)) +
+                    field('Valid ID', v(d.vid_status))
+                );
+
+                if (d.documents && d.documents.length > 0) {
+                    var docFields = '';
+                    d.documents.forEach(function (doc) {
+                        docFields += field(doc.name, '<a href="' + doc.url + '" target="_blank" style="color:#1a7a3f;text-decoration:underline;"><i class="fas fa-' + doc.icon + '"></i> View ' + doc.name + '</a>');
+                    });
+                    html += section('Uploaded Documents', docFields);
+                }
+
+                html += '</div>';
+                content.innerHTML = html;
+            })
+            .catch(function () {
+                content.innerHTML = '<div class="adm-loading" style="color:#c0392b;"><i class="fas fa-exclamation-circle" style="color:#c0392b;"></i><p>Error loading student details.</p></div>';
+            });
+    }
+
+    /* ── Delete ── */
+    function confirmDelete(studentId, studentName) {
+        document.getElementById('deleteStudentName').textContent = studentName;
+        document.getElementById('deleteForm').action = deleteUrl(studentId);
+        openAdmModal('deleteModal');
+    }
+</script>
+{% endblock %}

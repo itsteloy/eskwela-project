@@ -1,0 +1,46 @@
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>School</th>
+            <th>Date Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for teacher in teachers %}
+        <tr>
+            <td><strong>{{ teacher.username }}</strong></td>
+            <td>{{ teacher.last_name }}, {{ teacher.first_name }}</td>
+            <td>{{ teacher.email }}</td>
+            <td><span class="school-badge">{{ teacher.teacher_profile.get_campus_display }}</span></td>
+            <td>{{ teacher.date_joined|date:"M d, Y" }}</td>
+            <td>
+                <div class="action-buttons">
+                    <a href="{% url 'edit_teacher' teacher.id %}" class="action-btn btn-edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'reset_teacher_password' teacher.id %}" class="action-btn btn-reset"
+                        onclick="return confirm('Reset password?')">
+                        <i class="fas fa-key"></i>
+                    </a>
+                    <a href="{% url 'delete_teacher' teacher.id %}" class="action-btn btn-delete"
+                        onclick="return confirm('Delete this teacher?')">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="empty-message">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h3>No Teachers Found</h3>
+                <p>No teacher accounts exist yet.</p>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

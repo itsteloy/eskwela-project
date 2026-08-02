@@ -1,0 +1,1066 @@
+{% extends 'administrator/admin_base.html' %}
+{% load static %}
+
+{% block title %}Admission Management | Eskwela{% endblock %}
+{% block page_title %}Admission Management{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ── Google Font ── */
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    /* ── Token overrides scoped to this page ── */
+    .admission-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ════════════════════════════════
+     STAT CARDS
+  ════════════════════════════════ */
+    .adm-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 32px;
+    }
+
+    .adm-stat {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        transition: transform .18s, box-shadow .18s;
+    }
+
+    .adm-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+    }
+
+    .adm-stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .icon-pending {
+        background: #fff7e6;
+        color: #e07b00;
+    }
+
+    .icon-approved {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .icon-rejected {
+        background: #fdecea;
+        color: #c0392b;
+    }
+
+    .icon-total {
+        background: #e8f0fe;
+        color: #2a56c6;
+    }
+
+    .adm-stat-body {
+        flex: 1;
+    }
+
+    .adm-stat-label {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #8a9aa8;
+        margin-bottom: 4px;
+    }
+
+    .adm-stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+    }
+
+    /* ════════════════════════════════
+     TABLE SECTION
+  ════════════════════════════════ */
+    .adm-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .adm-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 20px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .adm-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+    }
+
+    .adm-section-title .title-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #e6f7ed;
+        color: #1a7a3f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+    }
+
+    .adm-count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #fef3cd;
+        color: #856404;
+        font-size: .75rem;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 20px;
+        border: 1px solid #f0d080;
+        margin-left: 4px;
+    }
+
+    /* Filter select */
+    .adm-filter-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .adm-filter-label {
+        font-size: .8rem;
+        font-weight: 600;
+        color: #6b7c7a;
+        white-space: nowrap;
+    }
+
+    .adm-select {
+        padding: 7px 32px 7px 12px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 8px;
+        font-size: .85rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+        transition: border-color .2s;
+    }
+
+    .adm-select:focus {
+        outline: none;
+        border-color: #1a7a3f;
+        box-shadow: 0 0 0 3px rgba(26, 122, 63, .12);
+    }
+
+    /* ── Scrollable table wrapper ── */
+    .adm-table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── Table ── */
+    .adm-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .875rem;
+        min-width: 900px;
+    }
+
+    .adm-table thead tr {
+        background: #f0f7f0;
+    }
+
+    .adm-table th {
+        padding: 13px 16px;
+        text-align: left;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #4a6a5a;
+        white-space: nowrap;
+        border-bottom: 2px solid #dceadc;
+    }
+
+    .adm-table td {
+        padding: 14px 16px;
+        color: #2d3f36;
+        border-bottom: 1px solid #f0f5f0;
+        vertical-align: middle;
+    }
+
+    .adm-table tbody tr {
+        transition: background .14s;
+    }
+
+    .adm-table tbody tr:hover {
+        background: #f5fbf5;
+    }
+
+    .adm-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* LRN mono */
+    .lrn-cell {
+        font-family: 'DM Mono', monospace;
+        font-size: .8rem;
+        font-weight: 500;
+        color: #4a6a5a;
+        background: #f0f7f0;
+        padding: 3px 8px;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    /* Campus badge */
+    .campus-badge {
+        display: inline-block;
+        background: #e8f0fe;
+        color: #2a56c6;
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+    }
+
+    /* Doc badges */
+    .doc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .78rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        border: none;
+        transition: opacity .15s, transform .15s;
+    }
+
+    .doc-badge:hover {
+        opacity: .85;
+        transform: scale(1.03);
+    }
+
+    .doc-has {
+        background: #e6f7ed;
+        color: #1a7a3f;
+    }
+
+    .doc-none {
+        background: #fdecea;
+        color: #c0392b;
+        cursor: default;
+    }
+
+    /* ════════════════════════════════
+     ACTION BUTTONS — all distinct
+  ════════════════════════════════ */
+    .action-group {
+        display: flex;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 13px;
+        border-radius: 7px;
+        font-size: .78rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        line-height: 1.4;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    }
+
+    .act-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    /* View — slate blue */
+    .act-view {
+        background: #4a6fa5;
+        color: #ffffff;
+    }
+
+    /* Approve — forest green */
+    .act-approve {
+        background: #1a7a3f;
+        color: #ffffff;
+    }
+
+    /* Reject — crimson red */
+    .act-reject {
+        background: #c0392b;
+        color: #ffffff;
+    }
+
+    /* ── Empty state ── */
+    .adm-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: #8a9aa8;
+    }
+
+    .adm-empty i {
+        font-size: 3rem;
+        color: #c8dfc8;
+        margin-bottom: 14px;
+        display: block;
+    }
+
+    .adm-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .adm-empty p {
+        font-size: .9rem;
+    }
+
+    /* ════════════════════════════════
+     MODALS
+  ════════════════════════════════ */
+    .adm-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 40, 30, .55);
+        backdrop-filter: blur(4px);
+        z-index: 9000;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .adm-modal.open {
+        display: flex;
+    }
+
+    .adm-modal-box {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, .22);
+        width: 100%;
+        overflow: hidden;
+        animation: modalIn .22s ease;
+    }
+
+    @keyframes modalIn {
+        from {
+            opacity: 0;
+            transform: scale(.95) translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .adm-modal-box.modal-lg {
+        max-width: 1050px;
+    }
+
+    .adm-modal-box.modal-md {
+        max-width: 800px;
+    }
+
+    .adm-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        background: #1b3a2d;
+        color: #ffffff;
+    }
+
+    .adm-modal-head h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+    }
+
+    .adm-modal-close {
+        background: rgba(255, 255, 255, .15);
+        border: none;
+        color: #ffffff;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .15s;
+        line-height: 1;
+    }
+
+    .adm-modal-close:hover {
+        background: rgba(255, 255, 255, .28);
+    }
+
+    .adm-modal-body {
+        overflow-y: auto;
+    }
+
+    .adm-modal-body.body-lg {
+        max-height: calc(90vh - 56px);
+        padding: 28px;
+        background: #f5fbf5;
+    }
+
+    .adm-modal-body.body-md {
+        max-height: 70vh;
+        padding: 20px;
+    }
+
+    /* Loading spinner inside modal */
+    .adm-loading {
+        text-align: center;
+        padding: 50px 20px;
+        color: #6b7c7a;
+    }
+
+    .adm-loading i {
+        font-size: 2.5rem;
+        color: #1a7a3f;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    /* Student detail readonly form */
+    .ro-container {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 28px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+    }
+
+    .ro-header {
+        text-align: center;
+        padding-bottom: 20px;
+        margin-bottom: 26px;
+        border-bottom: 2px solid #1a7a3f;
+    }
+
+    .ro-header h1 {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #1b3a2d;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .ro-section-title {
+        background: #1b3a2d;
+        color: #ffffff;
+        padding: 10px 16px;
+        border-radius: 8px 8px 0 0;
+        font-size: .8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        margin-top: 20px;
+        margin-bottom: 0;
+    }
+
+    .ro-section-body {
+        border: 1.5px solid #dceadc;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        overflow: hidden;
+    }
+
+    .ro-field {
+        padding: 13px 16px;
+        border-bottom: 1px solid #eaf2ea;
+        border-right: 1px solid #eaf2ea;
+    }
+
+    .ro-field:nth-child(even) {
+        border-right: none;
+    }
+
+    .ro-field:last-child,
+    .ro-field:nth-last-child(2):nth-child(odd) {
+        border-bottom: none;
+    }
+
+    .ro-field label {
+        font-size: .73rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .ro-field p {
+        font-size: .9rem;
+        color: #1b3a2d;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* Document items */
+    .doc-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 16px;
+        border-bottom: 1px solid #f0f5f0;
+        gap: 12px;
+    }
+
+    .doc-item:last-child {
+        border-bottom: none;
+    }
+
+    .doc-item-name {
+        font-size: .9rem;
+        font-weight: 600;
+        color: #1b3a2d;
+        flex: 1;
+    }
+
+    .doc-view-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #4a6fa5;
+        color: #ffffff;
+        padding: 6px 14px;
+        border-radius: 7px;
+        font-size: .8rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: filter .15s;
+    }
+
+    .doc-view-btn:hover {
+        filter: brightness(.88);
+    }
+
+    /* ════════════════════════════════
+     RESPONSIVE
+  ════════════════════════════════ */
+    @media (max-width: 1100px) {
+        .adm-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .adm-stats {
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .adm-stat {
+            padding: 16px 14px;
+        }
+
+        .adm-stat-value {
+            font-size: 1.6rem;
+        }
+
+        .adm-section-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .action-group {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .ro-section-body {
+            grid-template-columns: 1fr;
+        }
+
+        .ro-field {
+            border-right: none;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .adm-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="admission-wrap">
+
+    <!-- ── STAT CARDS ── -->
+    <div class="adm-stats">
+        <div class="adm-stat">
+            <div class="adm-stat-icon icon-pending">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="adm-stat-body">
+                <div class="adm-stat-label">Pending</div>
+                <div class="adm-stat-value">{{ total_pending }}</div>
+            </div>
+        </div>
+        <div class="adm-stat">
+            <div class="adm-stat-icon icon-approved">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="adm-stat-body">
+                <div class="adm-stat-label">Approved</div>
+                <div class="adm-stat-value">{{ total_approved }}</div>
+            </div>
+        </div>
+        <div class="adm-stat">
+            <div class="adm-stat-icon icon-rejected">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="adm-stat-body">
+                <div class="adm-stat-label">Rejected</div>
+                <div class="adm-stat-value">{{ total_rejected }}</div>
+            </div>
+        </div>
+        <div class="adm-stat">
+            <div class="adm-stat-icon icon-total">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="adm-stat-body">
+                <div class="adm-stat-label">Total</div>
+                <div class="adm-stat-value">{{ total_pending|add:total_approved|add:total_rejected }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PENDING TABLE ── -->
+    <div class="adm-section">
+        <div class="adm-section-header">
+            <div class="adm-section-title">
+                <div class="title-icon"><i class="fas fa-clock"></i></div>
+                Pending Approvals
+                <span class="adm-count-badge">{{ total_pending }}</span>
+            </div>
+            <div class="adm-filter-wrap">
+                <span class="adm-filter-label">Filter:</span>
+                <select id="documentFilter" class="adm-select" onchange="filterByDocuments()">
+                    <option value="all">All Students</option>
+                    <option value="with_docs">With Documents</option>
+                    <option value="without_docs">Without Documents</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>LRN</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Birthdate</th>
+                        <th>Gender</th>
+                        <th>Campus</th>
+                        <th>Documents</th>
+                        <th>Registered</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in pending_students %}
+                    {% with doc_count=student.get_document_count has_docs=student.has_uploaded_documents %}
+                    <tr class="student-row" data-has-documents="{% if has_docs %}yes{% else %}no{% endif %}">
+                        <td>
+                            <span class="lrn-cell">{{ student.lrn|default:'—' }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ student.user.last_name }}</strong>, {{ student.user.first_name }}
+                            {% if student.middle_name %} {{ student.middle_name }}{% endif %}
+                        </td>
+                        <td>{{ student.user.email }}</td>
+                        <td>{{ student.phone|default:'—' }}</td>
+                        <td>{{ student.birthdate|date:"Y-m-d"|default:'—' }}</td>
+                        <td>{{ student.gender|default:'—' }}</td>
+                        <td>
+                            <span class="campus-badge">{{ student.campus.name|default:'—' }}</span>
+                        </td>
+                        <td>
+                            {% if has_docs %}
+                            <button class="doc-badge doc-has" onclick="viewDocuments('{{ student.id }}')">
+                                <i class="fas fa-file-alt"></i> View ({{ doc_count }})
+                            </button>
+                            {% else %}
+                            <span class="doc-badge doc-none">
+                                <i class="fas fa-exclamation-triangle"></i> None
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ student.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="action-group">
+                                <button class="act-btn act-view" onclick="viewStudentDetails('{{ student.id }}')">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <a href="{% url 'approve_student' student.id %}" class="act-btn act-approve"
+                                    onclick="return confirm('Approve this student? An email with login credentials will be sent.')">
+                                    <i class="fas fa-check"></i> Approve
+                                </a>
+                                <a href="{% url 'reject_student' student.id %}" class="act-btn act-reject"
+                                    onclick="return confirm('Reject this student?')">
+                                    <i class="fas fa-times"></i> Reject
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endwith %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="10">
+                            <div class="adm-empty">
+                                <i class="fas fa-check-circle"></i>
+                                <h3>No Pending Approvals</h3>
+                                <p>All student registrations have been processed.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div><!-- /.admission-wrap -->
+
+
+<!-- ══════════════════════════════════════
+     MODAL — Student Details
+══════════════════════════════════════ -->
+<div id="studentDetailsModal" class="adm-modal">
+    <div class="adm-modal-box modal-lg">
+        <div class="adm-modal-head">
+            <h3><i class="fas fa-user-graduate"></i> Student Enrollment Information</h3>
+            <button class="adm-modal-close" onclick="closeAdmModal('studentDetailsModal')">&times;</button>
+        </div>
+        <div id="studentDetailsContent" class="adm-modal-body body-lg">
+            <div class="adm-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading student information…</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     MODAL — Documents Viewer
+══════════════════════════════════════ -->
+<div id="documentsModal" class="adm-modal">
+    <div class="adm-modal-box modal-md">
+        <div class="adm-modal-head">
+            <h3><i class="fas fa-folder-open"></i> Student Documents</h3>
+            <button class="adm-modal-close" onclick="closeAdmModal('documentsModal')">&times;</button>
+        </div>
+        <div id="documentsContent" class="adm-modal-body body-md">
+            <div class="adm-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading documents…</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    /* ── helpers ── */
+    function openAdmModal(id) {
+        document.getElementById(id).classList.add('open');
+    }
+    function closeAdmModal(id) {
+        document.getElementById(id).classList.remove('open');
+    }
+
+    /* Close on backdrop click */
+    document.querySelectorAll('.adm-modal').forEach(function (m) {
+        m.addEventListener('click', function (e) {
+            if (e.target === m) closeAdmModal(m.id);
+        });
+    });
+
+    /* Close on Escape */
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.adm-modal').forEach(function (m) {
+                m.classList.remove('open');
+            });
+        }
+    });
+
+    /* ── View Student Details ── */
+    function viewStudentDetails(studentId) {
+        const content = document.getElementById('studentDetailsContent');
+        content.innerHTML = '<div class="adm-loading"><i class="fas fa-spinner fa-spin"></i><p>Loading student information…</p></div>';
+        openAdmModal('studentDetailsModal');
+
+        fetch('/api/get_student_details/' + studentId + '/')
+            .then(function (r) {
+                if (!r.ok) throw new Error('Network error');
+                return r.json();
+            })
+            .then(function (d) {
+                const v = function (val) { return val || '—'; };
+
+                function field(label, value) {
+                    return '<div class="ro-field"><label>' + label + '</label><p>' + value + '</p></div>';
+                }
+
+                function section(title, fields) {
+                    return '<div class="ro-section-title">' + title + '</div>' +
+                        '<div class="ro-section-body">' + fields.join('') + '</div>';
+                }
+
+                // Helper for list fields
+                function formatList(arr) {
+                    if (!arr || arr.length === 0) return '—';
+                    return arr.map(function (item) { return item; }).join(', ');
+                }
+
+                // Availability table
+                function buildAvailability(avail) {
+                    var html = '<div class="ro-section-title">Weekly Availability</div><div class="ro-section-body">';
+                    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                    days.forEach(function (day) {
+                        html += field(day, v(avail[day]));
+                    });
+                    html += '</div>';
+                    return html;
+                }
+
+                // Documents section
+                function buildDocuments(docs) {
+                    var html = '<div class="ro-section-title">Uploaded Documents</div><div class="ro-section-body" style="display:block;">';
+                    if (docs && docs.length > 0) {
+                        docs.forEach(function (doc) {
+                            html += '<div class="doc-item">' +
+                                '<span class="doc-item-name"><i class="fas fa-file-alt" style="color:#4a6a5a;margin-right:8px;"></i>' + doc.name + '</span>' +
+                                '<a href="' + doc.url + '" target="_blank" class="doc-view-btn"><i class="fas fa-eye"></i> View</a>' +
+                                '</div>';
+                        });
+                    } else {
+                        html += '<div class="doc-item"><span class="doc-item-name" style="color:#c0392b;">No documents uploaded</span></div>';
+                    }
+                    html += '</div>';
+                    return html;
+                }
+
+                var personalFields = [
+                    field('LRN', v(d.lrn)),
+                    field('First Name', v(d.first_name)),
+                    field('Middle Name', v(d.middle_name)),
+                    field('Last Name', v(d.last_name)),
+                    field('Extension Name', v(d.extension_name)),
+                    field('Email', v(d.email)),
+                    field('Birthdate', v(d.birthdate)),
+                    field('Age', v(d.age)),
+                    field('Gender', v(d.gender)),
+                    field('Place of Birth', v(d.place_of_birth)),
+                    field('Civil Status', v(d.civil_status)),
+                    field('Religion', v(d.religion)),
+                    field('Mother Tongue', v(d.mother_tongue)),
+                ];
+
+                var specialFields = [
+                    field('Indigenous Person', d.is_indigenous_people ? 'Yes' : 'No'),
+                    field('IP Specify', v(d.indigenous_specify)),
+                    field('4Ps Beneficiary', d.is_4ps_beneficiary ? 'Yes' : 'No'),
+                    field('4Ps Household ID', v(d.fourps_household_id)),
+                ];
+
+                var contactFields = [
+                    field('Phone', v(d.phone)),
+                    field('Contact Numbers', v(d.contact_numbers)),
+                ];
+
+                var currentAddressFields = [
+                    field('Street Name', v(d.street_name)),
+                    field('Barangay', v(d.barangay)),
+                    field('Municipality', v(d.municipality)),
+                    field('Province', v(d.province)),
+                    field('ZIP Code', v(d.zip_code)),
+                    field('Full Address', v(d.address)),
+                ];
+
+                var permanentAddressFields = [
+                    field('Same as Current Address', d.same_address ? 'Yes' : 'No'),
+                    field('Permanent Street', v(d.permanent_street_name)),
+                    field('Permanent Barangay', v(d.permanent_barangay)),
+                    field('Permanent Municipality', v(d.permanent_municipality)),
+                    field('Permanent Province', v(d.permanent_province)),
+                    field('Permanent ZIP Code', v(d.permanent_zip_code)),
+                ];
+
+                var pwdFields = [
+                    field('PWD', d.is_pwd ? 'Yes' : 'No'),
+                    field('Has PWD ID', d.has_pwd_id ? 'Yes' : 'No'),
+                    field('Disability Types', formatList(d.disability_types)),
+                    field('Disability Subtypes', formatList(d.disability_subtypes)),
+                ];
+
+                var alsFields = [
+                    field('Attended ALS Before', d.attended_als_before ? 'Yes' : 'No'),
+                    field('ALS Programs', formatList(d.als_programs)),
+                    field('ALS Completed', v(d.als_completed)),
+                    field('ALS Not Completed Reason', v(d.als_not_completed_reason)),
+                    field('Reasons Not Schooling', formatList(d.reasons_not_schooling)),
+                    field('Other Reason Not Schooling', v(d.reason_not_schooling_other)),
+                    field('Last Grade Levels', formatList(d.last_grade_levels)),
+                ];
+
+                var learningCenterFields = [
+                    field('Learning Center Distance', v(d.learning_center_distance)),
+                    field('Transport Mode', v(d.learning_center_transport)),
+                    field('Transport Other', v(d.learning_center_transport_other)),
+                    field('Travel Time', v(d.travel_time)),
+                ];
+
+                var parentFields = [
+                    field('Father', v(d.father_name)),
+                    field('Mother', v(d.mother_name)),
+                    field('Guardian', v(d.guardian_name)),
+                ];
+
+                var enrollmentFields = [
+                    field('Campus', v(d.campus)),
+                    field('Enrolled In', v(d.enrolled_in)),
+                    field('Status', v(d.status)),
+                    field('Registration Date', v(d.registration_date)),
+                    field('Learning Modalities', formatList(d.learning_modalities)),
+                    field('Criteria Plan', formatList(d.criteria_plan)),
+                ];
+
+                var html = '<div class="ro-container">' +
+                    '<div class="ro-header"><h1>Student Enrollment Information</h1></div>' +
+                    section('Personal Details', personalFields) +
+                    section('Special Information', specialFields) +
+                    section('Contact Information', contactFields) +
+                    section('Current Address', currentAddressFields) +
+                    section('Permanent Address', permanentAddressFields) +
+                    section('PWD Information', pwdFields) +
+                    section('ALS History & Education', alsFields) +
+                    section('Learning Center', learningCenterFields) +
+                    buildAvailability(d.availability || {}) +
+                    section('Parents / Guardians', parentFields) +
+                    section('Enrollment Details', enrollmentFields) +
+                    buildDocuments(d.documents || []) +
+                    '</div>';
+
+                content.innerHTML = html;
+            })
+            .catch(function () {
+                content.innerHTML = '<div class="adm-loading" style="color:#c0392b;"><i class="fas fa-exclamation-circle" style="color:#c0392b;"></i><p>Error loading student details. Please try again.</p></div>';
+            });
+    }
+
+    /* ── View Documents ── */
+    function viewDocuments(studentId) {
+        const content = document.getElementById('documentsContent');
+        content.innerHTML = '<div class="adm-loading"><i class="fas fa-spinner fa-spin"></i><p>Loading documents…</p></div>';
+        openAdmModal('documentsModal');
+
+        fetch('/api/get_student_documents/' + studentId + '/')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                let html = '';
+                if (data.documents && data.documents.length > 0) {
+                    data.documents.forEach(function (doc) {
+                        html +=
+                            '<div class="doc-item">' +
+                            '<span class="doc-item-name"><i class="fas fa-file-alt" style="color:#4a6a5a;margin-right:8px;"></i>' + doc.name + '</span>' +
+                            '<a href="' + doc.url + '" target="_blank" class="doc-view-btn"><i class="fas fa-eye"></i> View</a>' +
+                            '</div>';
+                    });
+                } else {
+                    html = '<div class="adm-loading"><i class="fas fa-folder-open"></i><p>No documents uploaded for this student.</p></div>';
+                }
+                content.innerHTML = html;
+            })
+            .catch(function () {
+                content.innerHTML = '<div class="adm-loading" style="color:#c0392b;"><i class="fas fa-exclamation-circle" style="color:#c0392b;"></i><p>Error loading documents.</p></div>';
+            });
+    }
+
+    /* ── Filter ── */
+    function filterByDocuments() {
+        const filter = document.getElementById('documentFilter').value;
+        document.querySelectorAll('.student-row').forEach(function (row) {
+            if (filter === 'all') {
+                row.style.display = '';
+            } else if (filter === 'with_docs') {
+                row.style.display = row.dataset.hasDocuments === 'yes' ? '' : 'none';
+            } else {
+                row.style.display = row.dataset.hasDocuments === 'no' ? '' : 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

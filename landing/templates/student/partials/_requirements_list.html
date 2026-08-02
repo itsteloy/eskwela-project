@@ -1,0 +1,75 @@
+<div class="requirements-page">
+    <div class="requirements-header">
+        <h2>Requirements Checklist</h2>
+        <div class="status-summary">
+            <div class="status-box completed">
+                <div class="count">{{ requirements.completed }}</div>
+                <div class="label">Completed</div>
+            </div>
+            <div class="status-box pending">
+                <div class="count">{{ requirements.pending }}</div>
+                <div class="label">Pending</div>
+            </div>
+        </div>
+    </div>
+
+    {% for category in requirements.categories %}
+    <div class="requirement-category">
+        <div class="category-header">
+            <h3>{{ category.name }}</h3>
+            <span>{{ category.items|length }} items</span>
+        </div>
+        <div class="requirement-list">
+            {% for item in category.items %}
+            <div class="requirement-card">
+                <div class="requirement-icon">
+                    <i
+                        class="fas fa-{% if 'Birth' in item.name %}id-card{% elif 'Report' in item.name %}file-alt{% elif 'Picture' in item.name %}image{% elif 'Assessment' in item.name %}clipboard-list{% else %}id-card{% endif %}"></i>
+                </div>
+                <div class="requirement-info">
+                    <h4>{{ item.name }}</h4>
+                    <p>
+                        {% if 'Birth' in item.name %}
+                        PSA or Barangay Certification
+                        {% elif 'Report' in item.name %}
+                        Previous school record (if any)
+                        {% elif 'Picture' in item.name %}
+                        White background, formal attire
+                        {% elif 'Assessment' in item.name %}
+                        Face-to-face assessment at your assigned campus
+                        {% else %}
+                        School ID, Government ID, or Barangay ID
+                        {% endif %}
+                    </p>
+                    <div class="requirement-meta">
+                        {% if item.submitted %}
+                        <span><i class="fas fa-calendar"></i> Submitted: {{ item.submitted }}</span>
+                        <span><i class="fas fa-check-circle" style="color: #28a745;"></i> Verified</span>
+                        {% elif item.deadline %}
+                        <span><i class="fas fa-clock"></i> Deadline: {{ item.deadline }}</span>
+                        {% elif item.schedule %}
+                        <span><i class="fas fa-calendar"></i> Schedule: {{ item.schedule }}</span>
+                        {% elif item.note %}
+                        <span><i class="fas fa-info-circle"></i> {{ item.note }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="requirement-status">
+                    {% if item.status == 'completed' %}
+                    <span class="status-badge completed">Completed</span>
+                    {% else %}
+                    <span class="status-badge pending">Pending</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="requirement-note">
+        <i class="fas fa-info-circle"></i>
+        <p>Please submit all requirements to your ALS coordinator. You can upload requirements here or submit personally
+            at your assigned campus.</p>
+    </div>
+</div>

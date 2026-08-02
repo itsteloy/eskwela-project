@@ -1,0 +1,64 @@
+{% load schedule_extras %}
+{% if has_schedule %}
+{% for day in days_order %}
+{% with day_schedules=schedules_by_day|get_item:day %}
+{% if day_schedules %}
+<div class="day-section">
+    <h2 class="day-title">{{ day }}</h2>
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Subject</th>
+                <th>Teacher</th>
+                <th>Room</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in day_schedules %}
+            <tr>
+                <td class="time-cell">{{ schedule.time_range }}</td>
+                <td>
+                    <span class="subject-cell">{{ schedule.subject }}</span>
+                    <span class="grade-badge">{{ schedule.get_grade_level_display }}</span>
+                </td>
+                <td>
+                    {% if schedule.teacher and schedule.teacher.user %}
+                        {{ schedule.teacher.user.get_full_name }}
+                        <div class="teacher-info">
+                            <i class="fas fa-school"></i> {{ schedule.teacher.get_campus_display }}
+                        </div>
+                    {% else %}
+                        <span style="color:#999;">TBA</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if schedule.room %}
+                    <span><i class="fas fa-door-open"></i> {{ schedule.room }}</span>
+                    {% else %}
+                    <span style="color: #999;">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if schedule.notes %}
+                    <span>{{ schedule.notes|truncatechars:30 }}</span>
+                    {% else %}
+                    <span style="color: #999;">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endwith %}
+{% endfor %}
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-calendar-alt"></i>
+    <h3>No Schedule Available</h3>
+    <p>Your teacher hasn't created any schedules for your campus yet.</p>
+</div>
+{% endif %}

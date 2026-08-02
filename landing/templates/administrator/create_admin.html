@@ -1,0 +1,248 @@
+{% extends 'administrator/admin_base.html' %}
+{% load static %}
+
+{% block title %}Create Admin | Eskwela{% endblock %}
+
+{% block page_title %}Create New Admin Account{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .ca-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    /* ── SECTION CARD ── */
+    .ca-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .ca-section-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .ca-header-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: #e8f0fe;
+        color: #2a56c6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .ca-section-header h2 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0;
+    }
+
+    .ca-form-body {
+        padding: 24px;
+    }
+
+    /* ── INFO BOX ── */
+    .ca-info-box {
+        background: #eff6ff;
+        border-left: 4px solid #2a56c6;
+        padding: 16px 20px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        font-size: .9rem;
+        color: #1e3a8a;
+    }
+
+    .ca-info-box i {
+        font-size: 1.2rem;
+        color: #2a56c6;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    .ca-info-box p {
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .ca-info-box strong {
+        color: #1e3a8a;
+    }
+
+    /* ── FORM STYLES ── */
+    .ca-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .ca-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 18px;
+    }
+
+    .ca-form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .ca-form-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .ca-form-group label .required-star {
+        color: #c0392b;
+    }
+
+    .ca-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .ca-input:focus {
+        outline: none;
+        border-color: #1a7a3f;
+        box-shadow: 0 0 0 3px rgba(26, 122, 63, .12);
+    }
+
+    .ca-hint {
+        font-size: .75rem;
+        color: #8a9aa8;
+        display: block;
+        margin-top: 4px;
+    }
+
+    /* ── BUTTON ── */
+    .ca-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 13px 28px;
+        border-radius: 9px;
+        font-size: .9rem;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .ca-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, .12);
+    }
+
+    .ca-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .btn-create {
+        background: #1a7a3f;
+        color: #ffffff;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+        .ca-form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="ca-wrap">
+
+    <div class="ca-section">
+        <div class="ca-section-header">
+            <div class="ca-header-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h2>Create New Administrator</h2>
+        </div>
+
+        <div class="ca-form-body">
+
+            <!-- Info Notice -->
+            <div class="ca-info-box">
+                <i class="fas fa-info-circle"></i>
+                <p><strong>Note:</strong> Only superusers can create new admin accounts. New admins will have full
+                    access to the system.</p>
+            </div>
+
+            <form method="POST" action="{% url 'create_admin' %}">
+                {% csrf_token %}
+
+                <div class="ca-form-grid">
+                    <div class="ca-form-group">
+                        <label><i class="fas fa-user"></i> First Name</label>
+                        <input type="text" name="first_name" class="ca-input" placeholder="Enter first name" required>
+                    </div>
+                    <div class="ca-form-group">
+                        <label><i class="fas fa-user"></i> Last Name</label>
+                        <input type="text" name="last_name" class="ca-input" placeholder="Enter last name" required>
+                    </div>
+                </div>
+
+                <div class="ca-form-group">
+                    <label><span class="required-star">*</span> <i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" name="email" class="ca-input" required placeholder="admin@school.edu">
+                </div>
+
+                <div class="ca-form-group">
+                    <label><span class="required-star">*</span> <i class="fas fa-user-tag"></i> Username</label>
+                    <input type="text" name="username" class="ca-input" required placeholder="Choose a username">
+                </div>
+
+                <div class="ca-form-group">
+                    <label><span class="required-star">*</span> <i class="fas fa-lock"></i> Password</label>
+                    <input type="password" name="password" class="ca-input" required placeholder="Enter password">
+                    <span class="ca-hint">Minimum 8 characters</span>
+                </div>
+
+                <button type="submit" class="ca-btn btn-create">
+                    <i class="fas fa-save"></i> Create Admin Account
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

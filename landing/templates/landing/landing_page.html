@@ -1,0 +1,698 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESKWELA · Flexible ALS Education</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/green-theme.css' %}">
+    <style>
+        :root {
+            --forest-green: #228B22;
+            --emerald: #10B981;
+            --sage: #4A7043;
+            --mint-bg: #F0F9F0;
+            --charcoal: #2F3E2F;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+            color: var(--charcoal);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            background: rgba(255, 255, 255, 0.97);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(34, 139, 34, 0.1);
+            backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        header.scrolled {
+            padding: 12px 0;
+            box-shadow: 0 10px 30px rgba(34, 139, 34, 0.12);
+        }
+
+        .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-img {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--forest-green);
+            box-shadow: 0 4px 20px rgba(34, 139, 34, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.08) rotate(8deg);
+        }
+
+        .logo-title {
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--white);           /* Changed to solid color */
+        }
+
+        nav {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--charcoal);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.02rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 2.5px;
+            background: linear-gradient(to right, var(--forest-green), var(--emerald));
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: var(--forest-green);
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f8fcf8 100%);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .hero-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(2.8rem, 5vw, 4.2rem);
+            line-height: 1.1;
+            font-weight: 800;
+            color: var(--forest-green);
+            margin-bottom: 24px;
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            color: #374837;
+            margin-bottom: 40px;
+            max-width: 520px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 16px 36px;
+            background: var(--forest-green);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(34, 139, 34, 0.3);
+        }
+
+        .btn-outline {
+            padding: 16px 36px;
+            background: transparent;
+            color: var(--forest-green);
+            border: 2px solid var(--forest-green);
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(34, 139, 34, 0.25);
+        }
+
+        /* LOGIN SECTION */
+        .login-section {
+            padding: 140px 40px 100px;
+            background: var(--white);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--forest-green);
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .login-options {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+            border: 1px solid #e0f0e0;
+            box-shadow: 0 10px 30px rgba(34, 139, 34, 0.08);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px rgba(34, 139, 34, 0.18);
+            border-color: var(--emerald);
+        }
+
+        .login-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #f0f9f0, #e0f0e0);
+            border-radius: 50%;
+            color: var(--forest-green);
+            transition: all 0.4s ease;
+        }
+
+        .login-card:hover .login-icon {
+            transform: scale(1.12) rotate(8deg);
+            background: linear-gradient(135deg, var(--emerald), var(--forest-green));
+            color: white;
+        }
+
+        .login-card h3 {
+            font-size: 1.45rem;
+            margin-bottom: 14px;
+            color: var(--charcoal);
+        }
+
+        .login-card p {
+            color: #666;
+            margin-bottom: 32px;
+            flex-grow: 1;
+        }
+
+        .login-btn {
+            margin-top: auto;
+            padding: 14px 28px;
+            background: var(--forest-green);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-btn:hover {
+            background: white;
+            color: var(--forest-green);
+            border: 2px solid var(--forest-green);
+        }
+
+        /* ABOUT SECTION */
+        .about-section {
+            padding: 120px 40px;
+            background: var(--mint-bg);
+        }
+
+        .about-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            font-size: 2.4rem;
+            margin-bottom: 20px;
+            color: var(--forest-green);
+            position: relative;
+            display: inline-block;
+        }
+
+        .about-text h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 70px;
+            height: 4px;
+            background: linear-gradient(to right, var(--forest-green), var(--emerald));
+            border-radius: 2px;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            color: #444;
+            margin-bottom: 22px;
+        }
+
+        .core-values {
+            margin-top: 40px;
+        }
+
+        .value-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .value-item i {
+            color: var(--emerald);
+            font-size: 1.5rem;
+            margin-top: 4px;
+        }
+
+        .about-image {
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(34, 139, 34, 0.2);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .about-image:hover img {
+            transform: scale(1.08);
+        }
+
+        /* FOOTER */
+        footer {
+            background: linear-gradient(135deg, var(--forest-green) 0%, #1e5f1e 100%);
+            color: white;
+            padding: 100px 40px 40px;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--emerald), #a3e6a3, var(--emerald));
+        }
+
+        .footer-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 60px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.35rem;
+            margin-bottom: 24px;
+            position: relative;
+            padding-bottom: 12px;
+            color: white;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--emerald);
+        }
+
+        .footer-column a,
+        .footer-column p {
+            color: #d0e8d0;
+            text-decoration: none;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .footer-column a:hover {
+            color: white;
+            padding-left: 6px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            background: white;
+            color: var(--forest-green);
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            color: #b3d9b3;
+            font-size: 0.95rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 40px;
+            }
+
+            .login-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 24px;
+            }
+
+            .hero {
+                min-height: 90vh;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .login-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header id="mainHeader">
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="logo-title">ESKWELA</div>
+            </div>
+            <nav>
+                <a href="#home">Home</a>
+                <a href="#login">Portals</a>
+                <a href="#about">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Education Without Limits</h1>
+                <p>ESKWELA ALS — flexible, supportive, and empowering learning for out-of-school youth and working
+                    adults in the Philippines.</p>
+                <div class="cta-buttons">
+                    <a href="{% url 'register' %}" class="btn-primary">
+                        <i class="fas fa-user-plus"></i> Register Now
+                    </a>
+                    <a href="#login" class="btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> Access Portal
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="{% static '/images/als.jpg' %}"alt="Students learning together">
+            </div>
+        </div>
+    </section>
+
+    <!-- LOGIN / PORTALS -->
+    <section class="login-section" id="login">
+        <div class="section-header">
+            <h2 class="section-title">Choose Your Portal</h2>
+            <p class="section-subtitle">Whether you're a student, teacher, or administrator — your learning journey
+                starts here.</p>
+        </div>
+
+        <div class="login-options">
+            <div class="login-card">
+                <div class="login-icon"><i class="fas fa-graduation-cap"></i></div>
+                <h3>Student Portal</h3>
+                <p>Access modules, submit assignments, track your progress, and connect with teachers.</p>
+                <a href="{% url 'student_login' %}" class="login-btn">Student Login →</a>
+            </div>
+
+            <div class="login-card">
+                <div class="login-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <h3>Teacher Portal</h3>
+                <p>Manage classes, grade assignments, and support your students effectively.</p>
+                <a href="{% url 'teacher_login' %}" class="login-btn">Teacher Login →</a>
+            </div>
+
+            <div class="login-card">
+                <div class="login-icon"><i class="fas fa-user-shield"></i></div>
+                <h3>Admin Portal</h3>
+                <p>Oversee operations, manage users, and generate reports.</p>
+                <a href="{% url 'admin_login' %}" class="login-btn">Admin Login →</a>
+            </div>
+
+            <div class="login-card">
+                <div class="login-icon"><i class="fas fa-user-plus"></i></div>
+                <h3>New Student?</h3>
+                <p>Join our community and begin your flexible learning journey today.</p>
+                <a href="{% url 'register' %}" class="login-btn">Register Now →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT / DEPED VALUES -->
+    <section class="about-section" id="about">
+        <div class="about-content">
+            <div class="about-text">
+                <h2>Mission</h2>
+                <p>To protect and promote the right of every Filipino to quality, equitable, culture-based, and complete
+                    basic education.</p>
+
+                <h2 style="margin-top: 50px;">Vision</h2>
+                <p>We dream of Filipinos who passionately love their country and whose values and competencies enable
+                    them to realize their full potential and contribute meaningfully to nation-building.</p>
+
+                <h2 style="margin-top: 50px;">Core Values</h2>
+                <div class="core-values">
+                    <div class="value-item">
+                        <i class="fas fa-pray"></i>
+                        <div><strong>Maka-Diyos</strong> — Faith in God as the foundation of moral character.</div>
+                    </div>
+                    <div class="value-item">
+                        <i class="fas fa-hands-helping"></i>
+                        <div><strong>Makatao</strong> — Respect for human dignity and rights.</div>
+                    </div>
+                    <div class="value-item">
+                        <i class="fas fa-leaf"></i>
+                        <div><strong>Makakalikasan</strong> — Care for the environment and sustainable living.</div>
+                    </div>
+                    <div class="value-item">
+                        <i class="fas fa-flag"></i>
+                        <div><strong>Makabansa</strong> — Love of country and commitment to national development.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-image">
+                <img src="{% static '/images/als2.jpg' %}" alt="DepEd ALS Education">
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>ESKWELA</h3>
+                <p>Flexible ALS Education Program<br>Empowering every learner to succeed.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/CALLedPERFORMINGARTScenter/" target="_blank"><i
+                            class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-map-marker-alt"></i> CN Building 2nd Floor, Cor. Quirino &amp; Magnanao St., P3
+                    Lemonsito, Panabo City</p>
+                <p><i class="fas fa-phone"></i> (+63) 916 169 5587</p>
+                <p><i class="fas fa-envelope"></i> calledperformingartsstudio@gmail.com</p>
+                <p><i class="fas fa-clock"></i> Monday – Friday: 8:00 AM – 5:00 PM</p>
+            </div>
+        </div>
+
+        <div class="copyright">
+            © 2024–2026 ESKWELA ALS • CALLED School of Performing Arts. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            document.getElementById('mainHeader').classList.toggle('scrolled', window.scrollY > 60);
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    const headerHeight = document.getElementById('mainHeader').offsetHeight;
+                    const elementPosition = target.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.scrollY - headerHeight - 30;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

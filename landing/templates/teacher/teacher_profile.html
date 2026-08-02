@@ -1,0 +1,508 @@
+{% extends 'teacher/teacher_base.html' %}
+{% load static %}
+
+{% block title %}Profile Settings | Teacher Eskwela{% endblock %}
+
+{% block page_title %}Profile Settings{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .tp-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+        max-width: 880px;
+        margin: 0 auto;
+    }
+
+    /* ── PROFILE CARD ── */
+    .tp-profile-card {
+        background: var(--forest-green);
+        border-radius: 16px;
+        padding: 32px;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 20px rgba(27, 58, 45, .15);
+        flex-wrap: wrap;
+    }
+
+    .tp-avatar {
+        width: 90px;
+        height: 90px;
+        background: rgba(255, 255, 255, .12);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #ffffff;
+        flex-shrink: 0;
+    }
+
+    .tp-avatar i {
+        font-size: 2.5rem;
+        color: #ffffff;
+    }
+
+    .tp-profile-info {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .tp-profile-info h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0 0 6px 0;
+        color: #ffffff;
+    }
+
+    .tp-profile-info .tp-role {
+        display: inline-block;
+        background: var(--emerald);
+        color: #ffffff;
+        font-size: .78rem;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+    }
+
+    .tp-profile-info .tp-meta {
+        font-size: .9rem;
+        color: rgba(255, 255, 255, .8);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 4px;
+    }
+
+    .tp-profile-info .tp-meta i {
+        width: 18px;
+        opacity: .8;
+    }
+
+    /* ── TWO COLUMN GRID ── */
+    .tp-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    /* ── SECTION CARDS ── */
+    .tp-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+    }
+
+    .tp-section-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+    }
+
+    .tp-header-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .icon-username {
+        background: #eff6ff;
+        color: #2a56c6;
+    }
+
+    .icon-password {
+        background: #fef3cd;
+        color: #d97706;
+    }
+
+    .tp-section-header .tp-header-text h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0 0 2px 0;
+    }
+
+    .tp-section-header .tp-header-text p {
+        font-size: .8rem;
+        color: #8a9aa8;
+        margin: 0;
+    }
+
+    .tp-form-body {
+        padding: 24px;
+    }
+
+    /* ── INFO BOX ── */
+    .tp-info-box {
+        background: #eff6ff;
+        border-left: 4px solid #2a56c6;
+        padding: 14px 16px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        font-size: .85rem;
+        color: #1e3a8a;
+    }
+
+    .tp-info-box p {
+        margin: 0 0 2px 0;
+        font-weight: 600;
+    }
+
+    .tp-info-box small {
+        display: block;
+        margin-top: 2px;
+    }
+
+    /* ── FORM STYLES ── */
+    .tp-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .tp-form-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .tp-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .tp-input:focus {
+        outline: none;
+        border-color: var(--emerald);
+        box-shadow: 0 0 0 3px rgba(80, 200, 120, .12);
+    }
+
+    .tp-readonly {
+        background: #f5fbf5;
+        color: #6b7c7a;
+        cursor: not-allowed;
+        border-color: #dceadc;
+        font-weight: 500;
+    }
+
+    /* ── BUTTONS ── */
+    .tp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 11px 24px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .tp-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, .12);
+    }
+
+    .tp-btn:active {
+        transform: translateY(0);
+        filter: brightness(.85);
+    }
+
+    .btn-username {
+        background: #2a56c6;
+        color: #ffffff;
+    }
+
+    .btn-password {
+        background: #d97706;
+        color: #ffffff;
+    }
+
+    /* ── SECURITY TIPS ── */
+    .tp-tips-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(34, 139, 34, .06);
+        border: 1px solid #eaf2ea;
+        border-left: 4px solid var(--forest-green);
+        overflow: hidden;
+    }
+
+    .tp-tips-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .tp-tips-header i {
+        font-size: 1.3rem;
+        color: var(--forest-green);
+    }
+
+    .tp-tips-header h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        margin: 0;
+    }
+
+    .tp-tips-body {
+        padding: 20px 24px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .tp-tip-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: .9rem;
+        color: #4a6a5a;
+    }
+
+    .tp-tip-item i {
+        color: var(--emerald);
+        font-size: .9rem;
+        flex-shrink: 0;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+        .tp-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .tp-tips-body {
+            grid-template-columns: 1fr;
+        }
+
+        .tp-profile-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .tp-profile-info .tp-meta {
+            justify-content: center;
+        }
+    }
+</style>
+
+<div class="tp-wrap">
+
+    <!-- ══ PROFILE CARD ══ -->
+    <div class="tp-profile-card">
+        <div class="tp-profile-info">
+            <h2>{{ request.user.get_full_name|default:request.user.username }}</h2>
+            <span class="tp-role">Teacher</span>
+            <div class="tp-meta">
+                <i class="fas fa-envelope"></i> {{ request.user.email }}
+            </div>
+            <div class="tp-meta">
+                <i class="fas fa-school"></i> {{ teacher_school }}
+            </div>
+            <div class="tp-meta">
+                <i class="fas fa-calendar-alt"></i> Member since {{ request.user.date_joined|date:"F d, Y" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ TWO COLUMN FORMS ══ -->
+    <div class="tp-grid">
+
+        <!-- Change Username -->
+        <div class="tp-section">
+            <div class="tp-section-header">
+                <div class="tp-header-icon icon-username">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                <div class="tp-header-text">
+                    <h3>Change Username</h3>
+                    <p>Update your login username</p>
+                </div>
+            </div>
+            <div class="tp-form-body">
+                <form method="POST" action="{% url 'teacher_profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_username">
+
+                    <div class="tp-form-group">
+                        <label><i class="fas fa-tag"></i> Current Username</label>
+                        <input type="text" class="tp-input tp-readonly" value="{{ request.user.username }}" readonly
+                            tabindex="-1">
+                    </div>
+
+                    <div class="tp-form-group">
+                        <label><i class="fas fa-user-plus"></i> New Username</label>
+                        <input type="text" name="new_username" class="tp-input" required
+                            placeholder="Enter new username">
+                    </div>
+
+                    <div class="tp-form-group">
+                        <label><i class="fas fa-check-circle"></i> Confirm New Username</label>
+                        <input type="text" name="confirm_username" class="tp-input" required
+                            placeholder="Confirm new username">
+                    </div>
+
+                    <button type="submit" class="tp-btn btn-username">
+                        <i class="fas fa-save"></i> Update Username
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="tp-section">
+            <div class="tp-section-header">
+                <div class="tp-header-icon icon-password">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="tp-header-text">
+                    <h3>Change Password</h3>
+                    <p>Update your login password</p>
+                </div>
+            </div>
+            <div class="tp-form-body">
+                <div class="tp-info-box">
+                    <p><strong>Password Requirements:</strong></p>
+                    <small>• Minimum 8 characters</small>
+                    <small>• Use a mix of letters, numbers & symbols</small>
+                </div>
+
+                <form method="POST" action="{% url 'teacher_profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div class="tp-form-group">
+                        <label><i class="fas fa-lock"></i> Current Password</label>
+                        <input type="password" name="current_password" class="tp-input" required
+                            placeholder="Enter current password">
+                    </div>
+
+                    <div class="tp-form-group">
+                        <label><i class="fas fa-lock"></i> New Password</label>
+                        <input type="password" name="new_password" class="tp-input" required
+                            placeholder="Enter new password">
+                    </div>
+
+                    <div class="tp-form-group">
+                        <label><i class="fas fa-check-circle"></i> Confirm New Password</label>
+                        <input type="password" name="confirm_password" class="tp-input" required
+                            placeholder="Confirm new password">
+                    </div>
+
+                    <button type="submit" class="tp-btn btn-password">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SECURITY TIPS ══ -->
+    <div class="tp-tips-section">
+        <div class="tp-tips-header">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Security Tips</h3>
+        </div>
+        <div class="tp-tips-body">
+            <div class="tp-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Use a unique username that's easy to remember</span>
+            </div>
+            <div class="tp-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Never share your password with anyone</span>
+            </div>
+            <div class="tp-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Change your password regularly</span>
+            </div>
+            <div class="tp-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Use different passwords for different accounts</span>
+            </div>
+            <div class="tp-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Avoid using personal information in passwords</span>
+            </div>
+            <div class="tp-tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Log out when using shared computers</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.querySelectorAll('form').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            var action = this.querySelector('input[name="action"]').value;
+
+            if (action === 'change_username') {
+                var newUsername = this.querySelector('input[name="new_username"]').value;
+                var confirmUsername = this.querySelector('input[name="confirm_username"]').value;
+
+                if (newUsername !== confirmUsername) {
+                    e.preventDefault();
+                    alert('Usernames do not match!');
+                }
+            }
+
+            if (action === 'change_password') {
+                var newPassword = this.querySelector('input[name="new_password"]').value;
+                var confirmPassword = this.querySelector('input[name="confirm_password"]').value;
+
+                if (newPassword.length < 8) {
+                    e.preventDefault();
+                    alert('Password must be at least 8 characters long!');
+                } else if (newPassword !== confirmPassword) {
+                    e.preventDefault();
+                    alert('Passwords do not match!');
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('input').forEach(function (input) {
+        input.addEventListener('focus', function () {
+            this.classList.remove('error');
+        });
+    });
+</script>
+{% endblock %}

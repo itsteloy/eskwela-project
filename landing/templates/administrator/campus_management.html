@@ -1,0 +1,769 @@
+{% extends 'administrator/admin_base.html' %}
+
+{% block title %}Campus Management | Admin{% endblock %}
+
+{% block page_title %}Campus Management{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .cm-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    /* ── STAT CARDS ── */
+    .cm-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .cm-stat {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 22px 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 1px 4px rgba(0,0,0,.06);
+        border: 1px solid #eaf2ea;
+        transition: transform .18s, box-shadow .18s;
+    }
+
+    .cm-stat:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,.08);
+    }
+
+    .cm-stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .icon-total { background: #e8f0fe; color: #2a56c6; }
+    .icon-active { background: #e6f7ed; color: #1a7a3f; }
+    .icon-inactive { background: #fdecea; color: #c0392b; }
+
+    .cm-stat-body { flex: 1; }
+
+    .cm-stat-label {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .07em;
+        color: #8a9aa8;
+        margin-bottom: 4px;
+    }
+
+    .cm-stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1b3a2d;
+        line-height: 1;
+    }
+
+    /* ── SECTION CARDS ── */
+    .cm-section {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 1px 4px rgba(0,0,0,.06);
+        border: 1px solid #eaf2ea;
+        margin-bottom: 28px;
+        overflow: hidden;
+    }
+
+    .cm-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #eaf2ea;
+        background: #f8fdf8;
+    }
+
+    .cm-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1b3a2d;
+    }
+
+    .cm-section-title .title-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #e6f7ed;
+        color: #1a7a3f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .95rem;
+    }
+
+    .cm-summary-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #eff6ff;
+        color: #2a56c6;
+        font-size: .8rem;
+        font-weight: 600;
+        padding: 7px 16px;
+        border-radius: 20px;
+        border: 1px solid #bfdbfe;
+    }
+
+    .cm-summary-badge i {
+        font-size: .9rem;
+    }
+
+    /* ── FORM STYLES ── */
+    .cm-form-body {
+        padding: 24px;
+    }
+
+    .cm-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .cm-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .cm-form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .cm-form-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .cm-form-group label .required-star {
+        color: #c0392b;
+    }
+
+    .cm-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+        background: #ffffff;
+    }
+
+    .cm-input:focus {
+        outline: none;
+        border-color: #1a7a3f;
+        box-shadow: 0 0 0 3px rgba(26,122,63,.12);
+    }
+
+    .cm-hint {
+        font-size: .75rem;
+        color: #8a9aa8;
+        display: block;
+        margin-top: 4px;
+    }
+
+    /* ── BUTTONS ── */
+    .cm-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 11px 24px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 700;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+    }
+
+    .cm-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 12px rgba(0,0,0,.12);
+    }
+
+    .cm-btn:active { transform: translateY(0); filter: brightness(.85); }
+
+    .btn-create { background: #1a7a3f; color: #ffffff; }
+
+    /* ── TABLE ── */
+    .cm-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    .cm-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .875rem;
+        min-width: 800px;
+    }
+
+    .cm-table thead tr { background: #f0f7f0; }
+
+    .cm-table th {
+        padding: 13px 16px;
+        text-align: left;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #4a6a5a;
+        white-space: nowrap;
+        border-bottom: 2px solid #dceadc;
+    }
+
+    .cm-table td {
+        padding: 14px 16px;
+        color: #2d3f36;
+        border-bottom: 1px solid #f0f5f0;
+        vertical-align: middle;
+    }
+
+    .cm-table tbody tr { transition: background .14s; }
+
+    .cm-table tbody tr:hover { background: #f5fbf5; }
+
+    .cm-table tbody tr:last-child td { border-bottom: none; }
+
+    .cm-table tbody tr.inactive-row {
+        opacity: 0.6;
+        background: #f9fafb;
+    }
+
+    .cm-table tbody tr.inactive-row:hover {
+        opacity: 0.8;
+        background: #f0f5f0;
+    }
+
+    /* ── BADGES ── */
+    .campus-code {
+        font-family: 'DM Mono', monospace;
+        font-size: .8rem;
+        font-weight: 500;
+        color: #4a6a5a;
+        background: #f0f7f0;
+        padding: 3px 8px;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: .78rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+    .status-active { background: #e6f7ed; color: #1a7a3f; }
+    .status-inactive { background: #fdecea; color: #c0392b; }
+
+    /* ── ACTION BUTTONS — ALL DISTINCT SOLID COLORS ── */
+    .act-group {
+        display: flex;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border-radius: 7px;
+        font-size: .78rem;
+        font-weight: 600;
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: filter .15s, transform .15s, box-shadow .15s;
+        white-space: nowrap;
+        line-height: 1.4;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0,0,0,.15);
+    }
+
+    .act-btn:active { transform: translateY(0); filter: brightness(.85); }
+
+    .act-edit { background: #ffa500; color: #ffffff; }
+    .act-deactivate { background: #a55d04; color: #ffffff; }
+    .act-activate { background: #0891b2; color: #ffffff; }
+    .act-delete { background: #c0392b; color: #ffffff; }
+
+    /* ── FILTER ── */
+    .cm-filter-select {
+        padding: 8px 32px 8px 12px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a7a3f' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .cm-filter-select:focus { outline: none; border-color: #1a7a3f; }
+
+    /* ── MODAL ── */
+    .cm-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(20,40,30,.55);
+        backdrop-filter: blur(4px);
+        z-index: 9000;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .cm-modal.open { display: flex; }
+
+    .cm-modal-box {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0,0,0,.22);
+        width: 100%;
+        max-width: 520px;
+        overflow: hidden;
+        animation: modalIn .22s ease;
+    }
+
+    @keyframes modalIn {
+        from { opacity: 0; transform: scale(.95) translateY(10px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    .cm-modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        background: #d97706;
+        color: #ffffff;
+    }
+
+    .cm-modal-head h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+    }
+
+    .cm-modal-close {
+        background: rgba(255,255,255,.15);
+        border: none;
+        color: #ffffff;
+        width: 30px;
+        height: 30px;
+        border-radius: 7px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .15s;
+        line-height: 1;
+    }
+
+    .cm-modal-close:hover { background: rgba(255,255,255,.28); }
+
+    .cm-modal-body {
+        padding: 24px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .cm-modal-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+
+    .cm-modal-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .cm-modal-group label .required-star {
+        color: #c0392b;
+    }
+
+    .cm-modal-input {
+        padding: 10px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .cm-modal-input:focus {
+        outline: none;
+        border-color: #d97706;
+        box-shadow: 0 0 0 3px rgba(217,119,6,.12);
+    }
+
+    .cm-modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .btn-save { background: #1a7a3f; color: #ffffff; }
+    .btn-cancel { background: #e5e7eb; color: #374151; }
+    .btn-cancel:hover { background: #d1d5db; filter: none; }
+
+    .cm-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: .9rem;
+        font-weight: 500;
+        color: #1b3a2d;
+        cursor: pointer;
+    }
+
+    .cm-checkbox-label input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #1a7a3f;
+        cursor: pointer;
+    }
+
+    /* ── EMPTY STATE ── */
+    .cm-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: #8a9aa8;
+    }
+
+    .cm-empty i {
+        font-size: 3rem;
+        color: #c8dfc8;
+        margin-bottom: 14px;
+        display: block;
+    }
+
+    .cm-empty h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #4a6a5a;
+        margin-bottom: 6px;
+    }
+
+    .cm-empty p { font-size: .9rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+        .cm-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 800px) {
+        .cm-stats { grid-template-columns: 1fr; gap: 12px; }
+        .cm-form-grid { grid-template-columns: 1fr; }
+        .act-group { flex-direction: column; }
+    }
+</style>
+
+<div class="cm-wrap">
+
+    <!-- ══ STAT CARDS ══ -->
+    <div class="cm-stats">
+        <div class="cm-stat">
+            <div class="cm-stat-icon icon-total"><i class="fas fa-university"></i></div>
+            <div class="cm-stat-body">
+                <div class="cm-stat-label">Total Campuses</div>
+                <div class="cm-stat-value">{{ total_campuses }}</div>
+            </div>
+        </div>
+        <div class="cm-stat">
+            <div class="cm-stat-icon icon-active"><i class="fas fa-check-circle"></i></div>
+            <div class="cm-stat-body">
+                <div class="cm-stat-label">Active</div>
+                <div class="cm-stat-value">{{ active_campuses }}</div>
+            </div>
+        </div>
+        <div class="cm-stat">
+            <div class="cm-stat-icon icon-inactive"><i class="fas fa-ban"></i></div>
+            <div class="cm-stat-body">
+                <div class="cm-stat-label">Inactive</div>
+                <div class="cm-stat-value">{{ total_campuses|add:"-"|add:active_campuses }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ CREATE CAMPUS FORM ══ -->
+    <div class="cm-section">
+        <div class="cm-section-header">
+            <div class="cm-section-title">
+                <div class="title-icon"><i class="fas fa-plus-circle"></i></div>
+                Add New Campus
+            </div>
+            <div class="cm-summary-badge">
+                <i class="fas fa-university"></i> Total: {{ total_campuses }} · Active: {{ active_campuses }}
+            </div>
+        </div>
+        <div class="cm-form-body">
+            <form method="POST" action="{% url 'create_campus' %}">
+                {% csrf_token %}
+
+                <div class="cm-form-grid">
+                    <div class="cm-form-group">
+                        <label><span class="required-star">*</span> <i class="fas fa-university"></i> Campus Name</label>
+                        <input type="text" name="name" class="cm-input" required placeholder="e.g., Main Campus">
+                    </div>
+                    <div class="cm-form-group">
+                        <label><i class="fas fa-code"></i> Campus Code</label>
+                        <input type="text" name="code" class="cm-input" placeholder="e.g., MAIN (auto-generated if empty)">
+                        <span class="cm-hint">Optional: Unique identifier (uppercase, underscores)</span>
+                    </div>
+
+                    <div class="cm-form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Address</label>
+                        <input type="text" name="address" class="cm-input" placeholder="Campus address (optional)">
+                    </div>
+                    <div class="cm-form-group">
+                        <label><i class="fas fa-phone"></i> Contact Number</label>
+                        <input type="text" name="contact_number" class="cm-input" placeholder="Contact number (optional)">
+                    </div>
+                </div>
+
+                <button type="submit" class="cm-btn btn-create">
+                    <i class="fas fa-save"></i> Create Campus
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══ EXISTING CAMPUSES TABLE ══ -->
+    <div class="cm-section">
+        <div class="cm-section-header">
+            <div class="cm-section-title">
+                <div class="title-icon"><i class="fas fa-list"></i></div>
+                Existing Campuses
+            </div>
+            <div>
+                <select id="filterStatus" class="cm-filter-select" onchange="filterCampuses()">
+                    <option value="all">All Campuses</option>
+                    <option value="active">Active Only</option>
+                    <option value="inactive">Inactive Only</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="cm-table-scroll">
+            <table class="cm-table">
+                <thead>
+                    <tr>
+                        <th>Campus Name</th>
+                        <th>Code</th>
+                        <th>Address</th>
+                        <th>Contact</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for campus in campuses %}
+                    <tr class="campus-row {% if not campus.is_active %}inactive-row{% endif %}"
+                        data-status="{% if campus.is_active %}active{% else %}inactive{% endif %}">
+                        <td><strong>{{ campus.name }}</strong></td>
+                        <td><span class="campus-code">{{ campus.code }}</span></td>
+                        <td>{{ campus.address|default:"—" }}</td>
+                        <td>{{ campus.contact_number|default:"—" }}</td>
+                        <td>
+                            {% if campus.is_active %}
+                            <span class="status-badge status-active">
+                                <i class="fas fa-check-circle"></i> Active
+                            </span>
+                            {% else %}
+                            <span class="status-badge status-inactive">
+                                <i class="fas fa-ban"></i> Inactive
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ campus.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="act-group">
+                                <button
+                                    onclick="openEditModal('{{ campus.id }}', '{{ campus.name|escapejs }}', '{{ campus.code|escapejs }}', '{{ campus.address|escapejs }}', '{{ campus.contact_number|escapejs }}', '{% if campus.is_active %}true{% else %}false{% endif %}')"
+                                    class="act-btn act-edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+
+                                <form method="POST" action="{% url 'toggle_campus' campus.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                        class="act-btn {% if campus.is_active %}act-deactivate{% else %}act-activate{% endif %}"
+                                        onclick="return confirm('{% if campus.is_active %}Deactivate{% else %}Activate{% endif %} this campus?')">
+                                        <i class="fas {% if campus.is_active %}fa-ban{% else %}fa-check-circle{% endif %}"></i>
+                                        {% if campus.is_active %}Deactivate{% else %}Activate{% endif %}
+                                    </button>
+                                </form>
+
+                                <form method="POST" action="{% url 'delete_campus' campus.id %}" style="display: inline;"
+                                    onsubmit="return confirm('⚠️ Are you sure you want to delete \'{{ campus.name|escapejs }}\'? This action cannot be undone.')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="act-btn act-delete">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="cm-empty">
+                                <i class="fas fa-university"></i>
+                                <h3>No Campuses Yet</h3>
+                                <p>Add your first campus using the form above!</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div><!-- /.cm-wrap -->
+
+<!-- ══ EDIT CAMPUS MODAL ══ -->
+<div id="editCampusModal" class="cm-modal">
+    <div class="cm-modal-box">
+        <div class="cm-modal-head">
+            <h3><i class="fas fa-edit"></i> Edit Campus</h3>
+            <button class="cm-modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        <div class="cm-modal-body">
+            <form method="POST" action="" id="editCampusForm">
+                {% csrf_token %}
+
+                <div class="cm-modal-group">
+                    <label><span class="required-star">*</span> <i class="fas fa-university"></i> Campus Name</label>
+                    <input type="text" name="name" id="edit_name" class="cm-modal-input" required>
+                </div>
+
+                <div class="cm-modal-group">
+                    <label><i class="fas fa-code"></i> Campus Code</label>
+                    <input type="text" name="code" id="edit_code" class="cm-modal-input" placeholder="Auto-generated if empty">
+                </div>
+
+                <div class="cm-modal-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Address</label>
+                    <input type="text" name="address" id="edit_address" class="cm-modal-input">
+                </div>
+
+                <div class="cm-modal-group">
+                    <label><i class="fas fa-phone"></i> Contact Number</label>
+                    <input type="text" name="contact_number" id="edit_contact" class="cm-modal-input">
+                </div>
+
+                <div class="cm-modal-group" style="margin: 20px 0;">
+                    <label class="cm-checkbox-label">
+                        <input type="checkbox" name="is_active" id="edit_is_active" checked>
+                        <span>Active (visible in registration forms)</span>
+                    </label>
+                </div>
+
+                <div class="cm-modal-actions">
+                    <button type="button" onclick="closeEditModal()" class="cm-btn btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="cm-btn btn-save">
+                        <i class="fas fa-save"></i> Update Campus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openEditModal(id, name, code, address, contact, isActive) {
+        document.getElementById('editCampusForm').action = "{% url 'edit_campus' 0 %}".replace('0', id);
+        document.getElementById('edit_name').value = name;
+        document.getElementById('edit_code').value = code;
+        document.getElementById('edit_address').value = address;
+        document.getElementById('edit_contact').value = contact;
+        document.getElementById('edit_is_active').checked = isActive;
+        document.getElementById('editCampusModal').classList.add('open');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editCampusModal').classList.remove('open');
+    }
+
+    function filterCampuses() {
+        const status = document.getElementById('filterStatus').value;
+        const rows = document.querySelectorAll('.campus-row');
+
+        rows.forEach(row => {
+            if (status === 'all') {
+                row.style.display = '';
+            } else if (status === 'active') {
+                row.style.display = row.dataset.status === 'active' ? '' : 'none';
+            } else if (status === 'inactive') {
+                row.style.display = row.dataset.status === 'inactive' ? '' : 'none';
+            }
+        });
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('editCampusModal').addEventListener('click', function(e) {
+        if (e.target === this) closeEditModal();
+    });
+
+    // Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeEditModal();
+    });
+</script>
+{% endblock %}
