@@ -1,0 +1,227 @@
+{% extends 'administrator/admin_base.html' %}
+{% load static %}
+
+{% block title %}Enroll Subjects | Eskwela{% endblock %}
+{% block page_title %}Enroll Subjects{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+
+    .enroll-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+        max-width: 720px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #1a7a3f;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: .9rem;
+        margin-bottom: 18px;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .student-card {
+        background: #ffffff;
+        border: 1px solid #eaf2ea;
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin-bottom: 22px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+    }
+
+    .student-card h3 {
+        margin: 0 0 6px;
+        color: #1b3a2d;
+        font-size: 1.25rem;
+    }
+
+    .student-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        color: #4a6a5a;
+        font-size: .9rem;
+    }
+
+    .student-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .warn-banner {
+        background: #fff7e6;
+        border: 1px solid #f0d080;
+        color: #856404;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 18px;
+        font-size: .88rem;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .subjects-card {
+        background: #ffffff;
+        border: 1px solid #eaf2ea;
+        border-radius: 14px;
+        padding: 22px 24px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+    }
+
+    .subjects-card h4 {
+        margin: 0 0 6px;
+        color: #1b3a2d;
+        font-size: 1.05rem;
+    }
+
+    .subjects-hint {
+        color: #6a7a70;
+        font-size: .85rem;
+        margin-bottom: 18px;
+    }
+
+    .subject-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+
+    @media (max-width: 560px) {
+        .subject-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .subject-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: border-color .15s, background .15s;
+        background: #fafdfa;
+    }
+
+    .subject-option:hover {
+        border-color: #2d8a4e;
+        background: #f0faf3;
+    }
+
+    .subject-option input {
+        width: 18px;
+        height: 18px;
+        accent-color: #1a7a3f;
+        cursor: pointer;
+    }
+
+    .subject-option span {
+        font-weight: 600;
+        color: #1b3a2d;
+        font-size: .9rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .adm-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 20px;
+        border-radius: 9px;
+        font-size: .9rem;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .adm-btn-primary {
+        background: #1a7a3f;
+        color: #fff;
+    }
+
+    .adm-btn-primary:hover {
+        filter: brightness(1.08);
+    }
+
+    .adm-btn-ghost {
+        background: #eaf2ea;
+        color: #2d5a3d;
+    }
+</style>
+
+<div class="enroll-wrap">
+    <a class="back-link" href="{% url 'subject_enrollment' %}">
+        <i class="fas fa-arrow-left"></i> Back to Subject Enrollment
+    </a>
+
+    <div class="student-card">
+        <h3>{{ student.user.get_full_name }}</h3>
+        <div class="student-meta">
+            <span><i class="fas fa-envelope"></i> {{ student.user.email }}</span>
+            <span><i class="fas fa-university"></i>
+                {% if student.campus %}{{ student.campus.name }}{% else %}No campus{% endif %}
+            </span>
+            <span><i class="fas fa-graduation-cap"></i>
+                {{ student.enrolled_in|default:"No grade assigned" }}
+            </span>
+        </div>
+    </div>
+
+    {% if missing_grade or missing_campus %}
+    <div class="warn-banner">
+        <i class="fas fa-exclamation-triangle" style="margin-top:2px;"></i>
+        <div>
+            {% if missing_campus %}Campus is not assigned.{% endif %}
+            {% if missing_grade %}Grade level is not assigned.{% endif %}
+            You can still enroll subjects now; content will appear once campus and grade are set.
+        </div>
+    </div>
+    {% endif %}
+
+    <form method="post" class="subjects-card">
+        {% csrf_token %}
+        <h4>Subjects</h4>
+        <p class="subjects-hint">
+            Check the subjects this student should access. Unchecking a subject removes access immediately.
+        </p>
+
+        <div class="subject-grid">
+            {% for opt in subject_options %}
+            <label class="subject-option">
+                <input type="checkbox" name="subjects" value="{{ opt.value }}"
+                    {% if opt.checked %}checked{% endif %}>
+                <span>{{ opt.label }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="adm-btn adm-btn-primary">
+                <i class="fas fa-save"></i> Save Enrollment
+            </button>
+            <a href="{% url 'subject_enrollment' %}" class="adm-btn adm-btn-ghost">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

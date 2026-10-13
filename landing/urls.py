@@ -215,5 +215,15 @@ urlpatterns = [
         views.update_requirement_status,
         name="update_requirement_status",
     ),
+    path(
+        "subject_enrollment/",
+        views.subject_enrollment,
+        name="subject_enrollment",
+    ),
+    path(
+        "subject_enrollment/<int:student_id>/",
+        views.enroll_student_subjects,
+        name="enroll_student_subjects",
+    ),
     path("student_subjects/", views.student_subjects, name="student_subjects"),
 ]

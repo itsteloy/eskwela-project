@@ -828,6 +828,17 @@
         </div>
     </div>
 
+    {% elif not has_subject_enrollment %}
+    <div class="ssb-empty">
+        <div class="ssb-empty-icon"><i class="fas fa-user-lock"></i></div>
+        <h3>Not Yet Enrolled in Any Subjects</h3>
+        <p>An administrator has not enrolled you in any subjects yet.</p>
+        <div class="ssb-empty-note">
+            <i class="fas fa-info-circle"></i>
+            Modules and assignments will appear here once subject enrollment is completed.
+        </div>
+    </div>
+
     {% elif not subject_data %}
     <div class="ssb-empty">
         <div class="ssb-empty-icon"><i class="fas fa-book-open"></i></div>

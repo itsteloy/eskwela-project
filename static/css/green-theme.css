@@ -4,13 +4,13 @@
 */
 
 :root {
-    /* Main Colors */
-    --forest-green: #228B22;
-    --mint-bg: #F5FFFA;
-    --emerald: #50C878;
-    --emeraldv2: #00b53c;
-    --sage: #8FBC8F;
-    --charcoal: #222;
+    /* Main Colors — slightly dark green palette */
+    --forest-green: #1a5c1a;
+    --mint-bg: #e8efe8;
+    --emerald: #2d8a4e;
+    --emeraldv2: #1a7a3f;
+    --sage: #6b9b6b;
+    --charcoal: #1a2e1a;
     --white: #fff;
 
     /* UI Assignments */
@@ -73,7 +73,7 @@ input[type="button"]:hover {
 .form-container {
     background: var(--white);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(34, 139, 34, 0.08);
+    box-shadow: 0 2px 8px rgba(26, 92, 26, 0.1);
     padding: 1.5em;
     margin-bottom: 1.5em;
 }
@@ -95,7 +95,7 @@ tbody tr:nth-child(even) {
 }
 
 tbody tr:nth-child(odd) {
-    background: #e6f5ea;
+    background: #dce8dc;
 }
 
 /* High contrast for accessibility */

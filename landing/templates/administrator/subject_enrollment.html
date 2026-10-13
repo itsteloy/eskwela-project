@@ -1,0 +1,321 @@
+{% extends 'administrator/admin_base.html' %}
+{% load static %}
+
+{% block title %}Subject Enrollment | Eskwela{% endblock %}
+{% block page_title %}Subject Enrollment{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+    .se-wrap {
+        font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    }
+
+    .adm-filter-panel {
+        background: #ffffff;
+        border-radius: 14px 14px 0 0;
+        border: 1px solid #eaf2ea;
+        border-bottom: none;
+        padding: 20px 24px;
+    }
+
+    .adm-filter-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .adm-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .adm-filter-group label {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #4a6a5a;
+    }
+
+    .adm-filter-group.grow {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .adm-filter-group.campus {
+        min-width: 180px;
+    }
+
+    .adm-input {
+        padding: 9px 13px;
+        border: 1.5px solid #c8dfc8;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-family: inherit;
+        color: #1b3a2d;
+        background: #fafdfa;
+        outline: none;
+        transition: border-color .15s;
+        width: 100%;
+    }
+
+    .adm-input:focus {
+        border-color: #2d8a4e;
+    }
+
+    .adm-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 18px;
+        border-radius: 9px;
+        font-size: .875rem;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: filter .15s;
+    }
+
+    .adm-btn-primary {
+        background: #1a7a3f;
+        color: #fff;
+    }
+
+    .adm-btn-primary:hover {
+        filter: brightness(1.08);
+    }
+
+    .adm-btn-ghost {
+        background: #eaf2ea;
+        color: #2d5a3d;
+    }
+
+    .adm-table-card {
+        background: #ffffff;
+        border-radius: 0 0 14px 14px;
+        border: 1px solid #eaf2ea;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+    }
+
+    .adm-table-scroll {
+        overflow-x: auto;
+    }
+
+    .adm-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .875rem;
+        min-width: 720px;
+    }
+
+    .adm-table thead tr {
+        background: #f0f7f0;
+    }
+
+    .adm-table th {
+        padding: 13px 16px;
+        text-align: left;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #4a6a5a;
+        border-bottom: 2px solid #dceadc;
+    }
+
+    .adm-table td {
+        padding: 14px 16px;
+        color: #2d3f36;
+        border-bottom: 1px solid #f0f5f0;
+        vertical-align: middle;
+    }
+
+    .adm-table tbody tr:hover {
+        background: #f5fbf5;
+    }
+
+    .campus-badge {
+        display: inline-block;
+        background: #e8f0fe;
+        color: #2a56c6;
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+    }
+
+    .subject-chip {
+        display: inline-block;
+        background: #e6f7ed;
+        color: #1a7a3f;
+        font-size: .72rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 12px;
+        margin: 2px 2px 2px 0;
+    }
+
+    .count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 28px;
+        padding: 0 8px;
+        border-radius: 14px;
+        background: #1a7a3f;
+        color: #fff;
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    .count-badge.zero {
+        background: #c8d5cc;
+        color: #4a5a50;
+    }
+
+    .act-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border-radius: 7px;
+        font-size: .78rem;
+        font-weight: 600;
+        text-decoration: none;
+        background: #1a7a3f;
+        color: #fff;
+        transition: filter .15s, transform .15s;
+    }
+
+    .act-btn:hover {
+        filter: brightness(.92);
+        transform: translateY(-1px);
+    }
+
+    .adm-empty {
+        text-align: center;
+        padding: 48px 24px;
+        color: #6a7a70;
+    }
+
+    .adm-empty i {
+        font-size: 2.5rem;
+        color: #b0c8b8;
+        margin-bottom: 12px;
+    }
+
+    .page-intro {
+        margin-bottom: 20px;
+        color: #4a6a5a;
+        font-size: .95rem;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="se-wrap">
+    <p class="page-intro">
+        Enroll approved students into subjects. Students only see modules and assignments
+        for subjects they are enrolled in.
+    </p>
+
+    <div class="adm-filter-panel">
+        <form method="get" class="adm-filter-row">
+            <div class="adm-filter-group grow">
+                <label for="search">Search</label>
+                <input class="adm-input" type="text" id="search" name="search"
+                    value="{{ search_query }}" placeholder="Name, email, LRN, campus…">
+            </div>
+            <div class="adm-filter-group campus">
+                <label for="campus">Campus</label>
+                <select class="adm-input" id="campus" name="campus">
+                    <option value="">All Campuses</option>
+                    {% for campus in campuses %}
+                    <option value="{{ campus.id }}" {% if campus_filter == campus.id|stringformat:"s" %}selected{% endif %}>
+                        {{ campus.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="adm-btn adm-btn-primary">
+                <i class="fas fa-search"></i> Filter
+            </button>
+            {% if search_query or campus_filter %}
+            <a href="{% url 'subject_enrollment' %}" class="adm-btn adm-btn-ghost">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="adm-table-card">
+        <div class="adm-table-scroll">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Campus</th>
+                        <th>Grade</th>
+                        <th>Enrolled Subjects</th>
+                        <th>Count</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in student_rows %}
+                    <tr>
+                        <td>
+                            <strong>{{ row.student.user.get_full_name }}</strong><br>
+                            <span style="font-size:.8rem;color:#6a7a70;">{{ row.student.user.email }}</span>
+                        </td>
+                        <td>
+                            {% if row.student.campus %}
+                            <span class="campus-badge">{{ row.student.campus.name }}</span>
+                            {% else %}
+                            <span style="color:#a0aab0;">—</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ row.student.enrolled_in|default:"—" }}</td>
+                        <td>
+                            {% if row.enrolled_subjects %}
+                                {% for subj in row.enrolled_subjects %}
+                                <span class="subject-chip">{{ subj }}</span>
+                                {% endfor %}
+                            {% else %}
+                            <span style="color:#a0aab0;">None</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="count-badge {% if row.enrolled_count == 0 %}zero{% endif %}">
+                                {{ row.enrolled_count }}
+                            </span>
+                        </td>
+                        <td>
+                            <a class="act-btn" href="{% url 'enroll_student_subjects' row.student.id %}">
+                                <i class="fas fa-book"></i> Enroll Subjects
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">
+                            <div class="adm-empty">
+                                <i class="fas fa-user-graduate"></i>
+                                <p>No approved students found.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

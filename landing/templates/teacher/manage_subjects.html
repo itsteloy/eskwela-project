@@ -138,16 +138,47 @@
         font-size: .8rem;
         font-weight: 700;
         cursor: pointer;
-        display: flex;
+        font-family: inherit;
+        display: inline-flex;
         align-items: center;
         gap: 5px;
-        font-family: inherit;
-        transition: filter .15s, transform .15s;
+        transition: filter .15s;
     }
 
     .ms-btn-add:hover {
-        filter: brightness(.9);
-        transform: translateY(-1px);
+        filter: brightness(1.1);
+    }
+
+    .ms-btn-delete {
+        background: #c0392b;
+        color: #ffffff;
+        border: none;
+        border-radius: 7px;
+        padding: 6px 14px;
+        font-size: .8rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: filter .15s;
+    }
+
+    .ms-btn-delete:hover {
+        filter: brightness(1.1);
+    }
+
+    .ms-btn-delete:disabled {
+        opacity: .55;
+        cursor: not-allowed;
+        filter: none;
+    }
+
+    .ms-sidebar-actions {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
     }
 
     .ms-subject-list {
@@ -1268,16 +1299,23 @@
         <div class="ms-sidebar">
             <div class="ms-sidebar-head">
                 <h3><i class="fas fa-layer-group"></i> Subjects</h3>
-                <button class="ms-btn-add" onclick="openModal('addSubjectModal')">
-                    <i class="fas fa-plus"></i> Add
-                </button>
+                <div class="ms-sidebar-actions">
+                    <button type="button" class="ms-btn-add" onclick="openModal('addSubjectModal')">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                    <button type="button" class="ms-btn-delete"
+                        onclick="openModal('deleteSubjectModal')"
+                        {% if not subjects %}disabled title="No subjects to delete"{% endif %}>
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </div>
             </div>
 
             {% if subjects %}
             <ul class="ms-subject-list">
                 {% for subject in subjects %}
                 <li class="ms-subject-item">
-                    <button
+                    <button type="button"
                         class="ms-subject-btn {% if subject.value == active_subject or forloop.first and not active_subject %}active{% endif %}"
                         onclick="selectSubject('{{ subject.value }}', this)" data-subject="{{ subject.value }}">
                         <span class="ms-subject-icon"><i class="fas fa-book"></i></span>
@@ -1316,7 +1354,7 @@
                             assignments
                         </p>
                     </div>
-                    <div style="display: flex; gap: 8px;">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button class="ms-btn"
                             style="background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.3);"
                             onclick="openModal('uploadModuleModal')">
@@ -1659,6 +1697,44 @@
     </div>
 </div>
 
+<!-- Delete Subject Modal -->
+<div id="deleteSubjectModal" class="ms-modal">
+    <div class="ms-modal-box">
+        <div class="ms-modal-head" style="background:#c0392b;">
+            <h3><i class="fas fa-trash-alt"></i> Delete Subject</h3>
+            <button class="ms-modal-close" onclick="closeModal('deleteSubjectModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <form method="POST" action="{% url 'manage_subjects' %}"
+                onsubmit="return confirm('Delete the selected subject? This will also remove all modules and assignments for that subject.');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete_subject">
+                <div class="ms-form-group">
+                    <label>Select subject to delete *</label>
+                    <select name="subject_name" class="ms-select-modal" required>
+                        <option value="">Select a subject</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.value }}">{{ subject.label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <p style="font-size:.85rem;color:#856404;background:#fff7e6;border:1px solid #f0d080;border-radius:8px;padding:10px 12px;margin:0 0 16px;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Deleting a subject removes it from your list and deletes its modules and assignments.
+                </p>
+                <div class="ms-modal-actions">
+                    <button type="button" class="ms-btn btn-cancel"
+                        onclick="closeModal('deleteSubjectModal')">Cancel</button>
+                    <button type="submit" class="ms-btn"
+                        style="background:#c0392b;color:#fff;">
+                        <i class="fas fa-trash-alt"></i> Delete Subject
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Upload Module Modal -->
 <div id="uploadModuleModal" class="ms-modal">
     <div class="ms-modal-box">
@@ -1915,7 +1991,7 @@
     }
 
     window.addEventListener('click', function (e) {
-        ['addSubjectModal', 'uploadModuleModal', 'editModuleModal', 'createAssignmentModal', 'editAssignmentModal'].forEach(id => {
+        ['addSubjectModal', 'deleteSubjectModal', 'uploadModuleModal', 'editModuleModal', 'createAssignmentModal', 'editAssignmentModal'].forEach(id => {
             const modal = document.getElementById(id);
             if (modal && e.target === modal) closeModal(id);
         });
@@ -1923,14 +1999,14 @@
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
-            ['addSubjectModal', 'uploadModuleModal', 'editModuleModal', 'createAssignmentModal', 'editAssignmentModal'].forEach(closeModal);
+            ['addSubjectModal', 'deleteSubjectModal', 'uploadModuleModal', 'editModuleModal', 'createAssignmentModal', 'editAssignmentModal'].forEach(closeModal);
         }
     });
 
     // ===== SUBJECT SELECTION =====
     function selectSubject(subjectValue, btn) {
         activeSubject = subjectValue;
-        document.querySelectorAll('.subject-list-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.ms-subject-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const url = new URL(window.location.href);
         url.searchParams.set('subject', subjectValue);

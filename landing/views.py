@@ -16,6 +16,9 @@ from .models import (
     Assignment,
     AssignmentSubmission,
     LearningModule,
+    SubjectEnrollment,
+    TeacherSubject,
+    SUBJECT_CHOICES,
 )
 import random
 import string
@@ -776,6 +779,137 @@ def manage_students(request):
 
 
 @login_required
+@never_cache
+def subject_enrollment(request):
+    """Admin page: list approved students for subject enrollment."""
+    if not request.user.is_superuser:
+        messages.error(request, "Access denied. Administrator privileges required.")
+        return redirect("home")
+
+    students = (
+        StudentProfile.objects.select_related("user", "campus")
+        .filter(status="approved")
+        .order_by("-created_at")
+    )
+
+    search_query = request.GET.get("search", "").strip()
+    if search_query:
+        students = students.filter(
+            Q(user__first_name__icontains=search_query)
+            | Q(user__last_name__icontains=search_query)
+            | Q(user__email__icontains=search_query)
+            | Q(lrn__icontains=search_query)
+            | Q(campus__name__icontains=search_query)
+        )
+
+    campus_filter = request.GET.get("campus", "")
+    if campus_filter:
+        students = students.filter(campus__id=campus_filter)
+
+    # Annotate active enrollment counts for the table
+    student_rows = []
+    for student in students:
+        enrolled = student.enrolled_subjects()
+        student_rows.append(
+            {
+                "student": student,
+                "enrolled_count": len(enrolled),
+                "enrolled_subjects": enrolled,
+            }
+        )
+
+    campuses = Campus.objects.filter(is_active=True).order_by("name")
+
+    context = {
+        "student_rows": student_rows,
+        "campuses": campuses,
+        "search_query": search_query,
+        "campus_filter": campus_filter,
+        "active_page": "subject_enrollment",
+    }
+    return render(request, "administrator/subject_enrollment.html", context)
+
+
+@login_required
+@never_cache
+def enroll_student_subjects(request, student_id):
+    """Admin page: enroll/unenroll a student in subjects."""
+    if not request.user.is_superuser:
+        messages.error(request, "Access denied. Administrator privileges required.")
+        return redirect("home")
+
+    try:
+        student = StudentProfile.objects.select_related("user", "campus").get(
+            id=student_id, status="approved"
+        )
+    except StudentProfile.DoesNotExist:
+        messages.error(request, "Approved student not found.")
+        return redirect("subject_enrollment")
+
+    valid_subjects = {value for value, _label in SUBJECT_CHOICES}
+
+    if request.method == "POST":
+        selected = set(request.POST.getlist("subjects"))
+        invalid = selected - valid_subjects
+        if invalid:
+            messages.error(request, "One or more selected subjects are invalid.")
+            return redirect("enroll_student_subjects", student_id=student.id)
+
+        existing = {
+            e.subject: e
+            for e in SubjectEnrollment.objects.filter(student=student)
+        }
+
+        # Activate or create selected subjects
+        for subject_name in selected:
+            enrollment = existing.get(subject_name)
+            if enrollment:
+                if not enrollment.is_active:
+                    enrollment.is_active = True
+                    enrollment.enrolled_by = request.user
+                    enrollment.save(
+                        update_fields=["is_active", "enrolled_by"]
+                    )
+            else:
+                SubjectEnrollment.objects.create(
+                    student=student,
+                    subject=subject_name,
+                    enrolled_by=request.user,
+                    is_active=True,
+                )
+
+        # Deactivate unchecked subjects (preserve history)
+        for subject_name, enrollment in existing.items():
+            if subject_name not in selected and enrollment.is_active:
+                enrollment.is_active = False
+                enrollment.save(update_fields=["is_active"])
+
+        messages.success(
+            request,
+            f"Subject enrollment updated for {student.user.get_full_name()}.",
+        )
+        return redirect("enroll_student_subjects", student_id=student.id)
+
+    current_enrolled = set(student.enrolled_subjects())
+    subject_options = [
+        {"value": value, "label": label, "checked": value in current_enrolled}
+        for value, label in SUBJECT_CHOICES
+    ]
+
+    missing_grade = not student.enrolled_in
+    missing_campus = not student.campus
+
+    context = {
+        "student": student,
+        "subject_options": subject_options,
+        "missing_grade": missing_grade,
+        "missing_campus": missing_campus,
+        "active_page": "subject_enrollment",
+    }
+    return render(request, "administrator/enroll_student_subjects.html", context)
+
+
+@login_required
 @require_POST
 @staff_member_required
 @csrf_protect
@@ -809,16 +943,19 @@ def student_dashboard(request):
 
         # Get module statistics
         if student_profile.enrolled_in and student_profile.campus:
-            # Get total modules available for this student
+            enrolled_subjects = student_profile.enrolled_subjects()
+            # Get total modules available for this student (enrolled subjects only)
             total_modules = LearningModule.objects.filter(
                 campus=student_profile.campus,
                 grade_level=student_profile.enrolled_in,
                 is_active=True,
+                subject__in=enrolled_subjects,
             ).count()
 
             # Get completed modules (modules the student has accessed)
             accessed_modules = ModuleAccess.objects.filter(
-                student=student_profile
+                student=student_profile,
+                module__subject__in=enrolled_subjects,
             ).values_list("module_id", flat=True)
 
             completed_modules = len(accessed_modules)
@@ -1523,6 +1660,19 @@ def student_modules(request):
             context = {
                 "student_profile": student_profile,
                 "has_grade_level": False,
+                "has_subject_enrollment": False,
+                "modules": [],
+                "active_page": "modules",
+            }
+            return render(request, "student/student_subjects.html", context)
+
+        enrolled_subjects = student_profile.enrolled_subjects()
+        if not enrolled_subjects:
+            context = {
+                "student_profile": student_profile,
+                "has_grade_level": True,
+                "has_subject_enrollment": False,
+                "current_grade": student_profile.enrolled_in,
                 "modules": [],
                 "active_page": "modules",
             }
@@ -1532,12 +1682,13 @@ def student_modules(request):
         filter_subject = request.GET.get("subject", "all")
         search_query = request.GET.get("search", "")
 
-        # Base queryset - only show modules for student's grade level and campus
+        # Base queryset - only show modules for student's grade, campus, and enrolled subjects
         modules = (
             LearningModule.objects.filter(
                 campus=student_profile.campus,
                 grade_level=student_profile.enrolled_in,
                 is_active=True,
+                subject__in=enrolled_subjects,
             )
             .select_related("teacher__user")
             .order_by("-created_at")
@@ -1545,7 +1696,10 @@ def student_modules(request):
 
         # Apply filters
         if filter_subject != "all":
-            modules = modules.filter(subject=filter_subject)
+            if filter_subject not in enrolled_subjects:
+                modules = modules.none()
+            else:
+                modules = modules.filter(subject=filter_subject)
 
         if search_query:
             modules = modules.filter(
@@ -1570,12 +1724,13 @@ def student_modules(request):
         total_modules = modules.count()
         new_modules = modules.exclude(id__in=accessed_modules).count()
 
-        # Get unique values for filters
+        # Get unique values for filters (enrolled subjects only)
         subjects_list = (
             LearningModule.objects.filter(
                 campus=student_profile.campus,
                 grade_level=student_profile.enrolled_in,
                 is_active=True,
+                subject__in=enrolled_subjects,
             )
             .values_list("subject", flat=True)
             .distinct()
@@ -1596,6 +1751,7 @@ def student_modules(request):
                 "search": search_query,
             },
             "has_grade_level": True,
+            "has_subject_enrollment": True,
             "current_grade": student_profile.enrolled_in,
             "active_page": "modules",
         }
@@ -1612,12 +1768,14 @@ def view_module(request, module_id):
     """View module details and track access"""
     try:
         student_profile = request.user.student_profile
+        enrolled_subjects = student_profile.enrolled_subjects()
         module = get_object_or_404(
             LearningModule,
             id=module_id,
             campus=student_profile.campus,
             grade_level=student_profile.enrolled_in,
             is_active=True,
+            subject__in=enrolled_subjects,
         )
 
         # Record access
@@ -1643,12 +1801,14 @@ def student_download_module(request, module_id):
     """Download module (student access)"""
     try:
         student_profile = request.user.student_profile
+        enrolled_subjects = student_profile.enrolled_subjects()
         module = get_object_or_404(
             LearningModule,
             id=module_id,
             campus=student_profile.campus,
             grade_level=student_profile.enrolled_in,
             is_active=True,
+            subject__in=enrolled_subjects,
         )
 
         # Record download
@@ -2557,12 +2717,14 @@ def serve_module_pdf(request, module_id):
     """Serve PDF file with proper headers for embedding"""
     try:
         student_profile = request.user.student_profile
+        enrolled_subjects = student_profile.enrolled_subjects()
         module = get_object_or_404(
             LearningModule,
             id=module_id,
             campus=student_profile.campus,
             grade_level=student_profile.enrolled_in,
             is_active=True,
+            subject__in=enrolled_subjects,
         )
 
         # Serve the file with proper headers
@@ -3444,25 +3606,34 @@ def student_assignments(request):
             context = {
                 "student_profile": student_profile,
                 "has_grade_level": False,
+                "has_subject_enrollment": False,
                 "assignments": [],
                 "active_page": "assignments",
             }
             return render(request, "student/student_assignments.html", context)
 
+        enrolled_subjects = student_profile.enrolled_subjects()
+        if not enrolled_subjects:
+            return redirect("student_subjects")
+
         # Get filter parameters
         filter_subject = request.GET.get("subject", "all")
         filter_status = request.GET.get("status", "all")
 
-        # Base queryset - only show assignments for student's grade level and campus
+        # Base queryset - enrolled subjects only
         assignments = Assignment.objects.filter(
             campus=student_profile.campus,
             grade_level=student_profile.enrolled_in,
             is_active=True,
+            subject__in=enrolled_subjects,
         ).order_by("-created_at")
 
         # Apply filters
         if filter_subject != "all":
-            assignments = assignments.filter(subject=filter_subject)
+            if filter_subject not in enrolled_subjects:
+                assignments = assignments.none()
+            else:
+                assignments = assignments.filter(subject=filter_subject)
 
         # Get student's submissions
         submissions = AssignmentSubmission.objects.filter(
@@ -3490,6 +3661,7 @@ def student_assignments(request):
                 campus=student_profile.campus,
                 grade_level=student_profile.enrolled_in,
                 is_active=True,
+                subject__in=enrolled_subjects,
             )
             .values_list("subject", flat=True)
             .distinct()
@@ -3507,6 +3679,7 @@ def student_assignments(request):
                 "status": filter_status,
             },
             "has_grade_level": True,
+            "has_subject_enrollment": True,
             "current_grade": student_profile.enrolled_in,
             "active_page": "assignments",
         }
@@ -3558,12 +3731,14 @@ def submit_assignment(request, assignment_id):
     """Submit an assignment"""
     try:
         student_profile = request.user.student_profile
+        enrolled_subjects = student_profile.enrolled_subjects()
         assignment = get_object_or_404(
             Assignment,
             id=assignment_id,
             campus=student_profile.campus,
             grade_level=student_profile.enrolled_in,
             is_active=True,
+            subject__in=enrolled_subjects,
         )
 
         # Check if already submitted
@@ -4108,6 +4283,8 @@ def get_student_documents(request, student_id):
 
 
 @login_required
+@login_required
+@never_cache
 def manage_subjects(request):
     try:
         teacher = request.user.teacher_profile
@@ -4115,11 +4292,78 @@ def manage_subjects(request):
         messages.error(request, "Teacher profile not found.")
         return redirect("teacher_dashboard")
 
-    all_subject_choices = Assignment.SUBJECT_CHOICES
+    if not request.user.is_staff or request.user.is_superuser:
+        messages.error(request, "Access denied.")
+        return redirect("home")
 
-    # ---- Per-subject counts for the sidebar ----
+    valid_subjects = {value for value, _label in SUBJECT_CHOICES}
+
+    # ── Create / delete subject ──────────────────────────────
+    if request.method == "POST":
+        action = request.POST.get("action", "").strip()
+
+        if action == "create_subject":
+            subject_name = request.POST.get("subject_name", "").strip()
+            grade_level = request.POST.get("grade_level", "All Levels").strip()
+            if subject_name not in valid_subjects:
+                messages.error(request, "Invalid subject selected.")
+            elif TeacherSubject.objects.filter(
+                teacher=teacher, subject=subject_name
+            ).exists():
+                messages.warning(
+                    request, f'"{subject_name}" is already in your subject list.'
+                )
+            else:
+                TeacherSubject.objects.create(
+                    teacher=teacher,
+                    subject=subject_name,
+                    grade_level=grade_level or "All Levels",
+                )
+                messages.success(request, f'Subject "{subject_name}" added.')
+            if subject_name in valid_subjects:
+                return redirect(f"{reverse('manage_subjects')}?subject={subject_name}")
+            return redirect("manage_subjects")
+
+        if action == "delete_subject":
+            subject_name = request.POST.get("subject_name", "").strip()
+            try:
+                teacher_subject = TeacherSubject.objects.get(
+                    teacher=teacher, subject=subject_name
+                )
+            except TeacherSubject.DoesNotExist:
+                messages.error(request, "Subject not found in your list.")
+                return redirect("manage_subjects")
+
+            # Remove this teacher's modules and assignments for the subject
+            module_count = LearningModule.objects.filter(
+                teacher=teacher, subject=subject_name
+            ).count()
+            assignment_count = Assignment.objects.filter(
+                teacher=teacher, subject=subject_name
+            ).count()
+            LearningModule.objects.filter(
+                teacher=teacher, subject=subject_name
+            ).delete()
+            Assignment.objects.filter(
+                teacher=teacher, subject=subject_name
+            ).delete()
+            teacher_subject.delete()
+
+            messages.success(
+                request,
+                f'Subject "{subject_name}" deleted'
+                f" ({module_count} module(s), {assignment_count} assignment(s) removed).",
+            )
+            return redirect("manage_subjects")
+
+    # ── Subjects the teacher has added ───────────────────────
+    teacher_subjects = TeacherSubject.objects.filter(teacher=teacher).order_by(
+        "subject"
+    )
     subjects_with_counts = []
-    for value, label in all_subject_choices:
+    for ts in teacher_subjects:
+        value = ts.subject
+        label = dict(SUBJECT_CHOICES).get(value, value)
         module_count = LearningModule.objects.filter(
             teacher=teacher, subject=value
         ).count()
@@ -4137,13 +4381,23 @@ def manage_subjects(request):
                 "module_count": module_count,
                 "assignment_count": assignment_count,
                 "submission_count": submission_count,
+                "grade_level": ts.grade_level,
             }
         )
 
+    # Choices not yet added (for Add Subject modal)
+    owned = {s["value"] for s in subjects_with_counts}
+    available_subject_choices = [
+        (value, label)
+        for value, label in SUBJECT_CHOICES
+        if value not in owned
+    ]
+
     # ---- Active subject ----
     active_subject = request.GET.get("subject", None)
-    if not active_subject and subjects_with_counts:
-        active_subject = subjects_with_counts[0]["value"]
+    owned_values = [s["value"] for s in subjects_with_counts]
+    if active_subject not in owned_values:
+        active_subject = owned_values[0] if owned_values else None
 
     # ---- Modules ----
     modules_qs = LearningModule.objects.filter(teacher=teacher)
@@ -4207,7 +4461,7 @@ def manage_subjects(request):
         "active_subject": active_subject,
         "modules": modules_qs,
         "assignments": assignments_qs,
-        "all_subject_choices": all_subject_choices,
+        "all_subject_choices": available_subject_choices,
         "grade_levels": grade_levels,
         "quarters": quarters,
         "total_modules": total_modules,
@@ -4254,6 +4508,22 @@ def student_subjects(request):
                 {
                     "student_profile": student_profile,
                     "has_grade_level": False,
+                    "has_subject_enrollment": False,
+                    "active_page": "subjects",
+                },
+            )
+
+        enrolled_subjects = student_profile.enrolled_subjects()
+        if not enrolled_subjects:
+            return render(
+                request,
+                "student/student_subjects.html",
+                {
+                    "student_profile": student_profile,
+                    "has_grade_level": True,
+                    "has_subject_enrollment": False,
+                    "current_grade": student_profile.enrolled_in,
+                    "subject_data": {},
                     "active_page": "subjects",
                 },
             )
@@ -4261,10 +4531,13 @@ def student_subjects(request):
         campus = student_profile.campus
         grade_level = student_profile.enrolled_in
 
-        # ── Fetch all active modules for this student ────────
+        # ── Fetch active modules for enrolled subjects only ──
         all_modules = (
             LearningModule.objects.filter(
-                campus=campus, grade_level=grade_level, is_active=True
+                campus=campus,
+                grade_level=grade_level,
+                is_active=True,
+                subject__in=enrolled_subjects,
             )
             .select_related("teacher__user")
             .order_by("-created_at")
@@ -4277,9 +4550,12 @@ def student_subjects(request):
             )
         )
 
-        # ── Fetch all active assignments ─────────────────────
+        # ── Fetch active assignments for enrolled subjects ───
         all_assignments = Assignment.objects.filter(
-            campus=campus, grade_level=grade_level, is_active=True
+            campus=campus,
+            grade_level=grade_level,
+            is_active=True,
+            subject__in=enrolled_subjects,
         ).order_by("-created_at")
 
         # ── Fetch student's submissions ──────────────────────
@@ -4294,7 +4570,7 @@ def student_subjects(request):
         # Build a lookup: assignment_id → AssignmentSubmission instance
         submission_map = {sub.assignment_id: sub for sub in all_submissions}
 
-        # ── Collect every unique subject that has content ────
+        # ── Collect every unique enrolled subject that has content ────
         subjects_from_modules = set(all_modules.values_list("subject", flat=True))
         subjects_from_assignments = set(
             all_assignments.values_list("subject", flat=True)
@@ -4330,6 +4606,7 @@ def student_subjects(request):
         context = {
             "student_profile": student_profile,
             "has_grade_level": True,
+            "has_subject_enrollment": True,
             "current_grade": grade_level,
             "subject_data": subject_data,
             "accessed_modules": accessed_modules,

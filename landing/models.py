@@ -4,6 +4,19 @@ from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, RegexValidator
 
 
+# Shared ALS subject catalog (used by modules, assignments, and enrollments)
+SUBJECT_CHOICES = [
+    ("Communication Skills", "Communication Skills"),
+    ("Critical Thinking", "Critical Thinking"),
+    ("Mathematics", "Mathematics"),
+    ("Science", "Science"),
+    ("Social Studies", "Social Studies"),
+    ("Life Skills", "Life Skills"),
+    ("Filipino", "Filipino"),
+    ("English", "English"),
+]
+
+
 class StudentProfile(models.Model):
     GENDER_CHOICES = [
         ("Male", "Male"),
@@ -356,6 +369,14 @@ class StudentProfile(models.Model):
             count += 1
         return count
 
+    def enrolled_subjects(self):
+        """Return list of active subject names this student is enrolled in."""
+        return list(
+            self.subject_enrollments.filter(is_active=True).values_list(
+                "subject", flat=True
+            )
+        )
+
 
 class Teacher(models.Model):
     CAMPUS_CHOICES = [
@@ -466,16 +487,7 @@ class LearningModule(models.Model):
         ("Grade 12", "Grade 12"),
     ]
 
-    SUBJECT_CHOICES = [
-        ("Communication Skills", "Communication Skills"),
-        ("Critical Thinking", "Critical Thinking"),
-        ("Mathematics", "Mathematics"),
-        ("Science", "Science"),
-        ("Social Studies", "Social Studies"),
-        ("Life Skills", "Life Skills"),
-        ("Filipino", "Filipino"),
-        ("English", "English"),
-    ]
+    SUBJECT_CHOICES = SUBJECT_CHOICES
 
     QUARTER_CHOICES = [
         ("Quarter 1", "Quarter 1"),
@@ -651,16 +663,7 @@ class Assignment(models.Model):
         ("Grade 12", "Grade 12"),
     ]
 
-    SUBJECT_CHOICES = [
-        ("Communication Skills", "Communication Skills"),
-        ("Critical Thinking", "Critical Thinking"),
-        ("Mathematics", "Mathematics"),
-        ("Science", "Science"),
-        ("Social Studies", "Social Studies"),
-        ("Life Skills", "Life Skills"),
-        ("Filipino", "Filipino"),
-        ("English", "English"),
-    ]
+    SUBJECT_CHOICES = SUBJECT_CHOICES
 
     teacher = models.ForeignKey(
         "Teacher", on_delete=models.CASCADE, related_name="assignments"
@@ -750,6 +753,74 @@ class AssignmentSubmission(models.Model):
 
             self.graded_at = timezone.now()
         super().save(*args, **kwargs)
+
+
+class SubjectEnrollment(models.Model):
+    """Admin-managed enrollment of a student into a specific subject."""
+
+    student = models.ForeignKey(
+        StudentProfile,
+        on_delete=models.CASCADE,
+        related_name="subject_enrollments",
+    )
+    subject = models.CharField(
+        max_length=50, choices=SUBJECT_CHOICES, verbose_name="Subject"
+    )
+    enrolled_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="subject_enrollments_made",
+    )
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True, verbose_name="Active")
+
+    class Meta:
+        unique_together = ["student", "subject"]
+        ordering = ["subject"]
+        verbose_name = "Subject Enrollment"
+        verbose_name_plural = "Subject Enrollments"
+
+    def __str__(self):
+        return f"{self.student.user.get_full_name()} - {self.subject}"
+
+
+class TeacherSubject(models.Model):
+    """Subjects a teacher has added to their teaching list."""
+
+    GRADE_LEVEL_CHOICES = [
+        ("All Levels", "All Levels"),
+        ("Grade 7", "Grade 7"),
+        ("Grade 8", "Grade 8"),
+        ("Grade 9", "Grade 9"),
+        ("Grade 10", "Grade 10"),
+        ("Grade 11", "Grade 11"),
+        ("Grade 12", "Grade 12"),
+    ]
+
+    teacher = models.ForeignKey(
+        Teacher, on_delete=models.CASCADE, related_name="teacher_subjects"
+    )
+    subject = models.CharField(
+        max_length=50, choices=SUBJECT_CHOICES, verbose_name="Subject"
+    )
+    grade_level = models.CharField(
+        max_length=20,
+        choices=GRADE_LEVEL_CHOICES,
+        default="All Levels",
+        verbose_name="Grade Level",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ["teacher", "subject"]
+        ordering = ["subject"]
+        verbose_name = "Teacher Subject"
+        verbose_name_plural = "Teacher Subjects"
+
+    def __str__(self):
+        return f"{self.teacher.user.get_full_name()} - {self.subject}"
 
 
 class Campus(models.Model):

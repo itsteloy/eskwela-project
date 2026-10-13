@@ -33,7 +33,7 @@
         /* ===== SIDEBAR STYLES ===== */
         .sidebar {
             width: 280px;
-            background: linear-gradient(135deg, var(--forest-green), #1a6b1a);
+            background: linear-gradient(135deg, var(--forest-green), #0f3d0f);
             color: var(--white);
             padding: 30px 20px;
             position: fixed;
@@ -878,6 +878,12 @@
                     <a href="{% url 'manage_students' %}"
                         class="nav-link {% if active_page == 'manage_students' %}active{% endif %}">
                         <i class="fas fa-user-graduate"></i> Manage Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'subject_enrollment' %}"
+                        class="nav-link {% if active_page == 'subject_enrollment' %}active{% endif %}">
+                        <i class="fas fa-book-open"></i> Subject Enrollment
                     </a>
                 </li>
                 <li class="nav-item">
