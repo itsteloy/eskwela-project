@@ -1,3 +1,5 @@
+
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -18,7 +20,9 @@ from .models import (
     LearningModule,
     SubjectEnrollment,
     TeacherSubject,
-    SUBJECT_CHOICES,
+    ALL_SUBJECT_CHOICES,
+    ALL_GRADES,
+    subjects_for_grade,
 )
 import random
 import string
@@ -846,7 +850,7 @@ def enroll_student_subjects(request, student_id):
         messages.error(request, "Approved student not found.")
         return redirect("subject_enrollment")
 
-    valid_subjects = {value for value, _label in SUBJECT_CHOICES}
+    valid_subjects = {value for value, _label in ALL_SUBJECT_CHOICES}
 
     if request.method == "POST":
         selected = set(request.POST.getlist("subjects"))
@@ -891,9 +895,11 @@ def enroll_student_subjects(request, student_id):
         return redirect("enroll_student_subjects", student_id=student.id)
 
     current_enrolled = set(student.enrolled_subjects())
+    # Primary pupils (Grade 1-6) get the DepEd primary catalog; others get ALS.
+    applicable_choices = subjects_for_grade(student.enrolled_in)
     subject_options = [
         {"value": value, "label": label, "checked": value in current_enrolled}
-        for value, label in SUBJECT_CHOICES
+        for value, label in applicable_choices
     ]
 
     missing_grade = not student.enrolled_in
@@ -902,6 +908,7 @@ def enroll_student_subjects(request, student_id):
     context = {
         "student": student,
         "subject_options": subject_options,
+        "is_primary": student.enrolled_in in ("Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"),
         "missing_grade": missing_grade,
         "missing_campus": missing_campus,
         "active_page": "subject_enrollment",
@@ -1626,8 +1633,12 @@ def edit_student(request, student_id):
             else:
                 profile.campus = None
 
-            # Enrolled In (IMPORTANT: Keep this field)
-            profile.enrolled_in = request.POST.get("enrolled_in", "") or None
+            # Enrolled In — admin assigns Primary (Grade 1-6) or secondary grade.
+            enrolled_in = request.POST.get("enrolled_in", "") or None
+            if enrolled_in and enrolled_in not in ALL_GRADES:
+                messages.error(request, f"Invalid grade level: {enrolled_in}.")
+                return redirect("manage_students")
+            profile.enrolled_in = enrolled_in
 
             profile.save()
 
@@ -1937,15 +1948,7 @@ def teacher_schedules(request):
         inactive_schedules = schedules.filter(is_active=False)
 
         # Get unique grade levels for filter dropdown
-        grade_levels = [
-            "All Levels",
-            "Grade 7",
-            "Grade 8",
-            "Grade 9",
-            "Grade 10",
-            "Grade 11",
-            "Grade 12",
-        ]
+        grade_levels = ["All Levels"] + list(ALL_GRADES)
 
         context = {
             "teacher_profile": teacher_profile,
@@ -2369,24 +2372,8 @@ def teacher_modules(request):
         )
 
         # Get unique values for filters
-        grade_levels = [
-            "Grade 7",
-            "Grade 8",
-            "Grade 9",
-            "Grade 10",
-            "Grade 11",
-            "Grade 12",
-        ]
-        subjects = [
-            "Communication Skills",
-            "Critical Thinking",
-            "Mathematics",
-            "Science",
-            "Social Studies",
-            "Life Skills",
-            "Filipino",
-            "English",
-        ]
+        grade_levels = list(ALL_GRADES)
+        subjects = [value for value, _label in ALL_SUBJECT_CHOICES]
         quarters = ["Quarter 1", "Quarter 2", "Quarter 3", "Quarter 4"]
 
         context = {
@@ -3268,14 +3255,7 @@ def teacher_assignments(request):
             "assignments": page_obj,
             "total_assignments": total_assignments,
             "active_assignments": active_assignments,
-            "grade_levels": [
-                "Grade 7",
-                "Grade 8",
-                "Grade 9",
-                "Grade 10",
-                "Grade 11",
-                "Grade 12",
-            ],
+            "grade_levels": list(ALL_GRADES),
             "subjects": Assignment.SUBJECT_CHOICES,
             "current_filter": {
                 "grade": filter_grade,
@@ -3812,6 +3792,12 @@ def student_announcements(request):
         from django.db.models import Q
 
         grade_mapping = {
+            "Grade 1": "grade_1",
+            "Grade 2": "grade_2",
+            "Grade 3": "grade_3",
+            "Grade 4": "grade_4",
+            "Grade 5": "grade_5",
+            "Grade 6": "grade_6",
             "Grade 7": "grade_7",
             "Grade 8": "grade_8",
             "Grade 9": "grade_9",
@@ -4296,7 +4282,7 @@ def manage_subjects(request):
         messages.error(request, "Access denied.")
         return redirect("home")
 
-    valid_subjects = {value for value, _label in SUBJECT_CHOICES}
+    valid_subjects = {value for value, _label in ALL_SUBJECT_CHOICES}
 
     # ── Create / delete subject ──────────────────────────────
     if request.method == "POST":
@@ -4305,8 +4291,11 @@ def manage_subjects(request):
         if action == "create_subject":
             subject_name = request.POST.get("subject_name", "").strip()
             grade_level = request.POST.get("grade_level", "All Levels").strip()
+            valid_grades = {value for value, _label in TeacherSubject.GRADE_LEVEL_CHOICES}
             if subject_name not in valid_subjects:
                 messages.error(request, "Invalid subject selected.")
+            elif grade_level not in valid_grades:
+                messages.error(request, "Invalid grade level selected.")
             elif TeacherSubject.objects.filter(
                 teacher=teacher, subject=subject_name
             ).exists():
@@ -4363,7 +4352,7 @@ def manage_subjects(request):
     subjects_with_counts = []
     for ts in teacher_subjects:
         value = ts.subject
-        label = dict(SUBJECT_CHOICES).get(value, value)
+        label = dict(ALL_SUBJECT_CHOICES).get(value, value)
         module_count = LearningModule.objects.filter(
             teacher=teacher, subject=value
         ).count()
@@ -4389,7 +4378,7 @@ def manage_subjects(request):
     owned = {s["value"] for s in subjects_with_counts}
     available_subject_choices = [
         (value, label)
-        for value, label in SUBJECT_CHOICES
+        for value, label in ALL_SUBJECT_CHOICES
         if value not in owned
     ]
 

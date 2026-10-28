@@ -295,15 +295,25 @@
                 <label><i class="fas fa-graduation-cap"></i> Assigned Grade Level *</label>
                 <select name="enrolled_in" required>
                     <option value="">Pending Assessment</option>
-                    <option value="Grade 7" {% if student.enrolled_in == 'Grade 7' %}selected{% endif %}>Grade 7</option>
-                    <option value="Grade 8" {% if student.enrolled_in == 'Grade 8' %}selected{% endif %}>Grade 8</option>
-                    <option value="Grade 9" {% if student.enrolled_in == 'Grade 9' %}selected{% endif %}>Grade 9</option>
-                    <option value="Grade 10" {% if student.enrolled_in == 'Grade 10' %}selected{% endif %}>Grade 10
-                    </option>
-                    <option value="Grade 11" {% if student.enrolled_in == 'Grade 11' %}selected{% endif %}>Grade 11
-                    </option>
-                    <option value="Grade 12" {% if student.enrolled_in == 'Grade 12' %}selected{% endif %}>Grade 12
-                    </option>
+                    <optgroup label="Primary">
+                        <option value="Grade 1" {% if student.enrolled_in == 'Grade 1' %}selected{% endif %}>Grade 1</option>
+                        <option value="Grade 2" {% if student.enrolled_in == 'Grade 2' %}selected{% endif %}>Grade 2</option>
+                        <option value="Grade 3" {% if student.enrolled_in == 'Grade 3' %}selected{% endif %}>Grade 3</option>
+                        <option value="Grade 4" {% if student.enrolled_in == 'Grade 4' %}selected{% endif %}>Grade 4</option>
+                        <option value="Grade 5" {% if student.enrolled_in == 'Grade 5' %}selected{% endif %}>Grade 5</option>
+                        <option value="Grade 6" {% if student.enrolled_in == 'Grade 6' %}selected{% endif %}>Grade 6</option>
+                    </optgroup>
+                    <optgroup label="Junior / Senior High">
+                        <option value="Grade 7" {% if student.enrolled_in == 'Grade 7' %}selected{% endif %}>Grade 7</option>
+                        <option value="Grade 8" {% if student.enrolled_in == 'Grade 8' %}selected{% endif %}>Grade 8</option>
+                        <option value="Grade 9" {% if student.enrolled_in == 'Grade 9' %}selected{% endif %}>Grade 9</option>
+                        <option value="Grade 10" {% if student.enrolled_in == 'Grade 10' %}selected{% endif %}>Grade 10
+                        </option>
+                        <option value="Grade 11" {% if student.enrolled_in == 'Grade 11' %}selected{% endif %}>Grade 11
+                        </option>
+                        <option value="Grade 12" {% if student.enrolled_in == 'Grade 12' %}selected{% endif %}>Grade 12
+                        </option>
+                    </optgroup>
                 </select>
                 <small style="color: #666; margin-top: 5px;">
                     Set after face-to-face assessment

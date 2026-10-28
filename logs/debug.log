@@ -5707,3 +5707,425 @@
 [INFO] 2026-09-21 14:32:54 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
 [INFO] 2026-09-21 14:32:54 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
 [INFO] 2026-09-21 14:32:54 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 15:55:57 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:55:57 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:56:02 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 15:56:02 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:56:02 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:56:04 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 15:56:04 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:56:04 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:56:07 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 15:56:08 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:56:08 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:56:17 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:56:17 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:56:25 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 15:56:25 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:56:25 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:56:29 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:56:29 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:56:39 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 15:56:39 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:56:39 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:56:45 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 15:56:45 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:56:45 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:56:52 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 15:56:52 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 15:56:52 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 15:57:24 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 15:57:34 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 15:59:57 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 15:59:57 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:00:03 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-13 16:00:03 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:00:03 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:00:04 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-13 16:00:04 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:00:04 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:03:41 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:03:41 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:03:41 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:03:41 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:03:55 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:03:55 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:03:55 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:03:55 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:03:59 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:03:59 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:03:59 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:03:59 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:04:10 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:04:10 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:04:10 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:04:10 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:04:19 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:04:19 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:04:19 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:04:19 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:04:25 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:04:25 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:04:25 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:04:25 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:04:30 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:04:30 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:04:30 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:04:30 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:04:36 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:04:36 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:04:36 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:04:36 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:05:09 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:05:09 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:05:09 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:05:09 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:05:25 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:05:25 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:05:25 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:05:25 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:05:40 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:05:40 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:05:40 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:05:40 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:05:56 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:05:56 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:05:56 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:05:56 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:06:11 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:06:11 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:06:11 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:06:11 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:06:26 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:06:26 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:06:26 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:06:26 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:06:57 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:06:57 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:06:57 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:06:57 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:07:13 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:07:13 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:07:13 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:07:13 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:07:28 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:07:28 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:07:28 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:07:28 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:09:09 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:09:09 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:09:09 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:09:09 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:09:34 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:09:34 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:09:34 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:09:34 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:10:44 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:10:44 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:10:44 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:10:44 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:11:41 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:11:41 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:11:41 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:11:41 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:13:56 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:13:56 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:13:56 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:13:56 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:15:38 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:15:38 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:15:38 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:15:38 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:16:02 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:16:02 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:16:02 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:16:02 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:20:58 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-13 16:20:58 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:20:58 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:20:59 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-13 16:20:59 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:20:59 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:21:08 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-13 16:21:08 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:21:08 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:21:12 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-13 16:21:12 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:21:12 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:21:12 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-13 16:21:12 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:21:12 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:21:14 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-13 16:21:14 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:21:14 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:21:26 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-13 16:21:26 landing.consumers connect() - WebSocket connected: andrie.gavilo1 (43)
+[INFO] 2026-10-13 16:21:26 landing.consumers connect() - User andrie.gavilo1 added to dashboard_updates group
+[INFO] 2026-10-13 16:21:37 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:21:37 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:21:37 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:21:38 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:21:38 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:21:38 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:21:40 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:21:40 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:21:40 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:21:44 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:21:44 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:21:44 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:21:47 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:21:47 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:21:47 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:21:50 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:21:50 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:21:50 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:21:53 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:21:53 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:22:19 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:22:19 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:22:19 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:22:20 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:22:21 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:22:21 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:22:28 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:22:28 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-13 16:22:28 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-13 16:22:30 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:22:30 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-13 16:22:31 landing.consumers disconnect() - WebSocket disconnected: andrie.gavilo1 (code: 1001)
+[INFO] 2026-10-22 14:25:57 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:25:57 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:26:08 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:26:08 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:26:08 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:26:12 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:26:12 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:26:12 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:26:16 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:26:17 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:26:17 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:26:40 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:26:40 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:26:40 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:26:45 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:26:45 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:26:45 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:27:05 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:27:05 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:27:05 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:28:25 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:28:25 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:28:57 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:28:57 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:28:57 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:28:59 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:28:59 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:28:59 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:29:00 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:29:00 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:29:00 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:29:41 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:29:41 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:29:41 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:05 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:05 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:05 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:08 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:08 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:08 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:09 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:09 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:09 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:10 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:10 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:10 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:12 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:12 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:12 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:13 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:14 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:14 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:15 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:15 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:15 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:16 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:16 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:16 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:36 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:36 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:36 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:41 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:41 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:41 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:43 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:43 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:43 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:44 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:44 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:44 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:45 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:45 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:45 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:47 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:47 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:47 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:48 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:48 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:48 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:31:50 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:31:50 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:31:50 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:32:31 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:32:31 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:32:31 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:38:25 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:43:05 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1006)
+[INFO] 2026-10-22 14:43:08 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:43:08 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:43:45 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:43:45 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:43:45 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:43:49 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:43:49 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:43:49 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:49:27 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:49:27 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:49:27 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:49:39 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:49:39 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:49:39 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:50:18 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:50:18 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:50:18 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:51:06 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:51:06 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:51:10 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:51:10 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:51:10 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:51:18 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:51:18 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:51:18 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:51:24 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:51:24 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:51:24 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:51:28 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:51:28 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:51:28 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:51:29 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:51:30 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:51:30 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:51:32 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 14:51:32 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 14:51:32 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 14:52:43 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:00:24 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:00:24 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:00:24 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:00:29 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:00:29 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:00:29 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:04:08 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:04:08 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:04:09 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:04:09 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:04:09 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:04:11 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:04:11 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:04:11 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:04:15 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:04:15 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:04:15 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:04:19 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:04:19 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:04:19 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:04:23 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:04:24 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:04:24 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:14:08 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:22:56 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:22:56 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:23:09 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:23:09 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:23:09 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:23:16 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:23:16 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:23:16 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:23:18 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:23:18 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:23:18 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:23:19 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:23:19 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:23:19 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:23:20 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:23:20 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:23:20 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:23:22 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:23:22 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:23:22 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:23:24 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:23:24 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:23:24 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:24:15 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:24:15 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:24:15 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:24:25 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:24:25 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:24:25 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:31:35 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:31:35 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:31:35 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:31:41 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:31:41 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:31:41 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:31:46 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:31:46 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:31:46 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:31:48 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:31:48 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:31:48 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:32:09 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:32:09 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:32:09 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:32:50 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:32:50 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:32:50 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:32:51 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:32:51 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:32:51 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:32:55 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:32:55 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:32:55 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:32:58 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:32:58 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:32:58 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:33:26 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:33:26 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:33:26 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-22 15:33:36 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-22 15:33:36 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-22 15:33:36 landing.consumers connect() - User Administrator added to dashboard_updates group
+[WARNING] 2026-10-22 16:36:33 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 16:36:33 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[WARNING] 2026-10-22 16:36:40 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 16:36:40 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[WARNING] 2026-10-22 16:36:52 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 16:36:52 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[WARNING] 2026-10-22 16:37:04 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 16:37:04 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[WARNING] 2026-10-22 19:27:00 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 19:27:00 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[WARNING] 2026-10-22 19:27:15 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 19:27:15 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[WARNING] 2026-10-22 19:27:31 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 19:27:31 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[WARNING] 2026-10-22 19:27:47 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 19:27:47 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[WARNING] 2026-10-22 19:28:03 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 19:28:03 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[WARNING] 2026-10-22 19:28:19 landing.consumers connect() - Unauthenticated WebSocket connection attempt
+[INFO] 2026-10-22 19:28:19 landing.consumers disconnect() - WebSocket disconnected:  (code: 1006)
+[INFO] 2026-10-28 20:34:30 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-28 20:34:30 landing.consumers connect() - User Administrator added to dashboard_updates group
+[INFO] 2026-10-28 20:34:37 landing.consumers disconnect() - WebSocket disconnected: Administrator (code: 1001)
+[INFO] 2026-10-28 20:34:37 landing.consumers connect() - WebSocket connected: Administrator (1)
+[INFO] 2026-10-28 20:34:37 landing.consumers connect() - User Administrator added to dashboard_updates group

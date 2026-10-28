@@ -17,6 +17,57 @@ SUBJECT_CHOICES = [
 ]
 
 
+# DepEd primary subject catalog (Grade 1 - Grade 6)
+PRIMARY_SUBJECT_CHOICES = [
+    ("Mother Tongue", "Mother Tongue"),
+    ("Filipino", "Filipino"),
+    ("English", "English"),
+    ("Mathematics", "Mathematics"),
+    ("Science", "Science"),
+    ("Araling Panlipunan", "Araling Panlipunan"),
+    ("Edukasyon sa Pagpapakatao", "Edukasyon sa Pagpapakatao"),
+    ("MAPEH", "MAPEH"),
+    ("EPP", "EPP"),
+]
+
+# Combined catalog accepted at the DB level (grade-specific filtering happens in views)
+ALL_SUBJECT_CHOICES = SUBJECT_CHOICES + [
+    choice for choice in PRIMARY_SUBJECT_CHOICES if choice not in SUBJECT_CHOICES
+]
+
+PRIMARY_GRADES = ["Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6"]
+
+SECONDARY_GRADES = [
+    "Grade 7",
+    "Grade 8",
+    "Grade 9",
+    "Grade 10",
+    "Grade 11",
+    "Grade 12",
+]
+
+ALL_GRADES = PRIMARY_GRADES + SECONDARY_GRADES
+
+
+def is_primary_grade(grade):
+    """Return True when a grade string belongs to Primary (Grade 1-6)."""
+    return grade in PRIMARY_GRADES
+
+
+def subjects_for_grade(grade):
+    """Return the subject catalog applicable to a grade level."""
+    if is_primary_grade(grade):
+        return PRIMARY_SUBJECT_CHOICES
+    return SUBJECT_CHOICES
+
+
+def grade_audience_key(grade):
+    """Map 'Grade 1' -> 'grade_1' for announcement targeting."""
+    if not grade:
+        return ""
+    return grade.lower().replace(" ", "_")
+
+
 class StudentProfile(models.Model):
     GENDER_CHOICES = [
         ("Male", "Male"),
@@ -26,6 +77,12 @@ class StudentProfile(models.Model):
     ]
 
     GRADE_CHOICES = [
+        ("Grade 1", "Grade 1"),
+        ("Grade 2", "Grade 2"),
+        ("Grade 3", "Grade 3"),
+        ("Grade 4", "Grade 4"),
+        ("Grade 5", "Grade 5"),
+        ("Grade 6", "Grade 6"),
         ("Grade 7", "Grade 7"),
         ("Grade 8", "Grade 8"),
         ("Grade 9", "Grade 9"),
@@ -424,6 +481,12 @@ class Schedule(models.Model):
 
     GRADE_LEVEL_CHOICES = [
         ("All Levels", "All Levels"),
+        ("Grade 1", "Grade 1"),
+        ("Grade 2", "Grade 2"),
+        ("Grade 3", "Grade 3"),
+        ("Grade 4", "Grade 4"),
+        ("Grade 5", "Grade 5"),
+        ("Grade 6", "Grade 6"),
         ("Grade 7", "Grade 7"),
         ("Grade 8", "Grade 8"),
         ("Grade 9", "Grade 9"),
@@ -479,6 +542,12 @@ class LearningModule(models.Model):
 
     GRADE_LEVEL_CHOICES = [
         ("All Levels", "All Levels"),
+        ("Grade 1", "Grade 1"),
+        ("Grade 2", "Grade 2"),
+        ("Grade 3", "Grade 3"),
+        ("Grade 4", "Grade 4"),
+        ("Grade 5", "Grade 5"),
+        ("Grade 6", "Grade 6"),
         ("Grade 7", "Grade 7"),
         ("Grade 8", "Grade 8"),
         ("Grade 9", "Grade 9"),
@@ -487,7 +556,7 @@ class LearningModule(models.Model):
         ("Grade 12", "Grade 12"),
     ]
 
-    SUBJECT_CHOICES = SUBJECT_CHOICES
+    SUBJECT_CHOICES = ALL_SUBJECT_CHOICES
 
     QUARTER_CHOICES = [
         ("Quarter 1", "Quarter 1"),
@@ -510,7 +579,7 @@ class LearningModule(models.Model):
     title = models.CharField(max_length=200, verbose_name="Module Title")
     description = models.TextField(verbose_name="Description")
     subject = models.CharField(
-        max_length=50, choices=SUBJECT_CHOICES, default="Other", verbose_name="Subject"
+        max_length=50, choices=ALL_SUBJECT_CHOICES, default="Other", verbose_name="Subject"
     )
     grade_level = models.CharField(
         max_length=20, choices=GRADE_LEVEL_CHOICES, default="All Levels"
@@ -589,6 +658,12 @@ class Announcement(models.Model):
 
     AUDIENCE_CHOICES = [
         ("all", "All Students"),
+        ("grade_1", "Grade 1 Only"),
+        ("grade_2", "Grade 2 Only"),
+        ("grade_3", "Grade 3 Only"),
+        ("grade_4", "Grade 4 Only"),
+        ("grade_5", "Grade 5 Only"),
+        ("grade_6", "Grade 6 Only"),
         ("grade_7", "Grade 7 Only"),
         ("grade_8", "Grade 8 Only"),
         ("grade_9", "Grade 9 Only"),
@@ -655,6 +730,12 @@ class Assignment(models.Model):
     """Model for teacher assignments"""
 
     GRADE_LEVEL_CHOICES = [
+        ("Grade 1", "Grade 1"),
+        ("Grade 2", "Grade 2"),
+        ("Grade 3", "Grade 3"),
+        ("Grade 4", "Grade 4"),
+        ("Grade 5", "Grade 5"),
+        ("Grade 6", "Grade 6"),
         ("Grade 7", "Grade 7"),
         ("Grade 8", "Grade 8"),
         ("Grade 9", "Grade 9"),
@@ -663,7 +744,7 @@ class Assignment(models.Model):
         ("Grade 12", "Grade 12"),
     ]
 
-    SUBJECT_CHOICES = SUBJECT_CHOICES
+    SUBJECT_CHOICES = ALL_SUBJECT_CHOICES
 
     teacher = models.ForeignKey(
         "Teacher", on_delete=models.CASCADE, related_name="assignments"
@@ -679,7 +760,7 @@ class Assignment(models.Model):
     title = models.CharField(max_length=200, verbose_name="Title")
     description = models.TextField(verbose_name="Description")
     subject = models.CharField(
-        max_length=50, choices=SUBJECT_CHOICES, default="Other", verbose_name="Subject"
+        max_length=50, choices=ALL_SUBJECT_CHOICES, default="Other", verbose_name="Subject"
     )
     grade_level = models.CharField(
         max_length=20, choices=GRADE_LEVEL_CHOICES, verbose_name="Grade Level"
@@ -764,7 +845,7 @@ class SubjectEnrollment(models.Model):
         related_name="subject_enrollments",
     )
     subject = models.CharField(
-        max_length=50, choices=SUBJECT_CHOICES, verbose_name="Subject"
+        max_length=50, choices=ALL_SUBJECT_CHOICES, verbose_name="Subject"
     )
     enrolled_by = models.ForeignKey(
         User,
@@ -791,6 +872,12 @@ class TeacherSubject(models.Model):
 
     GRADE_LEVEL_CHOICES = [
         ("All Levels", "All Levels"),
+        ("Grade 1", "Grade 1"),
+        ("Grade 2", "Grade 2"),
+        ("Grade 3", "Grade 3"),
+        ("Grade 4", "Grade 4"),
+        ("Grade 5", "Grade 5"),
+        ("Grade 6", "Grade 6"),
         ("Grade 7", "Grade 7"),
         ("Grade 8", "Grade 8"),
         ("Grade 9", "Grade 9"),
@@ -803,7 +890,7 @@ class TeacherSubject(models.Model):
         Teacher, on_delete=models.CASCADE, related_name="teacher_subjects"
     )
     subject = models.CharField(
-        max_length=50, choices=SUBJECT_CHOICES, verbose_name="Subject"
+        max_length=50, choices=ALL_SUBJECT_CHOICES, verbose_name="Subject"
     )
     grade_level = models.CharField(
         max_length=20,

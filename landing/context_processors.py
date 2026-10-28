@@ -51,6 +51,12 @@ def student_notifications(request):
 
                 # Get pending announcements for this student
                 grade_mapping = {
+                    "Grade 1": "grade_1",
+                    "Grade 2": "grade_2",
+                    "Grade 3": "grade_3",
+                    "Grade 4": "grade_4",
+                    "Grade 5": "grade_5",
+                    "Grade 6": "grade_6",
                     "Grade 7": "grade_7",
                     "Grade 8": "grade_8",
                     "Grade 9": "grade_9",

@@ -200,9 +200,13 @@
 
     <form method="post" class="subjects-card">
         {% csrf_token %}
-        <h4>Subjects</h4>
+        <h4>{% if is_primary %}Primary Subjects (Grade 1–6){% else %}Subjects{% endif %}</h4>
         <p class="subjects-hint">
+            {% if is_primary %}
+            Check the DepEd primary subjects this pupil should access. Unchecking a subject removes access immediately.
+            {% else %}
             Check the subjects this student should access. Unchecking a subject removes access immediately.
+            {% endif %}
         </p>
 
         <div class="subject-grid">
